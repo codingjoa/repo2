@@ -28,6 +28,12 @@ async function addUser(cl, name, gender, phone, email, address) {
   await pool.query('insert into student (class, name, gender, phone, email, address) values ( (?), (?), (?), (?), (?), (?) )', values)
   .then(console.log, console.error);
 }
+//checkUser promise right..?
+async function checkUser(cl, name){
+  const values = [cl, name];
+  await pool.query('insert into student_check(class, name) select class, name from student where ??')
+  .then(console.log, console.error);
+}
 
 async function end() {
   pool.end();
