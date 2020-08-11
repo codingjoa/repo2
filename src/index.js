@@ -3,12 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
-import LinkButton from './LinkButton';
+import LinkButton from './linkButton';
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
-    <LinkButton />
+    <LikeButton />
   </React.StrictMode>,
   document.getElementById('root')
 );
