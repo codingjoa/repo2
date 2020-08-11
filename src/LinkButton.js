@@ -14,3 +14,4 @@ class LinkButton extends React.Component{
   }
 }
 module.export = { LinkButton };
+export default LinkButton;
