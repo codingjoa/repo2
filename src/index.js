@@ -8,7 +8,7 @@ import LinkButton from './linkButton';
 ReactDOM.render(
   <React.StrictMode>
     <App />
-    <LikeButton />
+    <LinkButton />
   </React.StrictMode>,
   document.getElementById('root')
 );

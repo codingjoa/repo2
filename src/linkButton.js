@@ -1,7 +1,7 @@
 import React from 'react';
 
 // 위에 코드 생략(파일이름 linkButton.js로 저장)
-class LikeButton extends React.Component{
+class LinkButton extends React.Component{
   constructor(props){
     super(props);
     this.state = {
