@@ -13,4 +13,4 @@ class LinkButton extends React.Component{
     // return e('button' , {onClick:()=>{this.setState({liked:true})}, type:'submit'} ,this.state.liked === true ? 'Liked' : 'Like', );//<button>Like</button>
   }
 }
-module.export = { LinkButton };
+module.export = { linkButton };
