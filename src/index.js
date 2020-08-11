@@ -3,10 +3,12 @@ import ReactDOM from 'react-dom';
 import './index.css';
 import App from './App';
 import * as serviceWorker from './serviceWorker';
+import LinkButton from './linkButton';
 
 ReactDOM.render(
   <React.StrictMode>
     <App />
+    <LinkButton />
   </React.StrictMode>,
   document.getElementById('root')
 );
