@@ -33,9 +33,9 @@ const styles = theme => ({
   grow:{
     flexGrow: 1,
   },
+  table:{textAlign:"center"},
   tableHead: {
     fontSize:'1.0rem',
-    textAlign:"center"
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -187,7 +187,7 @@ class App extends Component {
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
-                      <TableCell colSpan="6" align="center" style={{textAlign:"center"}}>
+                      <TableCell colSpan="6" align="center">
                         <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
