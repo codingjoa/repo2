@@ -1,0 +1,7 @@
+{
+    "host":"localhost",
+    "user":"php",
+    "password":"sm3548",
+    "port":"3306",
+    "database":"phpdb"
+}
