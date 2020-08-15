@@ -22,6 +22,7 @@ class CustomerAdd extends React.Component{
         super(props);
         this.state = {
             file:null,
+            classes:'',
             userName:'',
             age: '',
             brithday : '',
@@ -45,6 +46,7 @@ class CustomerAdd extends React.Component{
     handleClose = () =>{
         this.setState({
           file:null,
+          classes:'',
           userName:'',
           age: '',
           brithday : '',
@@ -68,6 +70,7 @@ class CustomerAdd extends React.Component{
             })
         this.setState({
           file:null,
+          classes:'',
           userName:'',
           age: '',
           brithday : '',
@@ -98,7 +101,7 @@ class CustomerAdd extends React.Component{
         const url ='/api/customers';
         const formData = new FormData();
         formData.append('image',this.state.file);
-        formData.append('class',this.state.class);
+        formData.append('classes',this.state.classes);
         formData.append('name',this.state.userName);
         formData.append('age',this.state.age);
         formData.append('birthday',this.state.birthday);
@@ -152,7 +155,7 @@ class CustomerAdd extends React.Component{
                             {this.state.fileName === "" ? "프로필 이미지" : this.state.fileName}
                         </Button><br/>
                     </label>
-                    <TextField label="반" type="text" name="class" value={this.state.class} onChange={this.handleValueChange}/><br/>
+                    <TextField label="반" type="text" name="classes" value={this.state.classes} onChange={this.handleValueChange}/><br/>
                     <TextField label="이름" type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange}/><br/>
                     <TextField label="나이" type="text" name="age" value={this.state.age} onChange={this.handleValueChange}/><br/>
                     <TextField label="생년월일" type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /><br/>

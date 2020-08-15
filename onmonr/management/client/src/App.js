@@ -139,7 +139,7 @@ class App extends Component {
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
       return data.map((c) => {
-        return <Customer stateRefresh={this.stateRefresh}  key={c.id} id={c.id} image={c.image} name={c.name} birthday={c.birthday} gender={c.gender} job={c.job} />
+        return <Customer stateRefresh={this.stateRefresh}  key={c.id} id={c.id} image={c.image} classes={c.classes} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.eamil} address={c.address} uniqueness={c.uniqueness}  />
       });
     }
 
