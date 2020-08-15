@@ -33,7 +33,7 @@ const styles = theme => ({
   grow:{
     flexGrow: 1,
   },
-  table:{textAlign:"center"},
+  tableBody:{textAlign:"center"},
   tableHead: {
     fontSize:'1.0rem',
     textAlign:"center"
