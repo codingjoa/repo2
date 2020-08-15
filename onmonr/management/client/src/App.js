@@ -37,7 +37,7 @@ const styles = theme => ({
     fontSize:'1.0rem',
     textAlign:"center"
   },
-  TableRow:{
+  tableRow:{
     textAlign:"center"
   },
   menuButton: {
