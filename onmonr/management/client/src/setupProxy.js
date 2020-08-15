@@ -82,7 +82,7 @@ module.exports = function(app) {
 
 
    app.delete('/api/customers/:id',(req, res) => {
-        let sql = 'UPDATE management SET isDeleted = 1 WHERE id = ?';
+        let sql = 'UPDATE student SET isDeleted = 1 WHERE id = ?';
         let params = [req.params.id];
         connection.query(sql, params,
             (err, rows, fields) => {
