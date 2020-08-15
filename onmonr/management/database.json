@@ -1,7 +1,7 @@
 {
     "host":"localhost",
-    "user":"php",
-    "password":"sm3548",
+    "user":"ky",
+    "password":"1234",
     "port":"3306",
-    "database":"phpdb"
+    "database":"ky"
 }
