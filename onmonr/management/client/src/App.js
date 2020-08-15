@@ -34,7 +34,8 @@ const styles = theme => ({
     flexGrow: 1,
   },
   tableHead: {
-    fontSize:'1.0rem'
+    fontSize:'1.0rem',
+    textAlign:"center"
   },
   menuButton: {
     marginRight: theme.spacing(2),
@@ -176,7 +177,7 @@ class App extends Component {
       <Paper>
         <Table className={classes.table}>
             <TableHead>
-              <TableRow style={{textAlign:"center"}}>
+              <TableRow>
                 {cellList.map(c => {
                   return <TableCell className={classes.tableHead}>{c}</TableCell>
                 })}
