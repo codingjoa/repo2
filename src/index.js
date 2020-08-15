@@ -1,14 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.css';
-import App from './App';
 import * as serviceWorker from './serviceWorker';
-import LinkButton from './LinkButton';
+//import LinkButton from './LinkButton';
+import App2 from './App2';
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
-    <LinkButton />
+    <App2 />
   </React.StrictMode>,
   document.getElementById('root')
 );
