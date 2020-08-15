@@ -183,10 +183,10 @@ class App extends Component {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody style={{textAlign:"center"}}>
+            <TableBody>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
-                  <TableRow>
+                  <TableRow style={{textAlign:"center"}}>
                       <TableCell colSpan="6" align="center">
                         <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
