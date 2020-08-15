@@ -37,9 +37,6 @@ const styles = theme => ({
     fontSize:'1.0rem',
     textAlign:"center"
   },
-  tableBody:{
-    textAlign:"center"
-  },
   menuButton: {
     marginRight: theme.spacing(2),
   },
@@ -186,7 +183,7 @@ class App extends Component {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody style={{textAlign:"center"}}>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
