@@ -28,6 +28,7 @@ const styles = theme => ({
   },
   progress: {
     margin: theme.spacing * 2,
+    textAlign:"center"
 
   },
   grow:{
@@ -187,8 +188,8 @@ class App extends Component {
             <TableBody>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
-                  <TableRow className={classes.tableBody}>
-                      <TableCell colSpan="12" align="center">
+                  <TableRow>
+                      <TableCell colSpan="12" align="center" className={classes.tableBody}>
                         <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
