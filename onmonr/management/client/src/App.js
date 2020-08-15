@@ -189,7 +189,7 @@ class App extends Component {
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
-                      <TableCell colSpan="12" align="center" className={classes.tableBody}>
+                      <TableCell colSpan="12" align="center">
                         <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>

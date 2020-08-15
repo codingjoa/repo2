@@ -5,7 +5,7 @@ import CustomerDelete from './CustomerDelete';
 class Customer extends React.Component{
     render(){
         return(
-            <TableRow>
+            <TableRow style={{textAlign:"center"}}>
                 <TableCell></TableCell>
                 <TableCell>{this.props.id}</TableCell>
                 <TableCell><img src={this.props.image} alt="profile" style={{width:64 ,height: 64}} /></TableCell>
