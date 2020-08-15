@@ -176,7 +176,7 @@ class App extends Component {
       <Paper>
         <Table className={classes.table}>
             <TableHead>
-              <TableRow style={{text-align:center}}>
+              <TableRow style={{textAlign:"center"}}>
                 {cellList.map(c => {
                   return <TableCell className={classes.tableHead}>{c}</TableCell>
                 })}
