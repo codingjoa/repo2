@@ -36,6 +36,7 @@ const styles = theme => ({
   table:{textAlign:"center"},
   tableHead: {
     fontSize:'1.0rem',
+    textAlign:"center"
   },
   menuButton: {
     marginRight: theme.spacing(2),
