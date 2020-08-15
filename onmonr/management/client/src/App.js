@@ -184,7 +184,7 @@ class App extends Component {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody className={classes.tableBody}>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
