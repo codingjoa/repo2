@@ -39,7 +39,7 @@ module.exports = function(app) {
    app.use('/image', express.static('upload'));
 
    app.post('/api/customers', upload.single('image'),(req, res)=>{
-        let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
+        let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
         let image = 'http://localhost:5000/image/' + req.file.filename;
         let classes = req.body.classes;
         let name = req.body.name;
@@ -47,9 +47,10 @@ module.exports = function(app) {
         let birthday = req.body.birthday;
         let gender = req.body.gender;
         let phone = req.body.phone;
+        let email = req.body.email;
         let address = req.body.address;
         let uniqueness = req.body.uniqueness;
-        let params = [image, classes, name, age, birthday, gender, phone, address, uniqueness];
+        let params = [image, classes, name, age, birthday, gender, phone, email, address, uniqueness];
         connection.query(sql, params,
             (err, rows, fields) => {
                 res.send(rows);
