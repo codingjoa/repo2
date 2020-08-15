@@ -188,9 +188,9 @@ class App extends Component {
             <TableBody className={classes.tableBody}>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
-                  <TableRow>
-                      <TableCell colSpan="12" align="center">
-                        <CircularProgress className={classes.progress} variant="determinate" value={this.state.completed} />
+                  <TableRow className={classes.tableBody}>
+                      <TableCell className={classes.tableBody} colSpan="12" align="center">
+                        <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
                   }
