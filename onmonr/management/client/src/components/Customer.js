@@ -6,19 +6,19 @@ class Customer extends React.Component{
     render(){
         return(
             <TableRow style={{textAlign:"center"}}>
-                <TableCell></TableCell>
-                <TableCell>{this.props.id}</TableCell>
-                <TableCell><img src={this.props.image} alt="profile" style={{width:64 ,height: 64}} /></TableCell>
-                <TableCell>{this.props.classes}</TableCell>
-                <TableCell>{this.props.name}</TableCell>
-                <TableCell>{this.props.age}</TableCell>
-                <TableCell>{this.props.birthday}</TableCell>
-                <TableCell>{this.props.gender}</TableCell>
-                <TableCell>{this.props.phone}</TableCell>
-                <TableCell>{this.props.email}</TableCell>
-                <TableCell>{this.props.address}</TableCell>
-                <TableCell>{this.props.uniqueness}</TableCell>
-                <TableCell><CustomerDelete stateRefresh = {this.props.stateRefresh} id = {this.props.id}/></TableCell>
+                <TableCell style={{textAlign:"center"}}></TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.id}</TableCell>
+                <TableCell style={{textAlign:"center"}}><img src={this.props.image} alt="profile" style={{width:64 ,height: 64}} /></TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.classes}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.name}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.age}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.birthday}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.gender}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.phone}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.email}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.address}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.uniqueness}</TableCell>
+                <TableCell style={{textAlign:"center"}}><CustomerDelete stateRefresh = {this.props.stateRefresh} id = {this.props.id}/></TableCell>
             </TableRow>
         );
     }
