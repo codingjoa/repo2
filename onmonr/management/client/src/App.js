@@ -34,7 +34,7 @@ const styles = theme => ({
   grow:{
     flexGrow: 1,
   },
-  tableBody:{textAlign:"center"},
+  tableBody:{textAlign:"center",width:'100%'},
   tableHead: {
     fontSize:'1.0rem',
     textAlign:"center"
@@ -185,7 +185,7 @@ class App extends Component {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody>
+            <TableBody className={classes.tableBody}>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
