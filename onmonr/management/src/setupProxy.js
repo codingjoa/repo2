@@ -28,24 +28,28 @@ module.exports = function(app) {
   connection.connect();
   app.get('/api/customers',(req,res)=>{
     connection.query(
-      "select * from management WHERE isDeleted = 0",
+      "select * from student WHERE isDeleted = 0",
       (err,rows,fields)=>{
         res.send(rows);
       }
     )
 });
 
-   
+
    app.use('/image', express.static('upload'));
 
    app.post('/api/customers', upload.single('image'),(req, res)=>{
-        let sql = 'INSERT INTO management VALUES (null, ?, ?, ?, ?, ?, now(), 0)';
+        let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
         let image = 'http://localhost:5000/image/' + req.file.filename;
+        let class = req.body.class;
         let name = req.body.name;
+        let age = req.body.age;
         let birthday = req.body.birthday;
         let gender = req.body.gender;
-        let job = req.body.job;
-        let params = [image, name, birthday, gender, job];
+        let phone = req.body.phone;
+        let address = req.body.address;
+        let uniqueness = req.body.uniqueness;
+        let params = [image, class, name, age, birthday, gender, phone, address, uniqueness];
         connection.query(sql, params,
             (err, rows, fields) => {
                 res.send(rows);
@@ -53,6 +57,7 @@ module.exports = function(app) {
         );
    });
 
+   //출석 체크 쿼리
    app.get('/api/customer',(req,res)=>{
      connection.query(
        "select * from customer_check WHERE isDeleted = 0",
