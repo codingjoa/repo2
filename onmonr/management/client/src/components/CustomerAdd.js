@@ -108,7 +108,7 @@ class CustomerAdd extends React.Component{
         formData.append('gender',this.state.gender);
         formData.append('phone',this.state.phone);
         formData.append('email',this.state.email);
-        formData.append('address',this.state.adress);
+        formData.append('address',this.state.address);
         formData.append('uniqueness',this.state.uniqueness);
         const config ={
             headers:{

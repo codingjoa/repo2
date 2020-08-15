@@ -40,7 +40,7 @@ module.exports = function(app) {
 
    app.post('/api/customers', upload.single('image'),(req, res)=>{
         let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
-        let image = 'http://localhost:5000/image/' + req.file.filename;
+        let image = 'http://txshi.iptime.org:50080/image/' + req.file.filename;
         let classes = req.body.classes;
         let name = req.body.name;
         let age = req.body.age;
