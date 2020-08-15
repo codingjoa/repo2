@@ -183,7 +183,7 @@ class App extends Component {
                 })}
               </TableRow>
             </TableHead>
-            <TableBody style={{text-align:"center"}}>
+            <TableBody align="center"}>
                   {this.state.customers ?
                     filterdComponents(this.state.customers) :
                   <TableRow>
