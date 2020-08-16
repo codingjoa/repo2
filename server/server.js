@@ -1,13 +1,15 @@
 const express = require('express');
-const app = express();
-const bodyParser = require('body-parser');
 const cors = require('cors');
-const port =process.env.PORT || 3001;
+const bodyParser = require('body-parser');
+const db = require('./db');
+
+const app = express();
+const port = process.env.PORT || 3307;
 
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api', (req, res)=> res.json({username:'bryan'}));
+app.use('/api', async (req, res)=> res.json(await db.fetchUser()));
 
 app.listen(port, ()=>{
-    console.log();
+    console.log('server opened.');
 })
