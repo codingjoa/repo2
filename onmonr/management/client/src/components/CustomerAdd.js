@@ -77,7 +77,6 @@ class CustomerAdd extends React.Component{
           open:false
         })
     }
-
     //체인지
     handleValueChange = (e) => {
         let nextState = {};
