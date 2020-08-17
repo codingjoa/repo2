@@ -74,7 +74,7 @@ class CustomerAdd extends React.Component{
           email:'',
           address:'',
           uniqueness:'',
-            open:false
+          open:false
         })
     }
 
@@ -142,7 +142,6 @@ class CustomerAdd extends React.Component{
                 <Dialog open={this.state.open} onClose={this.handleClose} >
                     <DialogTitle>학생 추가</DialogTitle>
                     <DialogContent>
-                    <input className={classes.hidden} accept="image/*" id="raised-button-file" type="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /><br/>
                     <TextField label="반" type="text" name="classes" value={this.state.classes} onChange={this.handleValueChange}/><br/>
                     <TextField label="이름" type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange}/><br/>
                     <TextField label="나이" type="text" name="age" value={this.state.age} onChange={this.handleValueChange}/><br/>
