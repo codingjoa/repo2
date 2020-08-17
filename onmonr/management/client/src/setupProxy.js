@@ -46,7 +46,7 @@ module.exports = function(app) {
         let email = req.body.email;
         let address = req.body.address;
         let uniqueness = req.body.uniqueness;
-        let params = [image, classes, name, age, birthday, gender, phone, email, address, uniqueness];
+        let params = [classes, name, age, birthday, gender, phone, email, address, uniqueness];
         connection.query(sql, params,
             (err, rows, fields) => {
                 res.send(rows);
