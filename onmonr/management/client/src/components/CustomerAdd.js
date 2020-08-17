@@ -32,10 +32,6 @@ class CustomerAdd extends React.Component{
             open: false
 
         }
-    this.handleFormSubmit = this.handleFormSubmit.bind(this)
-    this.handleFileChange = this.handleFileChange.bind(this)
-    this.handleValueChange = this.handleValueChange.bind(this)
-    this.addCustomer = this.addCustomer.bind(this)
     }
 
     handleClickOpen = () =>{
