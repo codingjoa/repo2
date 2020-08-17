@@ -21,7 +21,6 @@ class CustomerAdd extends React.Component{
     constructor(props){
         super(props);
         this.state = {
-            file:null,
             classes:'',
             userName:'',
             age: '',
@@ -31,7 +30,6 @@ class CustomerAdd extends React.Component{
             email:'',
             address:'',
             uniqueness:'',
-            fileName :'',
             open: false
 
         }
@@ -45,7 +43,6 @@ class CustomerAdd extends React.Component{
 
     handleClose = () =>{
         this.setState({
-          file:null,
           classes:'',
           userName:'',
           age: '',
@@ -55,7 +52,6 @@ class CustomerAdd extends React.Component{
           email:'',
           address:'',
           uniqueness:'',
-          fileName :'',
             open:false
         })
     }
@@ -69,7 +65,6 @@ class CustomerAdd extends React.Component{
                 this.props.stateRefresh();
             })
         this.setState({
-          file:null,
           classes:'',
           userName:'',
           age: '',
@@ -79,7 +74,6 @@ class CustomerAdd extends React.Component{
           email:'',
           address:'',
           uniqueness:'',
-          fileName :'',
             open:false
         })
     }
@@ -100,7 +94,6 @@ class CustomerAdd extends React.Component{
     addCustomer = () =>{
         const url ='/api/customers';
         const formData = new FormData();
-        formData.append('image',this.state.file);
         formData.append('classes',this.state.classes);
         formData.append('name',this.state.userName);
         formData.append('age',this.state.age);
@@ -150,11 +143,6 @@ class CustomerAdd extends React.Component{
                     <DialogTitle>학생 추가</DialogTitle>
                     <DialogContent>
                     <input className={classes.hidden} accept="image/*" id="raised-button-file" type="file" file={this.state.file} value={this.state.fileName} onChange={this.handleFileChange} /><br/>
-                    <label htmlFor="raised-button-file">
-                        <Button variant="contained" color="primary" component="span" name="file">
-                            {this.state.fileName === "" ? "프로필 이미지" : this.state.fileName}
-                        </Button><br/>
-                    </label>
                     <TextField label="반" type="text" name="classes" value={this.state.classes} onChange={this.handleValueChange}/><br/>
                     <TextField label="이름" type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange}/><br/>
                     <TextField label="나이" type="text" name="age" value={this.state.age} onChange={this.handleValueChange}/><br/>

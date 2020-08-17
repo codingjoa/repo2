@@ -14,8 +14,6 @@ module.exports = function(app) {
   const conf = JSON.parse(data);
   const mysql = require('mysql');
 
-  const multer = require('multer');
-  const upload = multer({dest:'upload'});
 
   const connection = mysql.createConnection({
       host: conf.host,
@@ -36,11 +34,9 @@ module.exports = function(app) {
 });
 
 
-   app.use('/image', express.static('upload'));
 
-   app.post('/api/customers', upload.single('image'),(req, res)=>{
-        let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
-        let image = 'http://localhost:5000/image/' + req.file.filename;
+   app.post('/api/customers',(req, res)=>{
+        let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
         let classes = req.body.classes;
         let name = req.body.name;
         let age = req.body.age;
