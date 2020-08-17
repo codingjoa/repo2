@@ -78,12 +78,6 @@ class CustomerAdd extends React.Component{
         })
     }
 
-    handleFileChange =(e) =>{
-        this.setState({
-            file: e.target.files[0],
-            fileName: e.target.value
-        });
-    }
     //체인지
     handleValueChange = (e) => {
         let nextState = {};
