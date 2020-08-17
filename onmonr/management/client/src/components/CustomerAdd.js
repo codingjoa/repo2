@@ -7,7 +7,6 @@ import DialogContent from '@material-ui/core/DialogContent';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import {withStyles} from '@material-ui/core/styles';
-import Customer from './Customer';
 
 const styles = theme => ({
     hidden: {
@@ -33,6 +32,10 @@ class CustomerAdd extends React.Component{
             open: false
 
         }
+    this.handleFormSubmit = this.handleFormSubmit.bind(this)
+    this.handleFileChange = this.handleFileChange.bind(this)
+    this.handleValueChange = this.handleValueChange.bind(this)
+    this.addCustomer = this.addCustomer.bind(this)
     }
 
     handleClickOpen = () =>{
@@ -96,12 +99,7 @@ class CustomerAdd extends React.Component{
         formData.append('email',this.state.email);
         formData.append('address',this.state.address);
         formData.append('uniqueness',this.state.uniqueness);
-        const config ={
-            headers:{
-                'content-type' : 'multipart/form-data'
-            }
-        }
-        return post(url, formData, config);
+        return post(url, formData);
     }
 
     //출석체크 부분
