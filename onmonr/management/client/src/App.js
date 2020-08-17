@@ -147,7 +147,7 @@ class App extends Component {
     }
 
     const {classes} = this.props;
-    const cellList = [<input type="checkbox" ></input>,"번호","프로필 이미지", "반", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
+    const cellList = [<input type="checkbox" ></input>,"번호", "반", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
     return(
       <div className={classes.root}>
       <AppBar position="static">
