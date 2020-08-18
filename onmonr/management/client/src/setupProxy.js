@@ -32,10 +32,11 @@ module.exports = function(app) {
       }
     )
 });
-
-
-
-   app.post('/api/customers',(req, res)=>{
+//이미지는 넣지 않지만.. multer 형식의 데이터 전송 ? post처리라 올려둡니다..
+    const multer = require('multer');
+    const upload = multer({dest:'upload'});
+    app.use('/image', express.static('upload'));
+   app.post('/api/customers',upload.single('image'),(req, res)=>{
         let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
         let classes = req.body.classes;
         let name = req.body.name;
