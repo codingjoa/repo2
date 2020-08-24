@@ -1,6 +1,6 @@
 const fs = require('fs');
-const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require('express');
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
