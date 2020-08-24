@@ -169,6 +169,13 @@ class App extends Component {
       });
       return data.map((c) => {
         return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} sid={c.sid} qid={c.qid} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.email} address={c.address} uniqueness={c.uniqueness}  />
+      });
+    }
+    const filterdComponents2 = (data2) => {
+      data2 = data2.filter((c)=>{
+        return c.name.indexOf(this.state.searchKeyword) > -1;
+      });
+      return data2.map((c) => {
         return <Student_check className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
       });
     }
@@ -205,8 +212,6 @@ class App extends Component {
       <div style={{display:"inline-block", width:"500px"}}>
       <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
-
-      <div>
       <Paper>
         <Table className={classes.table}>
             <TableHead>
@@ -228,9 +233,7 @@ class App extends Component {
             </TableBody>
         </Table>
       </Paper>
-      </div>
       /*출석체크*/
-      <div>
       <Paper>
         <Table className={classes.table}>
             <TableHead>
@@ -242,7 +245,7 @@ class App extends Component {
             </TableHead>
             <TableBody className={classes.tableBody}>
                   {this.state.student_check ?
-                    filterdComponents(this.state.student_check) :
+                    filterdComponents2(this.state.student_check) :
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="4" align="center">
                         <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
