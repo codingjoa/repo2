@@ -258,8 +258,7 @@ class App extends Component {
                         <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
-                  console.log(this.state.studentcheck);
-                  }                
+                  }
             </TableBody>
         </Table>
       </Paper>
