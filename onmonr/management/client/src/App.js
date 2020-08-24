@@ -182,7 +182,7 @@ class App extends Component {
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
       return data.map((c) => {
-        return <StudentCheck className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
+        return <StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
       });
     }
 
@@ -250,14 +250,16 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody className={classes.tableBody}>
-                  {this.state.studentcheck ?
-                    filterdComponents2(this.state.studentcheck) :
+                  {this.state.studentcheck ? this.state.studentcheck.map(c=>{
+                    return(<StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
+                  }):
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="6" align="center">
                         <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
-                  }
+                  console.log(this.state.studentcheck);
+                  }                
             </TableBody>
         </Table>
       </Paper>
