@@ -145,8 +145,8 @@ class App extends Component {
     }
 
     callApi2 = async() =>{
-      const response2 = await fetch('/api/studentcheck');
-      const body = await response2.json();
+      const response = await fetch('/api/studentcheck');
+      const body = await response.json();
       return body;
     }
 
@@ -218,7 +218,7 @@ class App extends Component {
       <div style={{display:"inline-block", width:"500px"}}>
       <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
-      <Paper>
+      <Paper style={{width:"500px"}>
         <Table className={classes.table}>
             <TableHead>
               <TableRow>

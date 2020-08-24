@@ -16,7 +16,7 @@ class Customer extends React.Component{
                 <TableCell style={{textAlign:"center"}}>{this.props.email}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.address}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.uniqueness}</TableCell>
-                <TableCell style={{textAlign:"center"}}><CustomerDelete stateRefresh = {this.props.stateRefresh} id = {this.props.sid}/></TableCell>
+                <TableCell style={{textAlign:"center"}}><CustomerDelete stateRefresh = {this.props.stateRefresh} sid = {this.props.sid}/></TableCell>
             </TableRow>
         );
     }
