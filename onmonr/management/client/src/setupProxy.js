@@ -6,7 +6,8 @@ const app = express();
 const port = process.env.PORT || 5000;
 
 module.exports = function(app) {
-  app.use(proxy("/api/costomers","/api/studentcheck", { target: "http://localhost:5000" }));
+  const exampleProxy = createProxyMiddleware('/api', {...});
+  app.use(proxy("/api/costomers", { target: "http://localhost:5000",changeOrigin:true}));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
 
