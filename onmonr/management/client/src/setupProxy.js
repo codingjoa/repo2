@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 
 module.exports = function(app) {
   app.use(proxy("/api/costomers", { target: "http://localhost:5000" }));
-  app.use(proxy("/api/student_check", { target: "http://localhost:5000" }));
+  app.use(proxy("/api/student_check", { target: "http://localhost:5001" }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
 
