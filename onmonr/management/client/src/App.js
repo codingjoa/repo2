@@ -2,6 +2,7 @@ import React, { Component } from 'react';
 import CustomerAdd from './components/CustomerAdd';
 import './App.css';
 import Customer from './components/Customer';
+import Student_check from './components/Student_check';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -168,8 +169,10 @@ class App extends Component {
       });
       return data.map((c) => {
         return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} sid={c.sid} qid={c.qid} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.email} address={c.address} uniqueness={c.uniqueness}  />
+        return <Student_check className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time}/>
       });
     }
+
 
     const {classes} = this.props;
     const cellList = ["번호", "분기", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
