@@ -2,7 +2,7 @@ import React from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 
-class Student_check extends React.Component{
+class StudentCheck extends React.Component{
     render(){
         return(
             <TableRow style={{textAlign:"center"}}>

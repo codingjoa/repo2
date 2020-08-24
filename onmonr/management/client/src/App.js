@@ -2,7 +2,7 @@ import React, { Component } from 'react';
 import CustomerAdd from './components/CustomerAdd';
 import './App.css';
 import Customer from './components/Customer';
-import Student_check from './components/Student_check';
+import Student_check from './components/StudentCheck';
 import Paper from '@material-ui/core/Paper';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
@@ -176,7 +176,7 @@ class App extends Component {
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
       return data2.map((c) => {
-        return <Student_check className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
+        return <StudentCheck className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
       });
     }
 
