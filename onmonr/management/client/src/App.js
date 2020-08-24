@@ -97,7 +97,7 @@ class App extends Component {
     super(props);
     this.state = {
       customers:'',
-      student_check:'',
+      studentcheck:'',
       completed:0,
       searchKeyword:''
     }
@@ -129,23 +129,23 @@ class App extends Component {
   //test 2020-08-24
     stateRefresh2 = () => {
       this.setState({
-        student_check:'',
+        studentcheck:'',
         completed:0,
         searchKeyword:''
       });
       this.callApi2()
-        .then(res=>this.setState({student_check: res}))
+        .then(res=>this.setState({studentcheck: res}))
         .catch(err => console.log(err));
     }
     componentDidMount2(){
       this.timer = setInterval(this.progress2, 20);
       this.callApi2()
-        .then(res=>this.setState({student_check: res}))
+        .then(res=>this.setState({studentcheck: res}))
         .catch(err => console.log(err));
     }
 
     callApi2 = async() =>{
-      const response2 = await fetch('/api/student_check');
+      const response2 = await fetch('/api/studentcheck');
       const body = await response2.json();
       return body;
     }
@@ -248,8 +248,8 @@ class App extends Component {
               </TableRow>
             </TableHead>
             <TableBody className={classes.tableBody}>
-                  {this.state.student_check ?
-                    filterdComponents2(this.state.student_check) :
+                  {this.state.studentcheck ?
+                    filterdComponents2(this.state.studentcheck) :
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="4" align="center">
                         <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />

@@ -32,7 +32,7 @@ module.exports = function(app) {
       }
     )
 });
-app.get('/api/student_check',(req,res)=>{
+app.get('/api/studentcheck',(req,res)=>{
   connection.query(
     "select * from student_check WHERE isDeleted = 0",
     (err,rows,fields)=>{
