@@ -4,7 +4,6 @@ const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
 const port = process.env.PORT || 5000;
-const port2 = process.env.PORT || 5001;
 
 module.exports = function(app) {
   app.use(proxy("/api/costomers", { target: "http://localhost:5000" }));
@@ -21,7 +20,6 @@ module.exports = function(app) {
       user: conf.user,
       password:conf.password,
       port:conf.port,
-      port2:conf.port2,
       database:conf.database
   });
 

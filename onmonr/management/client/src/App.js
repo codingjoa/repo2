@@ -172,7 +172,7 @@ class App extends Component {
     }
 
     const {classes} = this.props;
-    const cellList = [<input type="checkbox" ></input>,"번호", "분기", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
+    const cellList = ["번호", "분기", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
     const cellList2 = ["번호", "담당 선생님", "이름","출석 시간"];
     return(
       <div className={classes.root}>
