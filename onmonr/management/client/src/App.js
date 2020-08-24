@@ -175,11 +175,13 @@ class App extends Component {
         return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} sid={c.sid} qid={c.qid} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.email} address={c.address} uniqueness={c.uniqueness}  />
       });
     }
-    const filterdComponents2 = (data2) => {
-      data2 = data2.filter((c)=>{
+
+
+    const filterdComponents2 = (data) => {
+      data = data.filter((c)=>{
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
-      return data2.map((c) => {
+      return data.map((c) => {
         return <StudentCheck className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
       });
     }
@@ -251,7 +253,7 @@ class App extends Component {
                   {this.state.studentcheck ?
                     filterdComponents2(this.state.studentcheck) :
                   <TableRow className={classes.tableBody}>
-                      <TableCell className={classes.tableBody} colSpan="4" align="center">
+                      <TableCell className={classes.tableBody} colSpan="6" align="center">
                         <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
                       </TableCell>
                   </TableRow>
