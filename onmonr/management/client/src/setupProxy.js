@@ -1,5 +1,5 @@
 const fs = require('fs');
-const proxy = require('http-proxy-middleware');
+const { createProxyMiddleware } = require("http-proxy-middleware");
 const express = require('express');
 const bodyParser = require('body-parser');
 const app = express();
@@ -8,11 +8,13 @@ const port = process.env.PORT || 5000;
 
 module.exports = function(app) {
   app.use(
-    proxy('/api', {
-        target: 'http://localhost:5000/',
-        changeOrigin: true
+    "/api",
+    createProxyMiddleware({
+      // proxy할 주소, 즉, 백단의 주소를 적어줍니다.
+      target: "http://localhost:5000",
+      changeOrigin: true,
     })
-)
+  );
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
   const data = fs.readFileSync('../database.json');
