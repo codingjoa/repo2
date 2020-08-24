@@ -5,7 +5,7 @@ import TableCell from '@material-ui/core/TableCell';
 class StudentCheck extends React.Component{
     render(){
         return(
-            <TableRow style={{textAlign:"center"}}>
+            <TableRow style={{textAlign:"center",width:"500px"}}>
                 <TableCell style={{textAlign:"center"}}>{this.props.cid}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.sid}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.qid}</TableCell>
