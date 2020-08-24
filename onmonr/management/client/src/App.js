@@ -169,7 +169,7 @@ class App extends Component {
       });
       return data.map((c) => {
         return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} sid={c.sid} qid={c.qid} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.email} address={c.address} uniqueness={c.uniqueness}  />
-        return <Student_check className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time}/>
+        return <Student_check className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
       });
     }
 
