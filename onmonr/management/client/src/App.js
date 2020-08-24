@@ -206,7 +206,7 @@ class App extends Component {
       <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
 
-
+      <div>
       <Paper>
         <Table className={classes.table}>
             <TableHead>
@@ -228,7 +228,9 @@ class App extends Component {
             </TableBody>
         </Table>
       </Paper>
+      </div>
       /*출석체크*/
+      <div>
       <Paper>
         <Table className={classes.table}>
             <TableHead>
