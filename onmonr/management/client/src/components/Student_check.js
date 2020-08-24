@@ -16,4 +16,4 @@ class Student_check extends React.Component{
         );
     }
 }
-export default Customer;
+export default Student_check;
