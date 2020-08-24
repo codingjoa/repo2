@@ -109,5 +109,5 @@ app.get('/api/student_check',(req,res)=>{
    });
 
    app.listen(port, ()=> console.log(`Listening on port ${port}`));
-   app.listen(port, ()=> console.log(`Listening on port ${port2}`));
+   app.listen(port2, ()=> console.log(`Listening on port ${port2}`));
 }
