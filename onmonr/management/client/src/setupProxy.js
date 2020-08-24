@@ -7,7 +7,7 @@ const port = process.env.PORT || 5000;
 
 
 module.exports = function(app) {
-  app.use(createProxyMiddleware("/api", { target: "http://localhost:5000",changeOrigin: true}));
+  app.use(createProxyMiddleware('/api', { target: "http://localhost:5000"}));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
   const data = fs.readFileSync('../database.json');
