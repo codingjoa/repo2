@@ -138,7 +138,7 @@ class App extends Component {
         .catch(err => console.log(err));
     }
     componentDidMount2(){
-      this.timer = setInterval(this.progress, 20);
+      this.timer = setInterval(this.progress2, 20);
       this.callApi()
         .then(res=>this.setState({student_check: res}))
         .catch(err => console.log(err));
@@ -158,6 +158,10 @@ class App extends Component {
   }
 
   progress = () => {
+    const {completed} = this.state;
+    this.setState({completed : completed >=100 ? 0 : completed + 1});
+  }
+  progress2 = () => {
     const {completed} = this.state;
     this.setState({completed : completed >=100 ? 0 : completed + 1});
   }
