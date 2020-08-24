@@ -145,8 +145,8 @@ class App extends Component {
     }
 
     callApi2 = async() =>{
-      const response = await fetch('/api/student_check');
-      const body = await response.json();
+      const response2 = await fetch('/api/student_check');
+      const body = await response2.json();
       return body;
     }
 
