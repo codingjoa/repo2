@@ -190,6 +190,7 @@ class App extends Component {
     const {classes} = this.props;
     const cellList = ["번호", "분기", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
     const cellList2 = ["번호", "담당 선생님", "이름","출석 시간"];
+    const cellList3 = ["아이디","이름"];
     return(
       <div className={classes.root}>
       <AppBar position="static">
@@ -245,6 +246,29 @@ class App extends Component {
             <TableHead>
               <TableRow>
                 {cellList2.map(c => {
+                  return <TableCell className={classes.tableHead}>{c}</TableCell>
+                })}
+              </TableRow>
+            </TableHead>
+            <TableBody className={classes.tableBody}>
+                  {this.state.studentcheck ? this.state.studentcheck.map(c=>{
+                    return(<StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
+                  }):
+                  <TableRow className={classes.tableBody}>
+                      <TableCell className={classes.tableBody} colSpan="6" align="center">
+                        <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
+                      </TableCell>
+                  </TableRow>
+                  }
+            </TableBody>
+        </Table>
+      </Paper>
+      /*선생목록*/
+      <Paper>
+        <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                {cellList3.map(c => {
                   return <TableCell className={classes.tableHead}>{c}</TableCell>
                 })}
               </TableRow>
