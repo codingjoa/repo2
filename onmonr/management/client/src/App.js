@@ -218,7 +218,7 @@ class App extends Component {
       <div style={{display:"inline-block", width:"500px"}}>
       <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
-      <Paper style={{width:"500px"}>
+      <Paper style={{width:"500px"}}>
         <Table className={classes.table}>
             <TableHead>
               <TableRow>
