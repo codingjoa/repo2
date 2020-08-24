@@ -8,7 +8,6 @@ const port2 = process.env.PORT || 5001;
 
 module.exports = function(app) {
   app.use(proxy("/api/costomers", { target: "http://localhost:5000" }));
-  app.use(proxy("/api/student_check", { target: "http://localhost:5001" }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
 
@@ -109,5 +108,4 @@ app.get('/api/student_check',(req,res)=>{
    });
 
    app.listen(port, ()=> console.log(`Listening on port ${port}`));
-   app.listen(port2, ()=> console.log(`Listening on port ${port2}`));
 }
