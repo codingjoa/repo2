@@ -173,11 +173,11 @@ class App extends Component {
     }
 
     const filterdComponents2 = (data2) => {
-      data2 = data2.filter((c)=>{
+      data2 = data2.filter((e)=>{
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
-      return data2.map((c) => {
-        return <Student_check className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />
+      return data2.map((e) => {
+        return <Student_check className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={e.cid} cid = {e.cid} sid={e.sid} qid={e.qid} tid={e.tid} name={e.name} date_time={e.date_time} />
       });
     }
 
