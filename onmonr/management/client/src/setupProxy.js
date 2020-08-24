@@ -7,6 +7,7 @@ const port = process.env.PORT || 5000;
 
 module.exports = function(app) {
   app.use(proxy("/api/costomers", { target: "http://localhost:5000" }));
+  app.use(proxy("/api/student_check", { target: "http://localhost:5000" }));
   app.use(bodyParser.json());
   app.use(bodyParser.urlencoded({extended:true}));
 
@@ -32,13 +33,21 @@ module.exports = function(app) {
       }
     )
 });
+app.get('/api/student_check',(req,res)=>{
+  connection.query(
+    "select * from student_check WHERE isDeleted = 0",
+    (err,rows,fields)=>{
+      res.send(rows);
+    }
+  )
+});
 //이미지는 넣지 않지만.. multer 형식의 데이터 전송 ? post처리라 올려둡니다..
     const multer = require('multer');
     const upload = multer({dest:'upload'});
     app.use('/image', express.static('upload'));
    app.post('/api/customers',upload.single('image'),(req, res)=>{
         let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
-        let classes = req.body.classes;
+        let qid = req.body.qid;
         let name = req.body.name;
         let age = req.body.age;
         let birthday = req.body.birthday;
@@ -47,7 +56,16 @@ module.exports = function(app) {
         let email = req.body.email;
         let address = req.body.address;
         let uniqueness = req.body.uniqueness;
-        let params = [classes, name, age, birthday, gender, phone, email, address, uniqueness];
+        let params = [qid, name, age, birthday, gender, phone, email, address, uniqueness];
+        connection.query(sql, params,
+            (err, rows, fields) => {
+                res.send(rows);
+            }
+        );
+   });
+   app.post('/api/student_check',upload.single('image'),(req, res)=>{
+        let sql = 'insert into student_check (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = ?';
+        let params = [req.params.sid];
         connection.query(sql, params,
             (err, rows, fields) => {
                 res.send(rows);

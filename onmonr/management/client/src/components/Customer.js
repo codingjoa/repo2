@@ -8,7 +8,7 @@ class Customer extends React.Component{
             <TableRow style={{textAlign:"center"}}>
                 <TableCell style={{textAlign:"center"}}></TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.sid}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.classes}</TableCell>
+                <TableCell style={{textAlign:"center"}}>{this.props.qid}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.name}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.age}</TableCell>
                 <TableCell style={{textAlign:"center"}}>{this.props.birthday}</TableCell>
