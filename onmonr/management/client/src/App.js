@@ -139,7 +139,7 @@ class App extends Component {
     }
     componentDidMount2(){
       this.timer = setInterval(this.progress, 20);
-      this.callApi()
+      this.callApi2()
         .then(res=>this.setState({student_check: res}))
         .catch(err => console.log(err));
     }
@@ -171,6 +171,7 @@ class App extends Component {
         return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} sid={c.sid} qid={c.qid} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.email} address={c.address} uniqueness={c.uniqueness}  />
       });
     }
+
     const filterdComponents2 = (data2) => {
       data2 = data2.filter((c)=>{
         return c.name.indexOf(this.state.searchKeyword) > -1;
@@ -236,6 +237,7 @@ class App extends Component {
         </Table>
       </Paper>
       /*출석체크*/
+
       <Paper>
         <Table className={classes.table}>
             <TableHead>
