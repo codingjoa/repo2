@@ -16,4 +16,4 @@ class StudentCheck extends React.Component{
         );
     }
 }
-export default Student_check;
+export default StudentCheck;
