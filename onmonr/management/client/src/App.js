@@ -173,7 +173,7 @@ class App extends Component {
 
     const {classes} = this.props;
     const cellList = [<input type="checkbox" ></input>,"번호", "반", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
-    const cellList2 = [<input type="checkbox" ></input>,"번호", "담당 선생님", "이름","출석 시간"];
+    const cellList2 = ["번호", "담당 선생님", "이름","출석 시간"];
     return(
       <div className={classes.root}>
       <AppBar position="static">
@@ -202,6 +202,8 @@ class App extends Component {
       <div style={{display:"inline-block", width:"500px"}}>
       <CustomerAdd stateRefresh={this.stateRefresh}/>
       </div>
+
+
       <Paper>
         <Table className={classes.table}>
             <TableHead>
