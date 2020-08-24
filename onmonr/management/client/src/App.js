@@ -142,12 +142,13 @@ class App extends Component {
         return c.name.indexOf(this.state.searchKeyword) > -1;
       });
       return data.map((c) => {
-        return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.id} id={c.id} classes={c.classes} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.eamil} address={c.address} uniqueness={c.uniqueness}  />
+        return <Customer className={classes.tableBody} stateRefresh={this.stateRefresh}  key={c.sid} id={c.sid} classes={c.classes} name={c.name} age={c.age} birthday={c.birthday} gender={c.gender} phone={c.phone} email={c.eamil} address={c.address} uniqueness={c.uniqueness}  />
       });
     }
 
     const {classes} = this.props;
     const cellList = [<input type="checkbox" ></input>,"번호", "반", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
+    const cellList2 = [<input type="checkbox" ></input>,"번호", "담당 선생님", "이름","출석 시간", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
     return(
       <div className={classes.root}>
       <AppBar position="static">
@@ -181,6 +182,28 @@ class App extends Component {
             <TableHead>
               <TableRow>
                 {cellList.map(c => {
+                  return <TableCell className={classes.tableHead}>{c}</TableCell>
+                })}
+              </TableRow>
+            </TableHead>
+            <TableBody className={classes.tableBody}>
+                  {this.state.customers ?
+                    filterdComponents(this.state.customers) :
+                  <TableRow className={classes.tableBody}>
+                      <TableCell className={classes.tableBody} colSpan="11" align="center">
+                        <CircularProgress className={classes.tableBody} className={classes.progress} variant="determinate" value={this.state.completed} />
+                      </TableCell>
+                  </TableRow>
+                  }
+            </TableBody>
+        </Table>
+      </Paper>
+      //출석체크
+      <Paper>
+        <Table className={classes.table}>
+            <TableHead>
+              <TableRow>
+                {cellList2.map(c => {
                   return <TableCell className={classes.tableHead}>{c}</TableCell>
                 })}
               </TableRow>
