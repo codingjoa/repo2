@@ -142,10 +142,6 @@ class App extends Component {
     this.callApi2()
       .then(res=>this.setState({studentcheck: res}))
       .catch(err => console.log(err));
-
-      let t = Date.parse({this.props.date_time});
-      let time = new Date(t);
-      console.log(time.toString());
   }
 
   callApi = async() =>{
