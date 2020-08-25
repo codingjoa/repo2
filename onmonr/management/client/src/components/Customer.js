@@ -3,25 +3,23 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import CustomerDelete from './CustomerDelete';
 class Customer extends React.Component{
-  componentDidMount() {
-  // Jquery here $(...)...
+  const checkStyle = {
+    textAlign:"center",
 }
-
-
     render(){
         return(
-            <TableRow style={{textAlign:"center"}}>
-                <TableCell style={{textAlign:"center"}}>{this.props.sid}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.qid}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.name}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.age}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.birthday}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.gender}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.phone}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.email}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.address}</TableCell>
-                <TableCell style={{textAlign:"center"}}>{this.props.uniqueness}</TableCell>
-                <TableCell style={{textAlign:"center"}}><CustomerDelete stateRefresh = {this.props.stateRefresh} sid = {this.props.sid}/></TableCell>
+            <TableRow style={checkStyle}>
+                <TableCell>{this.props.sid}</TableCell>
+                <TableCell>{this.props.qid}</TableCell>
+                <TableCell>{this.props.name}</TableCell>
+                <TableCell>{this.props.age}</TableCell>
+                <TableCell>{this.props.birthday}</TableCell>
+                <TableCell>{this.props.gender}</TableCell>
+                <TableCell>{this.props.phone}</TableCell>
+                <TableCell>{this.props.email}</TableCell>
+                <TableCell>{this.props.address}</TableCell>
+                <TableCell>{this.props.uniqueness}</TableCell>
+                <TableCell><CustomerDelete stateRefresh = {this.props.stateRefresh} sid = {this.props.sid}/></TableCell>
             </TableRow>
         );
     }
