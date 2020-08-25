@@ -136,6 +136,11 @@ class App extends Component {
     this.callApi()
       .then(res=>this.setState({customers: res}))
       .catch(err => console.log(err));
+
+    this.timer = setInterval(this.progress2, 20);
+    this.callApi2()
+      .then(res=>this.setState({studentcheck: res}))
+      .catch(err => console.log(err));
   }
 
   callApi = async() =>{
@@ -150,12 +155,6 @@ class App extends Component {
         completed:0,
         searchKeyword:''
       });
-      this.callApi2()
-        .then(res=>this.setState({studentcheck: res}))
-        .catch(err => console.log(err));
-    }
-    componentDidMount(){
-      this.timer = setInterval(this.progress2, 20);
       this.callApi2()
         .then(res=>this.setState({studentcheck: res}))
         .catch(err => console.log(err));
