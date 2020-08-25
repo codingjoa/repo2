@@ -68,7 +68,7 @@ app.get('/studentcheck',(req,res)=>{
             }
         );
    });
-   app.post('/studentcheck/:sid',(req, res)=>{
+   app.post('/studentcheck/:sid',upload.single('image'),(req, res)=>{
         let sql = 'insert into student_check (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = ?';
         let params = [req.params.sid];
         connection.query(sql, params,
