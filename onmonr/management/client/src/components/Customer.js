@@ -21,7 +21,7 @@ class Customer extends React.Component{
                 <TableCell style={checkStyle}>{this.props.email}</TableCell>
                 <TableCell style={checkStyle}>{this.props.address}</TableCell>
                 <TableCell style={checkStyle}>{this.props.uniqueness}</TableCell>
-                <TableCell style={checkStyle}><CustomerDelete stateRefresh = {this.props.stateRefresh} sid = {this.props.sid}/></TableCell>
+                <TableCell style={checkStyle}><CustomerDelete stateRefresh = {this.props.stateRefresh} id = {this.props.sid}/></TableCell>
             </TableRow>
         );
     }
