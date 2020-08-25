@@ -8,7 +8,7 @@ const checkStyle = {
 }
 
 class StudentCheck extends React.Component{
-
+console.log({this.props.date_time});
     render(){
         return(
             <TableRow style={checkStyle}>
