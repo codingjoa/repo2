@@ -7,12 +7,22 @@ const checkStyle = {
 
 }
 class StudentCheck extends React.Component{
+  constructor(props){
+      super(props);
+      this.state ={
+          open:'',
+          value:''
+      }
+  }
     componentDidMount(){
-        let t = Date.parse({this.props.date_time});
-        let time = new Date(t);
-        console.log(time.toString());
+
       }
 
+      handleClose = () =>{
+          this.setState({
+              open:false
+          });
+      }
     render(){
         return(
             <TableRow style={checkStyle}>
@@ -23,6 +33,7 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.name}</TableCell>
                 <TableCell style={checkStyle}>{this.props.date_time}</TableCell>
             </TableRow>
+            <Button variant="contained" color="primary" onClick={this.handleClose}>닫기</Button>
         );
     }
 }
