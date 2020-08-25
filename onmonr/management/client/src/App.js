@@ -92,12 +92,13 @@ const styles = theme => ({
   // 출석체크
   checkzul:{
     textAlign:"center",
-    width:"50%",
+    width:"80%",
     position:"absolute",
     top:"50%",
     left:"50%",
     transform:"translate(-50%,-50%)",
-    zIndex:'1'
+    zIndex:'1',
+    fontSize:'1.0rem',
 
   },
   //클릭시 배경
