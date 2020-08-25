@@ -37,9 +37,18 @@ class CustomerDelete extends React.Component{
         this.props.stateRefresh();
     }
 
+    checkCustomer(sid){
+        const url = '/studentcheck/' + sid;
+        fetch(url, {
+            method:'UPDATE'
+        });
+        this.props.stateRefresh();
+    }
+
     render(){
         return(
         <div>
+            <Button variant="contained" color="secondary" onClick={(e)=>{this.checkCustomer(this.props.sid)}}>출석</Button>
             <Button variant="contained" color="secondary" onClick={this.handleClickOpen}>삭제</Button>
             <Dialog open={this.state.open} onClose={this.handleClose}>
                 <DialogTitle onClose={this.handleClose}>

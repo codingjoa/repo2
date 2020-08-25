@@ -68,7 +68,7 @@ app.get('/studentcheck',(req,res)=>{
             }
         );
    });
-   app.post('/api/student_check',upload.single('image'),(req, res)=>{
+   app.post('/studentcheck/:sid',(req, res)=>{
         let sql = 'insert into student_check (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = ?';
         let params = [req.params.sid];
         connection.query(sql, params,
@@ -78,28 +78,6 @@ app.get('/studentcheck',(req,res)=>{
         );
    });
 
-   //출석 체크 쿼리
-   app.get('/api/customer',(req,res)=>{
-     connection.query(
-       "select * from customer_check WHERE isDeleted = 0",
-       (err,rows,fields)=>{
-         res.send(rows);
-       }
-     )
-   });
-
-   //출석 체크 쿼리
-   app.post('/api/customer',(req, res)=>{
-    let sql = 'INSERT INTO customer_check (id, NAME, birthday, isDeleted) SELECT id, NAME, birthday, isDeleted FROM management WHERE isDeleted = 0';
-    let name = req.body.name;
-    let birthday = req.body.birthday;
-    let params = [name, birthday];
-    connection.query(sql, params,
-        (err, rows, fields) => {
-            res.send(rows);
-        }
-    );
-  });
 
 
    app.delete('/customers/:sid',(req, res) => {
