@@ -95,8 +95,9 @@ const styles = theme => ({
     position:"absolute",
     top:"50%",
     left:"50%",
-    transform:"transition(-50%,-50%)",
-    backgroundColor:"DarkGray"
+    transform:"translate(-50%,-50%)",
+    backgroundColor:"DarkGray",
+    zIndex:1;
 
   }
 });
