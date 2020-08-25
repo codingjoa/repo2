@@ -104,7 +104,7 @@ app.get('/studentcheck',(req,res)=>{
 
    app.delete('/customers/:sid',(req, res) => {
         let sql = 'UPDATE student SET isDeleted = 1 WHERE sid = ?';
-        let params = [req.params.id];
+        let params = [req.params.sid];
         connection.query(sql, params,
             (err, rows, fields) => {
                 res.send(rows);
