@@ -6,8 +6,12 @@ const checkStyle = {
   textAlign:"center"
 
 }
+let t = Date.parse({this.props.date_time});
+let time = new Date(t);
+console.log(time.toString());
 
 class StudentCheck extends React.Component{
+
 
     render(){
         return(
