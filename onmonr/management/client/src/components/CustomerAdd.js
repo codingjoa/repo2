@@ -84,9 +84,9 @@ class CustomerAdd extends React.Component{
     }
 
     addCustomer = () =>{
-        const url ='/api/customers';
+        const url ='/customers';
         const formData = new FormData();
-        formData.append('classes',this.state.classes);
+        formData.append('qid',this.state.qid);
         formData.append('name',this.state.userName);
         formData.append('age',this.state.age);
         formData.append('birthday',this.state.birthday);
@@ -100,7 +100,7 @@ class CustomerAdd extends React.Component{
 
     //출석체크 부분
     CustomersCheck = () =>{
-        const url ='/api/customer';
+        const url ='/customer';
         const formData = new FormData();
         formData.append('name',this.state.userName);
         formData.append('birthday',this.state.birthday);
@@ -129,7 +129,7 @@ class CustomerAdd extends React.Component{
                 <Dialog open={this.state.open} onClose={this.handleClose} >
                     <DialogTitle>학생 추가</DialogTitle>
                     <DialogContent>
-                    <TextField label="반" type="text" name="classes" value={this.state.classes} onChange={this.handleValueChange}/><br/>
+                    <TextField label="분기" type="text" name="qid" value={this.state.qid} onChange={this.handleValueChange}/><br/>
                     <TextField label="이름" type="text" name="userName" value={this.state.userName} onChange={this.handleValueChange}/><br/>
                     <TextField label="나이" type="text" name="age" value={this.state.age} onChange={this.handleValueChange}/><br/>
                     <TextField label="생년월일" type="text" name="birthday" value={this.state.birthday} onChange={this.handleValueChange} /><br/>

@@ -30,7 +30,7 @@ class CustomerDelete extends React.Component{
 
 
     deleteCustomer(sid){
-        const url = '/api/customers/' + sid;
+        const url = '/customers/' + sid;
         fetch(url, {
             method:'DELETE'
         });

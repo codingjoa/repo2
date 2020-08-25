@@ -3,6 +3,12 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import CustomerDelete from './CustomerDelete';
 class Customer extends React.Component{
+  componentDidMount() {
+  // Jquery here $(...)...
+}
+
+// ...
+}
     render(){
         return(
             <TableRow style={{textAlign:"center"}}>
