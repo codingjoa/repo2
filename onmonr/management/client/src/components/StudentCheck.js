@@ -25,6 +25,7 @@ class StudentCheck extends React.Component{
       }
     render(){
         return(
+          <div>
             <TableRow style={checkStyle}>
                 <TableCell style={checkStyle}>{this.props.cid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.sid}</TableCell>
@@ -34,6 +35,7 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.date_time}</TableCell>
             </TableRow>
             <Button variant="contained" color="primary" onClick={this.handleClose}>닫기</Button>
+          </div>
         );
     }
 }
