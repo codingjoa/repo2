@@ -10,9 +10,6 @@ class StudentCheck extends React.Component{
 
 
     render(){
-      let t = Date.parse({this.props.date_time});
-      let time = new Date(t);
-      console.log(time.toString());
         return(
             <TableRow style={checkStyle}>
                 <TableCell style={checkStyle}>{this.props.cid}</TableCell>
