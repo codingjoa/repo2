@@ -3,7 +3,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 
 const checkStyle = {
-  width:'700px'
+  textAlign:"center"
 
 }
 
@@ -12,12 +12,12 @@ class StudentCheck extends React.Component{
     render(){
         return(
             <TableRow style={checkStyle}>
-                <TableCell>{this.props.cid}</TableCell>
-                <TableCell>{this.props.sid}</TableCell>
-                <TableCell>{this.props.qid}</TableCell>
-                <TableCell>{this.props.tid}</TableCell>
-                <TableCell>{this.props.name}</TableCell>
-                <TableCell>{this.props.date_time}</TableCell>
+                <TableCell style={checkStyle}>{this.props.cid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.sid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.qid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.tid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.name}</TableCell>
+                <TableCell style={checkStyle}>{this.props.date_time}</TableCell>
             </TableRow>
         );
     }

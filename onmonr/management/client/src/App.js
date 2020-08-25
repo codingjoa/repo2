@@ -89,6 +89,16 @@ const styles = theme => ({
       },
     },
   },
+  checkzul:{
+    textAlign:"center",
+    width:"50%",
+    position:"absolute",
+    top:"50%",
+    left:"50%",
+    transform:"transition(-50%,-50%)",
+    backgroundColor:"DarkGray"
+
+  }
 });
 
 class App extends Component {
@@ -241,7 +251,7 @@ class App extends Component {
         </Table>
       </Paper>
       /*출석체크*/
-      <Paper>
+      <Paper className={classes.checkzul}>
         <Table className={classes.table}>
             <TableHead>
               <TableRow>
