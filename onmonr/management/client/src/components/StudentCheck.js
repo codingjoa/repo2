@@ -1,32 +1,14 @@
 import React from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Button from '@material-ui/core/Button';
 
 const checkStyle = {
   textAlign:"center"
 
 }
 class StudentCheck extends React.Component{
-  constructor(props){
-      super(props);
-      this.state ={
-          open:'',
-          value:''
-      }
-  }
-    componentDidMount(){
-
-      }
-
-      handleClose = () =>{
-          this.setState({
-              open:false
-          });
-      }
     render(){
         return(
-          <div>
             <TableRow style={checkStyle}>
                 <TableCell style={checkStyle}>{this.props.cid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.sid}</TableCell>
@@ -35,8 +17,6 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.name}</TableCell>
                 <TableCell style={checkStyle}>{this.props.date_time}</TableCell>
             </TableRow>
-            <Button variant="contained" color="primary" onClick={this.handleClose}>닫기</Button>
-          </div>
         );
     }
 }
