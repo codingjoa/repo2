@@ -122,7 +122,7 @@ class App extends Component {
   }
 
   callApi = async() =>{
-    const response = await fetch('/api/customers');
+    const response = await fetch('/customers');
     const body = await response.json();
     return body;
   }
@@ -145,7 +145,7 @@ class App extends Component {
     }
 
     callApi2 = async() =>{
-      const response = await fetch('/api/studentcheck');
+      const response = await fetch('/studentcheck');
       const body = await response.json();
       return body;
     }

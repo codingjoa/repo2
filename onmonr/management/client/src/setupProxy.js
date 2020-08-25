@@ -12,7 +12,6 @@ module.exports = function(app) {
     createProxyMiddleware({
       // proxy할 주소, 즉, 백단의 주소를 적어줍니다.
       target: "http://localhost:5000",
-      changeOrigin: true,
     })
   );
   app.use(bodyParser.json());
@@ -31,7 +30,7 @@ module.exports = function(app) {
   });
 
   connection.connect();
-  app.get('/api/customers',(req,res)=>{
+  app.get('/customers',(req,res)=>{
     connection.query(
       "select * from student WHERE isDeleted = 0",
       (err,rows,fields)=>{
@@ -39,7 +38,7 @@ module.exports = function(app) {
       }
     )
 });
-app.get('/api/studentcheck',(req,res)=>{
+app.get('/studentcheck',(req,res)=>{
   connection.query(
     "select * from student_check WHERE isDeleted = 0",
     (err,rows,fields)=>{
