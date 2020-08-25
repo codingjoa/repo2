@@ -50,7 +50,7 @@ app.get('/studentcheck',(req,res)=>{
     const multer = require('multer');
     const upload = multer({dest:'upload'});
     app.use('/image', express.static('upload'));
-   app.post('/api/customers',upload.single('image'),(req, res)=>{
+   app.post('/customers',upload.single('image'),(req, res)=>{
         let sql = 'INSERT INTO student VALUES (null, ?, ?, ?, ?, ?, ?, ?, ?, ?, now(), 0)';
         let qid = req.body.qid;
         let name = req.body.name;
@@ -102,7 +102,7 @@ app.get('/studentcheck',(req,res)=>{
   });
 
 
-   app.delete('/api/customers/:id',(req, res) => {
+   app.delete('/customers/:id',(req, res) => {
         let sql = 'UPDATE student SET isDeleted = 1 WHERE id = ?';
         let params = [req.params.id];
         connection.query(sql, params,

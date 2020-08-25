@@ -7,8 +7,7 @@ class Customer extends React.Component{
   // Jquery here $(...)...
 }
 
-// ...
-}
+
     render(){
         return(
             <TableRow style={{textAlign:"center"}}>
