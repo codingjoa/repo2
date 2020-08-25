@@ -11,8 +11,8 @@ class Customer extends React.Component{
     render(){
         return(
             <TableRow style={checkStyle}>
-                <TableCell>{this.props.sid}</TableCell>
-                <TableCell>{this.props.qid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.sid}</TableCell>
+                <TableCell style={checkStyle}>{this.props.qid}</TableCell>
                 <TableCell>{this.props.name}</TableCell>
                 <TableCell>{this.props.age}</TableCell>
                 <TableCell>{this.props.birthday}</TableCell>

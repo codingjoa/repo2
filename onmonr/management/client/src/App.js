@@ -189,7 +189,7 @@ class App extends Component {
 
     const {classes} = this.props;
     const cellList = ["번호", "분기", "이름","나이", "생년월일", "성별", "핸드폰", "이메일", "주소", "특이사항", "설정"];
-    const cellList2 = ["번호","ㄱㄱ","분기","담당 선생님", "이름","출석 시간"];
+    const cellList2 = ["번호","학생 번호","분기","담당 선생님", "이름","출석 시간"];
     const cellList3 = ["아이디","이름"];
     return(
       <div className={classes.root}>
