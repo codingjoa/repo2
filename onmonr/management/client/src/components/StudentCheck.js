@@ -3,12 +3,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 
 const checkStyle = {
-  textAlign:"center",
-  boxShadow:"3px 3px 5px #dddddd",
-  position:'absolute',
-  Top:'50%',
-  left:'50%',
-  transform:"transitions(-50%,-50%)",
+  width:'700px'
 
 }
 

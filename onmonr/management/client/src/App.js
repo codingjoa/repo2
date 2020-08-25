@@ -241,7 +241,7 @@ class App extends Component {
         </Table>
       </Paper>
       /*출석체크*/
-      <Paper style={{width:"500px"}}>
+      <Paper>
         <Table className={classes.table}>
             <TableHead>
               <TableRow>
