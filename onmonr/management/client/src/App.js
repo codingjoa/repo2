@@ -97,7 +97,7 @@ const styles = theme => ({
     left:"50%",
     transform:"translate(-50%,-50%)",
     backgroundColor:"DarkGray",
-    zIndex:1;
+    zIndex:'1';
 
   }
 });
