@@ -40,7 +40,7 @@ class CustomerDelete extends React.Component{
     checkCustomer(sid){
         const url = '/studentcheck/' + sid;
         fetch(url, {
-            method:'UPDATE'
+            method:'POST'
         });
         this.props.stateRefresh();
     }
