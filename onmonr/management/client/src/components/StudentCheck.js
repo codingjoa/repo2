@@ -7,6 +7,26 @@ const checkStyle = {
 
 }
 class StudentCheck extends React.Component{
+  constructor(props){
+      super(props);
+      this.state ={
+          open:false,
+          value:''
+      }
+  }
+
+
+  handleClickOpen = () =>{
+      this.setState({
+          open:true
+      });
+  }
+
+  handleClose = () =>{
+      this.setState({
+          open:false
+      });
+  }
     render(){
         return(
             <TableRow style={checkStyle}>
