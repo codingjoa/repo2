@@ -89,6 +89,7 @@ const styles = theme => ({
       },
     },
   },
+  // 출석체크
   checkzul:{
     textAlign:"center",
     width:"50%",
@@ -96,9 +97,14 @@ const styles = theme => ({
     top:"50%",
     left:"50%",
     transform:"translate(-50%,-50%)",
-    backgroundColor:"DarkGray",
     zIndex:'1'
 
+  },
+  //클릭시 배경
+  subback:{width:"100%",height:"100%",position:"absolute"},
+  //선생
+  teacher:{
+    width:"50%",
   }
 });
 
@@ -148,7 +154,7 @@ class App extends Component {
         .then(res=>this.setState({studentcheck: res}))
         .catch(err => console.log(err));
     }
-    componentDidMount2(){
+    componentDidMount(){
       this.timer = setInterval(this.progress2, 20);
       this.callApi2()
         .then(res=>this.setState({studentcheck: res}))
@@ -251,7 +257,7 @@ class App extends Component {
             </TableBody>
         </Table>
       </Paper>
-      /*출석체크*/
+      // 출석체크
       <Paper className={classes.checkzul}>
         <Table className={classes.table}>
             <TableHead>
@@ -263,7 +269,7 @@ class App extends Component {
             </TableHead>
             <TableBody className={classes.tableBody}>
                   {this.state.studentcheck ? this.state.studentcheck.map(c=>{
-                    return(<StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
+                    return(<StudentCheck className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
                   }):
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="6" align="center">
