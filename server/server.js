@@ -44,7 +44,9 @@ async function reqses(req, res, next) {
 // 학생 조회
 database.get('/', async (req, res) => res.json(await db.users.fetch()));
 // 학생 삭제
-database.delete('/:id', async (req, res) => res.json(await db.users.delete(req.params.id)));
+database.delete('/:sid', async (req, res) => res.json(await db.users.delete(req.params.sid)));
+// 학생 수정 이렇게 하는게 맞는지..?핳..
+database.put('/:sid', async (req, res) => res.json(await db.users.put(req.params.sid)));
 
 // 새션 조회
 auth.get('/', (req, res) => {
@@ -77,7 +79,7 @@ auth.get('/delete', (req, res) => {
     res.json({message: 'session deleted.'});
   }
   else res.json({message: 'session is empty.'});
-  
+
 });
 
 

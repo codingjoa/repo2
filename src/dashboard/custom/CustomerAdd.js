@@ -27,7 +27,7 @@ const styles = theme => ({
                 this.props.stateRefresh();
             })
   // state를 초기화
-        
+
     handleFileChange =(e) =>{
         this.setState({
             file: e.target.files[0],
@@ -65,7 +65,7 @@ export default function CustomerAdd() {
   const [ open, setOpen ] = useState(false);
   const idi = useRef();
   const i = useRef();
-  
+
 
   return(
     <div>
@@ -75,8 +75,9 @@ export default function CustomerAdd() {
       <Dialog open={open} onClose={() => setOpen(false)} >
         <DialogTitle>학생 추가</DialogTitle>
         <DialogContent>
-          <TextField label="반" type="text" name="classes" /><br/>
+          <TextField label="분기" type="text" name="qid" /><br/>
           <TextField label="이름" type="text" name="userName" /><br/>
+          <TextField label="나이" type="text" name="age" /><br/>
           <TextField label="생년월일" type="date" name="birthday" fullWidth /><br/>
 <Select label="성별" id="select" value="f" fullWidth> <MenuItem value="f">여</MenuItem> <MenuItem value="m">남</MenuItem> </Select><br/>
           <TextField label="성별" type="text" name="gender" /><br/>

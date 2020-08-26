@@ -8,7 +8,7 @@ import Typography from '@material-ui/core/Typography';
 
 import axios from 'axios';
 
-export default function CustomerDelete({ id, Remover }) {
+export default function CustomerDelete({ sid, Remover }) {
   const [ open, setOpen ] = useState(false);
   return (
     <div>
@@ -23,7 +23,7 @@ export default function CustomerDelete({ id, Remover }) {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="primary" onClick={() => Remover(id)}>삭제</Button>
+          <Button variant="contained" color="primary" onClick={() => Remover(sid)}>삭제</Button>
           <Button variant="contained" color="primary" onClick={() => setOpen(false)}>닫기</Button>
         </DialogActions>
       </Dialog>
