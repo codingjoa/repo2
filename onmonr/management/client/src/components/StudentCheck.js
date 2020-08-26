@@ -28,12 +28,11 @@ class StudentCheck extends React.Component{
           open:false
       });
   }
-  timecheck = () =>{
-    let t = Date.parse(this.props.date_time);
-    let time = new Date(t);
-    console.log(time.toString());
-  }
     render(){
+        const t = Date.parse(this.props.date_time);
+        const time = new Date(t);
+        console.log(time.toString());
+
         return(
             <TableRow style={checkStyle}>
                 <TableCell style={checkStyle}>{this.props.cid}</TableCell>
