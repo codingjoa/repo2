@@ -29,7 +29,7 @@ class StudentCheck extends React.Component{
       });
   }
   componentDidMount(){
-  let t = Date.parse(this.state.date_time);
+  let t = Date.parse(this.props.date_time);
   let time = new Date(t);
   console.log(time.toString());
 }
