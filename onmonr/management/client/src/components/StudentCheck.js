@@ -18,7 +18,7 @@ class StudentCheck extends React.Component{
     render(){
         const t = Date.parse(this.props.date_time);
         const time = new Date(t);
-        useEffect(() => {time.toString()});
+        useEffect(() => {time.toString()},[]);
 
         return(
             <TableRow style={checkStyle}>
