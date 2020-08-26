@@ -150,11 +150,6 @@ class App extends Component {
   }
   //test 2020-08-24
     stateRefresh2 = () => {
-      this.setState({
-        studentcheck:'',
-        completed:0,
-        searchKeyword:''
-      });
       this.callApi2()
         .then(res=>this.setState({studentcheck: res}))
         .catch(err => console.log(err));
