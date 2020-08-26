@@ -258,7 +258,7 @@ class App extends Component {
             </TableHead>
             <TableBody className={classes.tableBody}>
                   {this.state.studentcheck ? this.state.studentcheck.map(c=>{
-                    return(<StudentCheck className={classes.tableBody} stateRefresh={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
+                    return(<StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
                   }):
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="6" align="center">
@@ -281,7 +281,7 @@ class App extends Component {
             </TableHead>
             <TableBody className={classes.tableBody}>
                   {this.state.studentcheck ? this.state.studentcheck.map(c=>{
-                    return(<StudentCheck className={classes.tableBody} stateRefresh2={this.stateRefresh2}  key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
+                    return(<StudentCheck className={classes.tableBody} key={c.cid} cid = {c.cid} sid={c.sid} qid={c.qid} tid={c.tid} name={c.name} date_time={c.date_time} />);
                   }):
                   <TableRow className={classes.tableBody}>
                       <TableCell className={classes.tableBody} colSpan="6" align="center">
