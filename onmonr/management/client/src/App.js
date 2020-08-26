@@ -138,7 +138,6 @@ class App extends Component {
       .then(res=>this.setState({customers: res}))
       .catch(err => console.log(err));
 
-    this.timer = setInterval(this.progress2, 20);
     this.callApi2()
       .then(res=>this.setState({studentcheck: res}))
       .catch(err => console.log(err));
@@ -167,10 +166,6 @@ class App extends Component {
       return body;
     }
 
-    progress2 = () => {
-      const {completed} = this.state;
-      this.setState({completed : completed >=100 ? 0 : completed + 1});
-    }
 
   handleValueChange = (e) => {
     let nextState = {};

@@ -10,15 +10,12 @@ class StudentCheck extends React.Component{
   constructor(props){
       super(props);
       this.state ={
-          open:false,
-          value:'',
-          date_time:''
       }
   }
     render(){
         const t = Date.parse(this.props.date_time);
         const time = new Date(t);
-        useEffect(() => {time.toString()},[]);
+        console.log(time.toString());
 
         return(
             <TableRow style={checkStyle}>
@@ -27,7 +24,7 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.qid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.tid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.name}</TableCell>
-                <TableCell style={checkStyle}>{this.useEffect}</TableCell>
+                <TableCell style={checkStyle}>{time.toString()}</TableCell>
             </TableRow>
         );
     }
