@@ -28,11 +28,11 @@ class StudentCheck extends React.Component{
           open:false
       });
   }
-  componentDidMount(){
-  let t = Date.parse(this.props.date_time);
-  let time = new Date(t);
-  console.log(time.toString());
-}
+  timecheck = () =>{
+    let t = Date.parse(this.props.date_time);
+    let time = new Date(t);
+    console.log(time.toString());
+  }
     render(){
         return(
             <TableRow style={checkStyle}>
@@ -41,7 +41,7 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.qid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.tid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.name}</TableCell>
-                <TableCell style={checkStyle}>{time.toString()}</TableCell>
+                <TableCell style={checkStyle}>{this.timecheck}</TableCell>
             </TableRow>
         );
     }
