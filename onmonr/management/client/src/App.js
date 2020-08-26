@@ -115,7 +115,6 @@ class App extends Component {
     super(props);
     this.state = {
       customers:'',
-      studentcheck:'',
       completed:0,
       searchKeyword:''
     }
