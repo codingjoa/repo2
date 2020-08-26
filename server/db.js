@@ -1,33 +1,50 @@
-const mariadb = require('mariadb');
+const mariadb = require('mariadb');
 const host = 'localhost';
 const user = 'ky';
 const database = user;
 const password = '1234';
 const pool = mariadb.createPool({host, user, password, database, connectionLimit: 5});
 
-//test().then(end, end);
+const users = {
+  async add(cl, name, gender, phone, email, address) {
+    const values = [ cl, name, gender, phone, email, address ];
+    return await pool.query('insert into student (class, name, gender, phone, email, address) values ( (?), (?), (?), (?), (?), (?) )', values);
+  },
+  async del() {
+    return await pool.query('UPDATE student SET isDeleted = 1 WHERE id = ?', [ id ]);
+  },
+  async mod() {},
+  async fetch(id) {
+    let promise;
+    if(id) promise = pool.query('select * from student where id=(?)', [ id ]);
+    else promise = pool.query('select * from student where isDeleted=0');
+    return await promise;
+  }
+};
 
-async function test() {
-  // id가 1인 학생 검색
-  //await fetchUser(1);
-  // 아조씨라는 학생 추가
-  //await addUser('b', '아조씨', '남', '01012345678', 'taes@gmail.com', '경기도 성남시 중원구 희망로');
-  // 모든 학생 검색
-  await fetchUser();
+async function all() {
+  const list = await pool.query('show tables');
+  const proms = list.map(n => pool.query(`desc ${n.Tables_in_ky}`));
+  const names = list.map(r => r.Tables_in_ky);
+  let res = await Promise.all(proms);
+  
+  return [ res.map(r => r.map(s => s.Field)), names ];
 }
 
-async function fetchUser(id) {
-  let promise;
-  if(id) promise = pool.query('select * from student where id=(?)', [ id ]);
-  else promise = pool.query('select * from student');
-  return await promise;
+const plak = {
+  async list() {
+    return await pool.query('select sid, q.qid, name, email, tid, classes from quarter_imformation q left join student s on q.qid = s.qid');
+  }
+};
+
+async function end() {
+  pool.end();
 }
 
-async function addUser(cl, name, gender, phone, email, address) {
-  const values = [ cl, name, gender, phone, email, address ];
-  return await pool.query('insert into student (class, name, gender, phone, email, address) values ( (?), (?), (?), (?), (?), (?) )', values)
-  //.then(console.log, console.error);
+if(process.argv[2] === 'd') {
+  plak.list().then(console.log, console.error).then(end, end);
 }
+
 //checkUser promise right..?
 async function checkUser(cl, name){
   const values = [cl, name];
@@ -35,8 +52,6 @@ async function checkUser(cl, name){
   //.then(console.log, console.error);
 }
 
-async function end() {
-  pool.end();
-}
 
-module.exports = { fetchUser, end };
+
+module.exports = { users, end};
