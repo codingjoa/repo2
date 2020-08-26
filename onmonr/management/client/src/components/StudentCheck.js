@@ -40,7 +40,7 @@ class StudentCheck extends React.Component{
                 <TableCell style={checkStyle}>{this.props.qid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.tid}</TableCell>
                 <TableCell style={checkStyle}>{this.props.name}</TableCell>
-                <TableCell style={checkStyle}>{this.timecheck}</TableCell>
+                <TableCell style={checkStyle}>{time.toString()}</TableCell>
             </TableRow>
         );
     }
