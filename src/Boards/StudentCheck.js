@@ -11,7 +11,7 @@ export default function StudentCheck (props) {
 
   const [ datas, setDatas ] = useState(null);
   if(!datas) {
-    axios.get('/api/db').then(r => r.data).then(setDatas);
+    axios.post('/api/db').then(r => r.data).then(setDatas);
     return null;
   };
   // const t = Date.parse(row.props.date_time);

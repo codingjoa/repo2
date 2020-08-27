@@ -75,4 +75,4 @@ async function end() {
 }
 
 
-module.exports = { users, utils, plak, end };
+module.exports = { users, check, utils, plak, end };
