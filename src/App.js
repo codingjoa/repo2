@@ -12,14 +12,6 @@ import More from './dashboard/custom/More';
 import TableForm from './dashboard/custom/TableForm';
 import CustomerAdd from './dashboard/custom/CustomerAdd';
 
-const books = [
-  '죽지는 않았으나 시체는 찾았습니다.',
-  '디자인을 괴롭히는 디자이너',
-  '몸에는 해로우나 드십시오',
-  '노 저을 때 물 들어와라'
-];
-
-
 const RouteSession = ({ per, children }) => {
   if(per) {
     return (<>{children}</>);
@@ -76,7 +68,5 @@ const Root = () => {
     </Router>
   );
 };
-/*
-<Route path="/info/:id" component={Books2} />
-*/
+
 export default Root;

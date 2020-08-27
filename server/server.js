@@ -45,8 +45,8 @@ async function reqses(req, res, next) {
 database.get('/', async (req, res) => res.json(await db.users.fetch()));
 // 학생 삭제
 database.delete('/:sid', async (req, res) => res.json(await db.users.delete(req.params.sid)));
-// 학생 수정 이렇게 하는게 맞는지..?핳..
-database.put('/:sid', async (req, res) => res.json(await db.users.put(req.params.sid)));
+// 학생 수정 ( require('./db').users.modify(sid)
+database.put('/:sid', async (req, res) => res.json(await db.users.modify(req.params.sid)));
 
 // 새션 조회
 auth.get('/', (req, res) => {
