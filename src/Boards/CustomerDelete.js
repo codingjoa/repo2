@@ -10,8 +10,16 @@ import axios from 'axios';
 
 export default function CustomerDelete({ sid, Remover }) {
   const [ open, setOpen ] = useState(false);
+  checkCustomer(sid){
+      const url = '/:sid';
+      fetch(url, {
+          method:'POST'
+      });
+      this.props.stateRefresh();
+  }
   return (
     <div>
+      <Button variant="contained" color="secondary" onClick={(e)=>{this.checkCustomer(this.props.sid)}}>출석</Button>
       <Button variant="contained" color="secondary" onClick={()=> setOpen(true)}>삭제</Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle onClose={() => setOpen(false)}>
