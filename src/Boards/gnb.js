@@ -11,7 +11,7 @@ import LayersIcon from '@material-ui/icons/Layers';
 import AssignmentIcon from '@material-ui/icons/Assignment';
 import { Link } from 'react-router-dom';
 
-export const mainListItems = (
+export default (
   <div>
     <Link to="/" style={{ textDecoration: 'none', color: 'inherit'}}>
       <ListItem button>
@@ -61,11 +61,6 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Integrations" />
     </ListItem>
-  </div>
-);
-
-export const secondaryListItems = (
-  <div>
     <ListSubheader inset>Saved reports</ListSubheader>
     <ListItem button>
       <ListItemIcon>

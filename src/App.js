@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
 
-import SignIn from './signIn/SignIn';
-import Dashboard from './dashboard/Dashboard';
-import useSession from './custom/useSession';
-
-import Page from './dashboard/custom/Page';
-import Title from './dashboard/Title';
-import Customer from './dashboard/custom/Customer';
-import More from './dashboard/custom/More';
-import TableForm from './dashboard/custom/TableForm';
-import CustomerAdd from './dashboard/custom/CustomerAdd';
+import useSession from './Hooks/useSession';
+import SignIn from './Templates/SignIn';
+import Dashboard from './Templates/Dashboard';
+import Page from './Templates/Page';
+import Title from './Templates/Title';
+import More from './Templates/More';
+import TableForm from './Templates/TableForm';
+import Customer from './Boards/Customer';
+import CustomerAdd from './Boards/CustomerAdd';
+import gnb from './Boards/gnb';
 
 const RouteSession = ({ per, children }) => {
   if(per) {
@@ -28,7 +28,7 @@ const Root = () => {
         
       </Route>
       <RouteSession per={auth.id > 0}>
-        <Dashboard auth={auth}>
+        <Dashboard auth={auth} gnb={gnb}>
           <Route exact path="/">
             <Page>
               <Title>메인 페이지</Title>

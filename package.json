@@ -19,6 +19,7 @@
     "jquery": "^3.5.1",
     "mariadb": "^2.4.2",
     "nodemon": "^2.0.4",
+    "npm-run-all": "^4.1.5",
     "random-hash": "^4.0.1",
     "react": "^16.13.1",
     "react-dom": "^16.13.1",
@@ -30,7 +31,7 @@
   "scripts": {
     "start": "npm-run-all --parallel start:**",
     "start:client": "react-scripts start",
-    "start:server": "node ./servers/server.js",
+    "start:server": "node ./server/server.js",
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject"

@@ -13,12 +13,10 @@ import IconButton from '@material-ui/core/IconButton';
 import Badge from '@material-ui/core/Badge';
 import Container from '@material-ui/core/Container';
 import Grid from '@material-ui/core/Grid';
-import Paper from '@material-ui/core/Paper';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
 import NotificationsIcon from '@material-ui/icons/Notifications';
-import { mainListItems, secondaryListItems } from './listItems';
 
 function Copyright() {
   return (
@@ -111,7 +109,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export default function Dashboard({children}) {
+export default function Dashboard({children, gnb}) {
   const classes = useStyles();
   const [open, setOpen] = React.useState(false);
   const handleDrawerOpen = () => {
@@ -157,9 +155,7 @@ export default function Dashboard({children}) {
           </IconButton>
         </div>
         <Divider />
-        <List>{mainListItems}</List>
-        <Divider />
-        <List>{secondaryListItems}</List>
+        <List>{gnb}</List>
       </Drawer>
       <main className={classes.content}>
         <div className={classes.appBarSpacer} />
