@@ -21,11 +21,11 @@ const RouteSession = ({ per, children }) => {
 
 const Root = () => {
   const { session: auth, refreshSession, signIn, signOut } = useSession();
-  
+
   return (
     <Router>
       <Route path="/">
-        
+
       </Route>
       <RouteSession per={auth.id > 0}>
         <Dashboard auth={auth} gnb={gnb}>
@@ -39,6 +39,7 @@ const Root = () => {
               <Title>학생 관리</Title>
               <CustomerAdd />
               <Customer />
+              <StudentCheck />
               <More>More</More>
             </Page>
           </Route>

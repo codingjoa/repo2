@@ -47,7 +47,10 @@ database.get('/', async (req, res) => res.json(await db.users.fetch()));
 database.delete('/:sid', async (req, res) => res.json(await db.users.delete(req.params.sid)));
 // 학생 수정 ( require('./db').users.modify(sid)
 database.put('/:sid', async (req, res) => res.json(await db.users.modify(req.params.sid)));
-
+// 학생 출석 체크 조회
+database.get('/:sid', async (req, res)=>res.json(await db.users.student(req.params.sid)));
+// 학생 출석체크 INSERT
+database.post('/:sid',async (req, res)=>res.json(await db.users.insert(req.params.sid)));
 // 새션 조회
 auth.get('/', (req, res) => {
   console.log(req.session.user);

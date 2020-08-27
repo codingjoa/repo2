@@ -7,7 +7,7 @@ const pool = mariadb.createPool({host, user, password, database, connection
 
 /*
 const test = {
-  qid: 
+  qid:
 
 }
 */
@@ -35,6 +35,18 @@ const users = {
   }
 };
 
+//학생 체크 구문
+const check = {
+  async insert(sid){
+    return await pool.query('insert into student_check (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = (?)', [sid]);
+  },
+  async student(sid){
+    let promise;
+    if(sid) promise = pool.query('select * from student_check where sid=(?)', [ sid ]);
+    return await promise;
+  }
+};
+
 const utils = {
   async getTableNames() {
     // ky database의 모든 테이블을 수집
@@ -48,7 +60,7 @@ const utils = {
     // 그 결과 중에서 Field라는 결과만 가져옴 [ Field(필드이름들) 배열, 테이블이름들 배열]
     return [ res.map(r => r.map(s => s.Field)), names ];
   }
-}
+};
 
 const plak = {
   async list() {
@@ -61,11 +73,5 @@ async function end() {
   pool.end();
 }
 
-//checkUser promise right..?
-async function checkUser(cl, name){
-  const values = [cl, name];
-  return await pool.query('insert into student_check(class, name) select class, name from student where ??')
-  //.then(console.log, console.error);
-}
 
 module.exports = { users, utils, plak, end };
