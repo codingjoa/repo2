@@ -32,4 +32,3 @@ export default function StudentCheck (props) {
             </>
         );
 }
-export default StudentCheck;
