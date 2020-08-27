@@ -17,10 +17,10 @@ export default function StudentCheck (props) {
   // const t = Date.parse(row.props.date_time);
   // const time = new Date(t);
   // console.log(time.toString());
+  //학생 클릭 시 sid 값을 받아와서 학생 출력 정보를 출력한다.
+  //<a href={row.sid} 이렇게는 안될 것 같은데.. 음
         return(
           <>
-          //학생 클릭 시 sid 값을 받아와서 학생 출력 정보를 출력한다.
-          //<a href={row.sid} 이렇게는 안될 것 같은데.. 음
           {datas.map(row =>
             <TableRow style={checkStyle}>
                 <TableCell style={checkStyle}>{row.cid}</TableCell>

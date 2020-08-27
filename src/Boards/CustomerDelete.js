@@ -17,9 +17,9 @@ export default function CustomerDelete({ sid, Remover }) {
   //     });
   //     this.props.stateRefresh();
   // } 함수를 못쓰는건가요..?
+  // <Button variant="contained" color="secondary" onClick={(e)=>{this.checkCustomer(this.props.sid)}}>출석</Button>
   return (
     <div>
-      // <Button variant="contained" color="secondary" onClick={(e)=>{this.checkCustomer(this.props.sid)}}>출석</Button>
       <Button variant="contained" color="secondary" onClick={()=> setOpen(true)}>삭제</Button>
       <Dialog open={open} onClose={() => setOpen(false)}>
         <DialogTitle onClose={() => setOpen(false)}>
