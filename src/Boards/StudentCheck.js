@@ -14,19 +14,19 @@ export default function StudentCheck (props) {
     axios.get('/api/db').then(r => r.data).then(setDatas);
     return null;
   };
-  const t = Date.parse(this.props.date_time);
-  const time = new Date(t);
-  console.log(time.toString());
+  // const t = Date.parse(row.props.date_time);
+  // const time = new Date(t);
+  // console.log(time.toString());
         return(
           <>
           {datas.map(row =>
             <TableRow style={checkStyle}>
-                <TableCell style={checkStyle}>{this.props.cid}</TableCell>
-                <TableCell style={checkStyle}>{this.props.sid}</TableCell>
-                <TableCell style={checkStyle}>{this.props.qid}</TableCell>
-                <TableCell style={checkStyle}>{this.props.tid}</TableCell>
-                <TableCell style={checkStyle}>{this.props.name}</TableCell>
-                <TableCell style={checkStyle}>{time.toString()}</TableCell>
+                <TableCell style={checkStyle}>{row.cid}</TableCell>
+                <TableCell style={checkStyle}>{row.sid}</TableCell>
+                <TableCell style={checkStyle}>{row.qid}</TableCell>
+                <TableCell style={checkStyle}>{row.tid}</TableCell>
+                <TableCell style={checkStyle}>{row.name}</TableCell>
+                <TableCell style={checkStyle}>{row.date_time}</TableCell>
             </TableRow>
             )}
             </>
