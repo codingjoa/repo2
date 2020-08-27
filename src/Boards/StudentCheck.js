@@ -8,16 +8,17 @@ const checkStyle = {
 
 }
 export default function StudentCheck (props) {
-  const [ datas, setDatas ] = useState(null);
-  if(!datas) {
-    axios.get('/api/db').then(r => r.data).then(setDatas);
-    return null;
-  }
+  
   componentDidMount(){
         const t = Date.parse(this.props.date_time);
         const time = new Date(t);
         console.log(time.toString());
-  }
+  };
+  const [ datas, setDatas ] = useState(null);
+  if(!datas) {
+    axios.get('/api/db').then(r => r.data).then(setDatas);
+    return null;
+  };
         return(
           <>
           {datas.map(row =>
@@ -32,6 +33,5 @@ export default function StudentCheck (props) {
             )}
             </>
         );
-
 }
 export default StudentCheck;
