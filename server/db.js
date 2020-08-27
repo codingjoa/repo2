@@ -43,6 +43,7 @@ const check = {
   async student(sid){
     let promise;
     if(sid) promise = pool.query('select * from student_check where sid=(?)', [ sid ]);
+    else promise = pool.query('select * from student_check where isDeleted=0');
     return await promise;
   }
 };
