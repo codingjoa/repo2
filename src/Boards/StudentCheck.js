@@ -9,17 +9,14 @@ const checkStyle = {
 }
 export default function StudentCheck (props) {
 
-  componentDidMount(){
-        const t = Date.parse(this.props.date_time);
-        const time = new Date(t);
-        console.log(time.toString());
-  }
-
   const [ datas, setDatas ] = useState(null);
   if(!datas) {
     axios.get('/api/db').then(r => r.data).then(setDatas);
     return null;
   };
+  const t = Date.parse(this.props.date_time);
+  const time = new Date(t);
+  console.log(time.toString());
         return(
           <>
           {datas.map(row =>
