@@ -10,6 +10,7 @@ import More from './Templates/More';
 import TableForm from './Templates/TableForm';
 import Customer from './Boards/Customer';
 import CustomerAdd from './Boards/CustomerAdd';
+import StudentCheck from './Boards/StudentCheck';
 import gnb from './Boards/gnb';
 
 const RouteSession = ({ per, children }) => {
