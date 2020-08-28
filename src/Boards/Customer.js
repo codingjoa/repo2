@@ -17,6 +17,7 @@ export default function Customer (props) {
       <>자료를 다시 불러오는 중</>
     );
   }
+  //<a href={'/url/' + row.sid}
   return (
     <>
       {datas.map(row =>
