@@ -9,12 +9,11 @@ export default function Customer (props) {
   const [ datas, setDatas ] = useState(null);
   const Refresh = useCallback(sid => {
     setDatas(null);
-    axios.delete(`/api/db/${sid}`).then(() => null).then(setDatas);
   }, []);
   if(!datas) {
     axios.get('/api/db').then(r => r.data).then(setDatas);
     return (
-      <>자료를 다시 불러오는 중</>
+      <>자료를 다시 불러오는 중...</>
     );
   }
   //<a href={'/url/' + row.sid}

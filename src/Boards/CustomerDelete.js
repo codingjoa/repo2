@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import Dialog from '@material-ui/core/Dialog';
 import DialogActions from '@material-ui/core/DialogActions';
 import DialogTitle from '@material-ui/core/DialogTitle';
@@ -8,16 +8,17 @@ import Typography from '@material-ui/core/Typography';
 
 import axios from 'axios';
 
-export default function CustomerDelete({ sid, Remover }) {
+export default function CustomerDelete({ sid, refresh }) {
+  // 경고창 띄우기용 state
   const [ open, setOpen ] = useState(false);
-  // checkCustomer(sid){
-  //     const url = '/:sid';
-  //     fetch(url, {
-  //         method:'POST'
-  //     });
-  //     this.props.stateRefresh();
-  // } 함수를 못쓰는건가요..?
-  // <Button variant="contained" color="secondary" onClick={(e)=>{this.checkCustomer(this.props.sid)}}>출석</Button>
+  
+  // sid를 부모로부터 받아서 그 sid를 삭제
+  const Delete = useCallback(() => {
+    // refresh는 Customer를 다시 불러오는 역할임
+    axios.delete(`/api/db/${sid}`).then(refresh);
+  }, [ sid ]);
+
+  // 컴포넌트 뿌리기
   return (
     <div>
       <Button variant="contained" color="secondary" onClick={()=> setOpen(true)}>삭제</Button>
@@ -31,7 +32,7 @@ export default function CustomerDelete({ sid, Remover }) {
           </Typography>
         </DialogContent>
         <DialogActions>
-          <Button variant="contained" color="primary" onClick={() => Remover(sid)}>삭제</Button>
+          <Button variant="contained" color="primary" onClick={Delete}>삭제</Button>
           <Button variant="contained" color="primary" onClick={() => setOpen(false)}>닫기</Button>
         </DialogActions>
       </Dialog>

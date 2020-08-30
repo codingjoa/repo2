@@ -12,6 +12,9 @@ const test = {
 }
 */
 
+
+
+
 // 학생 정보를 다루는 클래스
 const users = {
   async add(qid, name, age, birthday, gender, phone, email, address, uniqueness) {
