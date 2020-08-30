@@ -40,6 +40,8 @@ const defaultResult = {
 test.post('/', db.quarter.create);
 test.get('/', db.quarter.fetch);
 test.put('/', db.quarter.rename);
+test.post('/check', db.studyChecking.check);
+test.get('/check', db.studyChecking.fetch);
 
 // todo: 만드는중임
 async function reqses(req, res, next) {

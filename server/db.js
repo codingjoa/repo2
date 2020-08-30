@@ -19,7 +19,7 @@ ee.emit('add', { teacherName, teacherAccount, teacherPassword, teacherOp });
 
 
 
-
+// 출석 취소, 출석한 학생 안한 학생 구분
 const quarter = {
   async create(req, res) {
 /* @codingjoa
@@ -37,6 +37,10 @@ const quarter = {
     res.json(grace);
   },
   async rename(req, res) {
+/* @codingjoa
+   선생이 자신이 관리하는 반의 이름을 변경합니다.
+*/
+// 이 반의 tid가 자신의 tid랑 일치하는지 검사할 것
     const { qid: quarterID, qname: quarterName } = req.body;
     const grace = await pool.query({
       namedPlaceholders: true,
@@ -47,14 +51,102 @@ const quarter = {
     res.json(grace);
   },
   async fetch(req, res) {
-    const grace = await pool.query('select * from quarter')
+/* @codingjoa
+   선생이 자신이 담당하는 반의 목록을 조회합니다.
+*/
+    const { tid: teacherID } = req.params;
+    const grace = await pool.query(
+      'select * from quarter where teacherID=?',
+      [ teacherID ]
+    )
     .then(r => ({ complete: true, data: r }))
     .catch(e => ({ complete: false, message: '조회에 실패했습니다.' }));
     res.json(grace);
   }
 }
 
+const studyChecking = {
+  async check(req, res) {
+// 선생은 교사가 바뀔때 대비해서
+    try {
+      const { sdate: studyDate, qid: quarterID, sid: studentID } = req.body;
+/* @codingjoa
+   등록하려는 학생이 반에 있는지 검사
+*/
+const result = await pool.query(
+  'select studentID from student where quarterID=? and studentID=?',
+  [ quarterID, studentID ]
+);
+if(!result.length) throw new Error('학생 소속 오류');
 
+/* @codingjoa
+   오늘 수업을 이미 만들었는지 확인함
+   오늘 날짜와 반의 id를 대입함
+*/
+      const study = await pool.query(
+        'select s.studyID, q.teacherID from study s inner join quarter q on s.quarterID=q.quarterId where s.studyDate=? and q.quarterID=?',
+        [ studyDate, quarterID ]
+      );
+/* @codingjoa
+   오늘 수업이 없는데 출석 체크를 시도하고 있음.
+   따라서 오늘 수업을 만듬
+   이 반의 선생 id를 먼저 가져오고
+   수업 개최자 정보에 선생id와 수업을 한 반의 id를 등록함
+   생성된 수업의 아이디를 반환값으로 받음
+   생성된 수업이 이미 있으면 study.studyID 에서 가져옴
+*/
+let studyID;
+if(!study.length) {
+  const result = await pool.query(
+    'select t.teacherID from teacher t inner join quarter q on q.teacherID=t.teacherID where quarterID=?',
+    [ quarterID ]
+  );
+  const { insertId } = await pool.query(
+    'insert into study(teacherID, quarterID) values(?, ?)',
+    [ result[0].teacherID, quarterID ]
+  );
+  studyID = insertId;
+}
+else studyID = study[0].studyID;
+/* @codingjoa
+   req.body에서 받은 등록할 학생id와
+   오늘(등록하고자 하는)날의 studyID를 이용해
+   checking 등록
+*/
+// todo: 이미 출석했으면 못하게 막아야...
+const grace = await pool.query(
+  'insert into checking(studyID, studentID) values (?, ?)',
+  [ studyID, studentID ]
+)
+.then(r => ({ complete: true, message: '출석이 등록되었습니다.' }))
+.catch(e => ({ complete: false, message: e.message })); 
+
+      res.json(grace);
+    }
+    catch(e) {
+      res.json({ complete: false, message: e.message });
+    }
+    
+  },
+  async fetch(req, res) {
+    const grace = await pool.query('select s.studyID, c.checkingID, s.teacherID, c.studentID, s.studyDate, c.checkTime from study s, checking c where s.studyID = c.studyID')
+    .then(r => ({ complete: true, data: r }))
+    .catch(e => ({ complete: false, message: '조회에 실패했습니다.' }));
+    res.json(grace);
+  }
+};
+
+
+
+/*
+
+curl -X PUT -H 'Content-Type: application/json' -d '{"qid":"6", "qname":"엘리트1반"}' http://localhost:3307/api/test
+curl -X POST -H 'Content-Type: application/json' -d '{"sdate":"6", "ctime":"2020-08-30"}' http://localhost:3307/api/test/check
+
+
+
+
+*/
 
 
 // 학생 정보를 다루는 클래스
@@ -120,4 +212,4 @@ async function end() {
 }
 
 
-module.exports = { users, check, utils, plak, end, quarter };
+module.exports = { users, check, utils, plak, end, quarter, studyChecking };
