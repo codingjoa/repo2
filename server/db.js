@@ -1,16 +1,58 @@
 const mariadb = require('mariadb');
+const { EventEmitter } = require('events');
+
 const host = 'localhost';
 const user = 'ky';
 const database = user;
 const password = '1234';
 const pool = mariadb.createPool({host, user, password, database, connectionLimit: 5});
-
 /*
-const test = {
-  qid:
+const ee = new EventEmitter();
+require('./db/teacher')(pool, ee);
 
-}
+let teacherName = '설민석',
+teacherAccount = 'history',
+teacherPassword = '12345',
+teacherOp = 0;
+ee.emit('add', { teacherName, teacherAccount, teacherPassword, teacherOp });
 */
+
+
+
+
+const quarter = {
+  async create(req, res) {
+/* @codingjoa
+   반을 생성하는 함수: post
+   tid: 담당하게 될 선생 id
+*/
+    const { tid: teacherID } = req.body;
+    console.log(req.body);
+    const grace = await pool.query({
+      namedPlaceholders: true,
+      sql: 'insert into quarter(teacherID) values (:teacherID)'
+    },{ teacherID })
+    .then(r => ({complete: true, message: '반 생성에 성공했습니다.' }))
+    .catch(e => ({ complete: false, message: '반 생성에 실패했습니다.' }));
+    res.json(grace);
+  },
+  async rename(req, res) {
+    const { qid: quarterID, qname: quarterName } = req.body;
+    const grace = await pool.query({
+      namedPlaceholders: true,
+      sql: 'update quarter set quarterName=:quarterName where quarterID=:quarterID'
+    },{ quarterID, quarterName })
+    .then(r => ({ complete: true, message: '반 이름 변경에 성공했습니다.' }))
+    .catch(e => ({ complete: false, message: '반 이름 변경에 실패했습니다.' }));
+    res.json(grace);
+  },
+  async fetch(req, res) {
+    const grace = await pool.query('select * from quarter')
+    .then(r => ({ complete: true, data: r }))
+    .catch(e => ({ complete: false, message: '조회에 실패했습니다.' }));
+    res.json(grace);
+  }
+}
 
 
 
@@ -78,4 +120,4 @@ async function end() {
 }
 
 
-module.exports = { users, check, utils, plak, end };
+module.exports = { users, check, utils, plak, end, quarter };

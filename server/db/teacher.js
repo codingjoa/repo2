@@ -1,9 +1,4 @@
-
-
-node -e "
-const { on, EventEmitter } = require('events');
-//const { pool } = re
-
+/*
 function keyFilter(raw, allowed) {
   const filtered = Object.keys(raw)
   .filter(key =>
@@ -13,41 +8,54 @@ function keyFilter(raw, allowed) {
     return obj;
   }, {});
 }
+*/
 
-const obj = {  };
-keyFilter(['id', 'name', 'password', 'account', 'op']);
+const { on } = require('events');
 
-"
-
-const ee = new EventEmitter();
-(() => {
+module.exports = ((pool, ee) => {
   (async () => {
-    for await (const [ value ] of on(ee, 'add'))
-      pool.query();
+    for await (const [ value ] of on(ee, 'addTeacher')) {
+      const r = await pool.query(
+        {
+          namedPlaceholders: true,
+          sql: 'insert into teacher( teacherName, teacherAccount, teacherPassword, teacherOp ) values ( :teacherName, :teacherAccount, :teacherPassword, :teacherOp )'
+        },
+        value
+      );
+      ee.emit('fetch', value);
+    }
+  })();
+  (async () => {
+    for await (const [ value ] of on(ee, 'listTeacher')) {
+      const r = await pool.query('select teacherID, teacherName, teacherCreated, teacherModified from teacher');
+      ee.emit('end', null);
+    }
+  })();
+  (async () => {
+    for await (const [ value ] of on(ee, 'delete')) {
+      const r = await pool.query('select * from teacher');
+      console.log(r);
+      ee.emit('end', null);
+    }
+  })();
+  (async () => {
+    for await (const [ value ] of on(ee, 'newPassword'))
       console.log(value);
   })();
   (async () => {
-    for await (const [ value ] of on(ee, 'bar'))
-      console.log(value);
+    for await (const [ value ] of on(ee, 'test'))
+      console.log(value+9);
   })();
+});
 
-})();
-ee.emit('foo', 1);
-ee.emit('bar', 3);
-ee.emit('foo', 'discord');
-ee.emit('foo', 11);
-ee.emit('bar', 5);
-"
+((pool, ee) => {
+  (async () => {
+    for await (const [ value ] of on(ee, ''))
+      pool.end();
+  })();
+});
 
-.on('add', (pool, {}) => {
-  
-
-})
-.on('del', (pool, id) => {})
-
-
-'insert into teacher( teacherName, teacherAccount, teacherPassword, teacherOp ) values ( :teacherName, :teacherAccount, :teacherPassword, :teacherOp )'
-
+/*
 { id,  }
 1002,
   '임시명',
@@ -60,3 +68,4 @@ insert into quarter(
 ) values (
   1002
 );
+*/

@@ -10,6 +10,7 @@ const port = process.env.PORT || 3307;
 const router = express.Router();
 const database = express.Router();
 const auth = express.Router();
+const test = express.Router();
 
 // 세션
 app.use(session({
@@ -24,6 +25,7 @@ app.use(bodyParser.json());
 app.use('/api', router);
 router.use('/db', database); // /api/db/
 router.use('/auth', auth); // /api/auth/
+router.use('/test', test); // /api/test/
 
 let uid = 0;
 const defaultSession = {
@@ -33,6 +35,11 @@ const defaultSession = {
 const defaultResult = {
 
 };
+
+
+test.post('/', db.quarter.create);
+test.get('/', db.quarter.fetch);
+test.put('/', db.quarter.rename);
 
 // todo: 만드는중임
 async function reqses(req, res, next) {
