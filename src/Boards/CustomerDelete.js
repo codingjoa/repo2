@@ -16,7 +16,7 @@ export default function CustomerDelete({ sid, refresh }) {
   const Delete = useCallback(() => {
     // refresh는 Customer를 다시 불러오는 역할임
     axios.delete(`/api/db/${sid}`).then(refresh);
-  }, [ sid ]);
+  }, [ sid, refresh ]);
 
   // 컴포넌트 뿌리기
   return (

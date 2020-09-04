@@ -47,7 +47,8 @@ create table checking(
   checkingID int unsigned not null AUTO_INCREMENT,
   studyID int unsigned,
   studentID int unsigned,
-  checkTime time not null default CURRENT_TIME,
+  checkOk boolean not null default 0,
+  checkModified datetime not null default CURRENT_TIMESTAMP on update CURRENT_TIMESTAMP,
   primary key (checkingID),
   foreign key (studyID) references study(studyID) on delete set null on update cascade,
   foreign key (studentID) references student(studentID) on delete set null on update cascade

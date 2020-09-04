@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useRef, useMemo } from 'react';
+import React, { useState, useCallback, useRef } from 'react';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -17,7 +17,12 @@ import CustomerDelete from './CustomerDelete';
 import axios from 'axios';
 
 export default function Customer (props) {
-/* @codingjoa
+  const [ quarters, setQuarters ] = useState(null);
+  const getQuarters = useCallback(()=>{
+    axios.get('/api/db/quarter').then(r => r.data).then(setQuarters);
+  }, []);
+
+  /* @codingjoa
    datas: api에서 불러온 데이터를 저장하는 state
    filtered: 검색어를 이용해 필터링된 데이터를 저장하는 state
    keyword: TextField를 가리키기 위해 사용히는 ref
@@ -46,6 +51,41 @@ export default function Customer (props) {
     //setFiltered(datas.filter(x => x.name.startsWith(text) ));
     setFiltered(datas.filter(x => rg.test(x.name) ));
   }, [ datas, keyword ]);
+
+
+  if(quarters === null) {
+    getQuarters();
+    return (
+      <>반 목록을 불러오는 중...</>
+    );
+  }
+  else if(!quarters.complete) {
+    return (
+      <>반 목록을 불러오는 데 실패했습니다.</>
+    );
+  }
+  else {
+/* @codingjoa
+   작업중입니다.
+
+
+*/
+  return (
+    <>
+      <Button onClick={() => { axios.get(`/api/db/${p}`)}}>
+      {quarters.data.map(row =>
+      <TableRow style={{textAlign:"center"}}>
+        <TableCell style={{textAlign:"center"}}>{row.teacherID}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.quarterID}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.quarterName}</TableCell>
+      </TableRow>
+      )}
+    </>
+  );
+
+
+  }
+
 
   if(!datas) {
 /* @codingjoa

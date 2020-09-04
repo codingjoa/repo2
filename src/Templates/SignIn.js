@@ -55,7 +55,7 @@ export default function SignIn({ signIn }) {
     const id = idi.current.value;
     const pw = pwi.current.value;
     signIn(id, pw);
-  });
+  }, []);
 
   return (
     <Container component="main" maxWidth="xs">

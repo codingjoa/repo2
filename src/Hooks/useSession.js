@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback, useEffect } from 'react';
 import axios from 'axios';
 
 let globalsession = null;
@@ -21,26 +21,26 @@ export default function useSession() {
 
   const refreshSession = useCallback(() => {
     getSessionForce().then(setSession).catch(() => {});
-  });
+  }, [ setSession ]);
 
   useEffect(() => {
     getSession().then(setSession).catch(() => {});
-  }, []);
+  }, [ setSession ]);
 
   const signIn = useCallback((id, pw) => {
-    axios.post('/api/auth/create', {id, pw})
+    axios.post('/api/auth/login', {id, pw})
     .then(r => {
       if(r.data?.message) alert(r.data.message);
     })
     .then(refreshSession);
-  });
+  }, []);
 
   const signOut = useCallback(() => {
-    axios.get('/api/auth/delete')
+    axios.get('/api/auth/logout')
     .then(r => {
       if(r.data?.message) alert(r.data.message);
     })
     .then(refreshSession);
-  });
+  }, []);
   return { session, refreshSession, signIn, signOut };
 }
