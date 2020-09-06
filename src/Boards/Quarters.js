@@ -1,4 +1,6 @@
-import React, { useState, useCallback, useRef } from 'react';
+import React, { useState, useCallback, useRef, useEffect, useLayoutEffect } from 'react';
+
+import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
@@ -8,36 +10,22 @@ import TableCell from '@material-ui/core/TableCell';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import IconButton from '@material-ui/core/IconButton';
+import Select from '@material-ui/core/Select';
+import MenuItem from '@material-ui/core/MenuItem';
+
 import CheckIcon from '@material-ui/icons/Check';
 import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
+import EditIcon from '@material-ui/icons/Edit';
 
 import CustomerDelete from './CustomerDelete';
 
 import axios from 'axios';
 
-export default function Customer (props) {
-  const [ quarters, setQuarters ] = useState(null);
-  const getQuarters = useCallback(()=>{
-    axios.get('/api/db/quarter').then(r => r.data).then(setQuarters);
-  }, []);
-
-  /* @codingjoa
-   datas: api에서 불러온 데이터를 저장하는 state
-   filtered: 검색어를 이용해 필터링된 데이터를 저장하는 state
-   keyword: TextField를 가리키기 위해 사용히는 ref
-*/
-  const [ datas, setDatas ] = useState(null);
+function Students({ select, quarters }) {
+  const [ students, setStudents ] = useState(null);
   const [ filtered, setFiltered ] = useState(null);
   const keyword = useRef();
-  const Refresh = useCallback(sid => {
-/* @codingjoa
-   datas가 null로 변경됨에 따라 화면은 다시 렌더링 될 것이고.
-   if문이 true가 되어 자료를 다시 불러오게 된다.
-*/
-    setDatas(null);
-    setFiltered(null);
-  }, []);
   const Search = useCallback(() => {
 /* @codingjoa
    검색 버튼을 눌렀을 때
@@ -48,74 +36,61 @@ export default function Customer (props) {
 */
     const text = keyword.current?.value ?? '';
     const rg = new RegExp(text, 'gi');
-    //setFiltered(datas.filter(x => x.name.startsWith(text) ));
-    setFiltered(datas.filter(x => rg.test(x.name) ));
-  }, [ datas, keyword ]);
+    //setFiltered(students.data.filter(x => x.name.startsWith(text) ));
+    setFiltered(students.data.filter(x => rg.test(x.studentName) ));
+  }, [ students, keyword ]);
 
-
-  if(quarters === null) {
-    getQuarters();
-    return (
-      <>반 목록을 불러오는 중...</>
-    );
-  }
-  else if(!quarters.complete) {
-    return (
-      <>반 목록을 불러오는 데 실패했습니다.</>
-    );
-  }
-  else {
 /* @codingjoa
-   작업중입니다.
-
-
+   select가 변할 때마다
+   students와 filtered는
+   null이 되어 학생 목록을 없앱니다.
 */
-  return (
-    <>
-      <Button onClick={() => { axios.get(`/api/db/${p}`)}}>
-      {quarters.data.map(row =>
-      <TableRow style={{textAlign:"center"}}>
-        <TableCell style={{textAlign:"center"}}>{row.teacherID}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.quarterID}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.quarterName}</TableCell>
-      </TableRow>
-      )}
-    </>
-  );
-
-
-  }
-
-
-  if(!datas) {
-/* @codingjoa
-   처음 페이지를 불러왔을 때,
-   Refresh 콜백으로 인해 datas가 null이 됐을 때
-   실행됨으로써 자료를 다시 불러옴
-*/
-    axios.get('/api/db').then(r => r.data).then(setDatas);
+  useEffect(() => {
+    setStudents(null);
+    setFiltered(null);
+  }, [ select ]);
+  if(select === null || quarters === null) {
     return (
-      <>자료를 다시 불러오는 중...</>
+      <></>
     );
   }
-  if(!filtered) {
+  else if(students === null){
+/* @codingjoa
+   첫 실행시 select가 선택이 되기 전과
+   quarters가 다시 불러와지기 전까지
+   학생 목록을 띄우는 것을 금지합니다.
+*/
+    axios.get(`/api/db/student?qid=${select}`)
+    .then(r => r.data)
+    .then(setStudents);
+    return (
+      <>학생 목록을 불러오는 중...</>
+    );
+  }
+  else if(!students.complete) {
+    return (
+      <>학생 목록을 불러오는 데 실패했습니다.</>
+    );
+  }
+  else if(!filtered) {
     Search();
     return (
-      <>자료를 필터링하는 중...</>
+      <>학생 목록을 필터링하는 중...</>
     );
   }
+
   return (
     <>
       <TextField label="검색" type="text" inputRef={keyword} name="search" /><br/>
       <Button variant="contained" color="primary" onClick={Search} endIcon={<SearchIcon />}>검색</Button>
+<AddStudent select={select} setStudents={setStudents} setFiltered={setFiltered} />
+<React.Fragment>
 <Table>
 <TableHead>
       <TableRow style={{textAlign:"center"}}>
         <TableCell></TableCell>
         <TableCell>번호</TableCell>
-        <TableCell>반 번호</TableCell>
         <TableCell>이름</TableCell>
-        <TableCell>나이</TableCell>
         <TableCell>생일</TableCell>
         <TableCell>성별</TableCell>
         <TableCell>전화번호</TableCell>
@@ -129,31 +104,176 @@ export default function Customer (props) {
       {filtered.map(row =>
       <TableRow style={{textAlign:"center"}}>
         <TableCell style={{textAlign:"center"}}></TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.sid}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.qid}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.name}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.age}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.birthday}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.gender}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.phone}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.email}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.address}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.uniqueness}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentID}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentName}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentBirthday}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentGender}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentPhone}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentEmail}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentAddress}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{row.studentUniqueness}</TableCell>
         <TableCell style={{textAlign:"center"}}>
           { /* 삭제 버튼임 */ }
-          <CustomerDelete id={row.sid} refresh={Refresh}/>
+          <CustomerDelete id={row.sid} refresh={null} />
           <IconButton>
             <CheckIcon />
           </IconButton>
-          <IconButton>
-            <DeleteIcon />
-          </IconButton>
+          <DeleteStudent sid={row.studentID} name={row.studentName} setStudents={setStudents} setFiltered={setFiltered} />
         </TableCell>
       </TableRow>
       )}
 </TableBody>
 </Table>
+</React.Fragment>
       
     </>
   );
+
+}
+
+function Quarters({ quarters, select, setSelect, setQuarters }) {
+  const editName = useCallback(() => {
+/* @codingjoa
+   변경할 이름을 입력시키는 창을 띄우는데
+   quarters가 변경되거나 select가 변경될 때
+   이 함수를 다시 만듭니다.
+*/
+    const find = quarters.data.find(m => m.quarterID === select);
+    const name = prompt('변경할 이름을 입력', find.quarterName);
+    if(name === null) return;
+    axios.put('/api/db/quarter', { qid: select, qname: name })
+    .then(r => setQuarters(null));
+  }, [select, quarters]);
+
+  if(quarters === null) {
+    return (
+      <>반 목록을 불러오는 중...</>
+    );
+  }
+  else if(!quarters.complete) {
+    return (
+      <>반 목록을 불러오는 데 실패했습니다.</>
+    );
+  }
+  return (
+    <Grid container>
+      <Grid container xs={6}>
+        <Grid container item xs={10}>
+          <Select style={{width: '100%'}} value={select} onChange={e => setSelect(e.target.value)}>
+            {quarters.data.map(row => 
+              <MenuItem value={row.quarterID}>{row.quarterName}</MenuItem>
+            )}
+          </Select>
+        </Grid>
+        <Grid container item xs={2}>
+          <IconButton onClick={editName}>
+            <EditIcon />
+          </IconButton>
+        </Grid>
+      </Grid>
+      <Grid container item xs={6}>
+        <AddQuarter setQuarters={setQuarters} setSelect={setSelect} />
+        {quarters.data.length}개 반 조회됨.
+      </Grid>
+    </Grid>
+  );
+
+}
+
+function AddQuarter({ setQuarters, setSelect }) {
+
+  const question = useCallback(() => {
+    const r = window.confirm('새 반을 생성 할까요?');
+    if(!r) return;
+    axios.post('/api/db/quarter')
+    .then(r => setSelect(r.data?.data))
+    .then(() => setQuarters(null));
+    
+  }, []);
+  
+  return (
+    <div>
+      <Button onClick={question} color="primary" variant="contained">
+        새로운 반 만들기
+      </Button>
+    </div>
+  );
+}
+
+function AddStudent({ select, setStudents, setFiltered }) {
+  const question = useCallback(() => {
+    const r = window.prompt('학생 이름을 입력하세요.', '');
+    if(!r) return;
+    axios.post('/api/db/student', { qid: select, name: r })
+    .then(() => {
+      setStudents(null);
+      setFiltered(null);
+    });
+    
+  }, [ select ]);
+  
+  return (
+    <div>
+      <Button onClick={question} color="primary" variant="contained">
+        학생 추가
+      </Button>
+    </div>
+  );
+}
+
+function DeleteStudent({ sid, name, setStudents, setFiltered }) {
+  const question = useCallback(() => {
+    const r = window.confirm(`${name} 학생을 명부에서 삭제합니다.`);
+    if(!r) return;
+    axios.delete(`/api/db/student?sid=${sid}`)
+    .then(() => {
+      setStudents(null);
+      setFiltered(null);
+    });
+  }, []);
+  
+  return (
+    <div>
+      <IconButton onClick={question} color="primary">
+        <DeleteIcon />
+      </IconButton>
+    </div>
+  );
+  
+}
+
+
+
+
+
+export default function Customer (props) {
+  const [ quarters, setQuarters ] = useState(null);
+  const [ select, setSelect ] = useState(null);
+/* @codingjoa
+   datas: api에서 불러온 데이터를 저장하는 state
+   filtered: 검색어를 이용해 필터링된 데이터를 저장하는 state
+   keyword: TextField를 가리키기 위해 사용히는 ref
+*/
+  useEffect(() => {
+    if(quarters === null) {
+      axios.get('/api/db/quarter')
+      .then(r => r.data)
+      .then(setQuarters);
+      return;
+    }
+    if(select === null) setSelect(quarters.data[0].quarterID ?? null);
+  }, [ quarters ]);
+
+  return (
+    <>
+      <Quarters quarters={quarters} select={select} setSelect={setSelect} setQuarters={setQuarters} />
+      <Students quarters={quarters} select={select} />
+    </>
+  );
+/* @codingjoa
+   처음 페이지를 불러왔을 때,
+   Refresh 콜백으로 인해 datas가 null이 됐을 때
+   실행됨으로써 자료를 다시 불러옴
+*/
+
 }

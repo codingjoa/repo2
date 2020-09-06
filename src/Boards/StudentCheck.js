@@ -9,8 +9,43 @@ const checkStyle = {
 }
 
 function TimeString(origin) {
-  return new Date(Date.parse(origin)).toString();
+  return new Date(Date.parse(origin)).toLocaleString('ko-KR', { timeZone: 'UTC' });
 }
+
+function CurrentAge(birth) {
+/* @codingjoa
+   만 나이 계산 공식
+   출처: https://m.blog.naver.com/PostView.nhn?blogId=wow0815&logNo=90178740921&proxyReferer=https:%2F%2Fwww.google.com%2F
+*/
+
+node -e "
+function ca(origin) {
+  const regexp = /^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/;
+  const birthday = regexp.exec(origin);
+  const today = regexp.exec( new Date().toJSON() );
+  const age = today[1] - 0 - birthday[1];
+  if( today[2]-0 < birthday[2]-0 ) return age;
+  if( today[2]-0 === birthday[2]-0) {
+    if( today[3]-0 <= birthday[3]-0 ) {
+      return age;
+    }
+  }
+  return age - 1;
+}
+console.log(ca('1998-9-5'));
+console.log(ca('1998-9-6'));
+console.log(ca('1998-9-7'));
+console.log(ca('1998-8-5'));
+console.log(ca('1998-8-6'));
+console.log(ca('1998-8-7'));
+console.log(ca('1998-10-5'));
+console.log(ca('1998-10-6'));
+console.log(ca('1998-10-7'));
+"
+
+  
+}
+
 
 export default function StudentCheck (props) {
     // checkCustomer(sid){

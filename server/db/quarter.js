@@ -8,20 +8,20 @@ module.exports = function quarter(pool) {
    반을 생성하는 함수: post
    tid: 담당하게 될 선생 id
 */
-    const { tid: teacherID } = req.session.user;
+    const { tid: teacherID } = req.session?.user ?? {};
     const grace = await pool.query({
       namedPlaceholders: true,
       sql: 'insert into quarter(teacherID) values (:teacherID)'
     },{ teacherID })
-    .then(r => ({complete: true, message: '반 생성에 성공했습니다.' }))
-    .catch(e => ({ complete: false, message: '반 생성에 실패했습니다.' }));
+    .then(r => ({ complete: true, message: '반 생성에 성공했습니다.', data: r.insertId }))
+    .catch(e => ({ complete: false, message: '반 생성에 실패했습니다.', cause: e.message }));
     res.json(grace);
   },
   async rename(req, res) {
 /* @codingjoa
    선생이 자신이 관리하는 반의 이름을 변경합니다.
 */
-    const { qid: quarterID, qname: quarterName } = req.body;
+    const { qid: quarterID, qname: quarterName } = req.body ?? {};
     const grace = await pool.query({
       namedPlaceholders: true,
       sql: 'update quarter set quarterName=:quarterName where quarterID=:quarterID'
@@ -34,7 +34,7 @@ module.exports = function quarter(pool) {
 /* @codingjoa
    선생이 자신이 담당하는 반의 목록을 조회합니다.
 */
-    const { tid: teacherID } = req.session.user;
+    const { tid: teacherID } = req.session?.user ?? {};
     const grace = await pool.query(
       'select teacherID, quarterID, quarterName from quarter where teacherID=?',
       [ teacherID ]

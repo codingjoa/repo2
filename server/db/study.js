@@ -64,20 +64,76 @@ const grace = await pool.query(
     }
     
   },
+  async addStudy(req, res) {
+/* @codingjoa
+   출석부를 만듬
+*/
+    const { qid: quarterID, date: studyDate } = req.body ?? {};
+    const { tid: teacherID } = req.session?.user ?? {};
+    const grace = pool.query(
+      'select count(st.studentID) from quarter q, student st where q.quarterID=st.quarterID and q.quarterID=?',
+      [ quarterID ]
+    )
+    .then(r => {
+      if(r[0]['count(st.studentID)'] === 0) throw { message: '반에 소속된 학생이 없어서 출석부를 만들 수 없음.' };
+    })
+    .then(async r => {
+      return await pool.query(
+        'insert into study(teacherID, quarterID, studyDate) values(?, ?, ?)',
+        [ teacherID, quarterID, studyDate ?? null ]
+      );
+    })
+    .then(r => {
+      if(r.affectedRows === 0) throw { message: '수업 생성에 실패하였음' };
+      return r.insertId;
+    })
+    .then(async studyID => {
+      return await pool.query(
+        'insert into checking(studyID, studentID) select s.studyID, st.studentID from study s, student st where s.quarterID=st.quarterID and s.studyID=?',
+        [ studyID ]
+      );
+    })
+    .then(r => {
+      if(r.affectedRows === 0) throw { message: '학생 목록 복사에 실패하였음' };
+    });
+    await grace.then(r => res.json({ complete: true, message: '출석부 생성에 성공했습니다.', data: r }))
+    .catch(e => res.json({ complete: false, message: '출석부 생성에 실패했습니다.', cause: e.message }));
+  },
   async fetch(req, res) {
-    const grace = await pool.query('select s.studyID, c.checkingID, s.teacherID, c.studentID, s.studyDate, c.checkTime from study s, checking c where s.studyID = c.studyID')
-    .then(r => ({ complete: true, data: r }))
-    .catch(e => ({ complete: false, message: '조회에 실패했습니다.' }));
-    res.json(grace);
+/* @codingjoa
+   출석부를 조회함
+*/
+    const { qid: quarterID, date: studyDate } = req.query ?? {};
+    const grace = pool.query(
+      'select s.studyID, c.checkingID, s.teacherID, c.studentID, s.studyDate, c.checkModified from study s, checking c where s.studyID=c.studyID and s.studyDate=? and s.quarterID=?',
+      [ studyDate, quarterID ]
+    )
+    .then(r => {
+      if(r.length === 0) throw { message: '조회된 데이터 없음' };
+      return r;
+    });
+
+    await grace.then(r => res.json({ complete: true, message: '조회에 성공했습니다.', data: r }))
+    .catch(e => res.json({ complete: false, message: '조회에 실패했습니다.', cause: e.message }));
   }
 
   }
 };
 
 /*
-async insert(sid){
-    return await pool.query('insert into student_check (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = (?)', [sid]);
-  },
+이 반에 출석부가 있는지 조사
+select s.studyID, q.teacherID from study s, quarter q where s.quarterID=q.quarterId and s.studyDate="2020-08-30" and q.quarterID=5;
+
+
+async check(sid){
+
+
+  { date: studyDate }
+
+
+  { sid: studentID } = req.body ?? {};
+  pool.query('update checking (sid, qid, name, isDeleted) select sid, qid, name, isDeleted from student where sid = (?)', [sid]);
+
   async student(sid){
     let promise;
     if(sid) promise = pool.query('select * from student_check where sid=(?)', [ sid ]);
@@ -104,12 +160,8 @@ getFullYear();
 => 6~8/3 = 2
 => 9~11/3 = 3
 
-이 반에 출석부가 있는지 조사
-select s.studyID, q.teacherID from study s, quarter q where s.quarterID=q.quarterId and s.studyDate="2020-08-30" and q.quarterID=5;
 
-이 반에 출석부를 만듬
-insert into study(teacherID, quarterID) values(1212, 5);
-insert into checking(studyID, studentId) select s.studyID, st.studentID from study s, student st where s.quarterID=st.quarterID and s.studyID=6;
+
 출석처리
 update from checking set checkOk=1 where studentID=1 and studyID=6;
 

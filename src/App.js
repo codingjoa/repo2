@@ -12,7 +12,7 @@ import Customer from './Boards/Customer';
 import CustomerAdd from './Boards/CustomerAdd';
 import StudentCheck from './Boards/StudentCheck';
 import Quarters from './Boards/Quarters';
-import Qut from './Boards/Qut';
+import Test from './Test/TestButton';
 
 
 import DashboardIcon from '@material-ui/icons/Dashboard';
@@ -49,6 +49,7 @@ const Root = () => {
             <Route exact path="/">
               <Page>
                 <Title>메인 페이지</Title>
+                <Test />
               </Page>
             </Route>
             <Route exact path="/student">

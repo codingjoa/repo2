@@ -8,25 +8,30 @@ module.exports = function teacher(pool) {
 /* @codingjoa
    아이디와 비밀번호가 일치하는지 검사
 */
-    const { id: teacherAccount, pw: teacherPassword } = req.body ?? {};
-    const grace = await pool.query(
+    const teacherAccount = req.session?.user?.id ?? req.body?.id;
+    const { pw: teacherPassword } = req.body ?? {};
+    const grace = pool.query(
       'select teacherID, teacherPassword from teacher where teacherAccount=?',
       [ teacherAccount ]
     )
-    if(grace.length === 0) {
-      res.json({ complete: false, message: '존재하지 않는 아이디입니다.' });
-      return;
-    }
-    if(await bcrypt.compare(teacherPassword, grace[0].teacherPassword)) {
-      if(req.session?.user === undefined) {
-        req.session.user = {
-          tid: grace[0].teacherID,
-          id: teacherAccount
-        };
+    .then(r => {
+      if(r.length === 0) throw { message: '존재하지 않는 아이디입니다.' };
+      return r[0];
+    })
+    .then(async r => {
+      if(await bcrypt.compare(teacherPassword, r.teacherPassword)) {
+        if(req.session?.user === undefined) {
+          req.session.user = {
+            tid: r.teacherID,
+            id: teacherAccount
+          };
+        }
       }
-      next();
-    }
-    else res.json({ complete: false, message: '로그인에 실패했습니다.'});
+      else throw { message: '비밀번호가 일치하지 않습니다.'};
+    })
+
+    grace.then(next)
+    .catch(e => res.json({ complete: false, message: '인증에 실패했습니다.', cause: e.message }));
   },
   async create() {
 /* @codingjoa
@@ -38,7 +43,7 @@ module.exports = function teacher(pool) {
 /* @codingjoa
    비밀번호를 재설정
 */
-    const { tid: teacherID } = req.generate ?? req.body ?? {};
+    const { tid: teacherID } = req.body ?? {};
     const saltRounds = 10;
     const tempPW = cryptoRandomString({ length: 6 });
     const teacherPassword = await bcrypt.hash(tempPW, saltRounds);
@@ -52,7 +57,27 @@ module.exports = function teacher(pool) {
     })
     .catch(e => ({ complete: false, message: `db 오류: ${e.message}` }));
     res.json(grace);
+  },
+  async changeMyPassword(req, res) {
+/* @codingjoa
+   자신의 비밀번호를 변경
+*/
+    const { newpw: tempPW } = req.body;
+    const { tid: teacherID } = req.session?.user ?? {};
+    const saltRounds = 10;
+    const teacherPassword = await bcrypt.hash(tempPW, saltRounds);
+    const grace = pool.query(
+      'update teacher set teacherPassword=? where teacherID=?',
+      [ teacherPassword, teacherID ]
+    )
+    .then(r => {
+      if(r.affectedRows === 0) throw { message: '존재하지 않는 ID입니다.' };
+    });
+
+    grace.then(r => res.json({ complete: true, message: '비밀번호 변경에 성공했습니다.' }))
+    .catch(e => res.json({ complete: false, message: `db 오류: ${e.message}` }));
   }
+
 
   };
 
