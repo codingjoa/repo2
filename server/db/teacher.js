@@ -33,10 +33,37 @@ module.exports = function teacher(pool) {
     grace.then(next)
     .catch(e => res.json({ complete: false, message: '인증에 실패했습니다.', cause: e.message }));
   },
+  async fetch(req, res) {
+/* @codingjoa
+   선생님 정보를 출력
+   @divdivcount
+   분기 번호를 받아와야 하나요 ?
+*/
+  const grace = await pool.query(
+  'select teacherID, teacherName, teacherOp from teacher'
+  )
+  .then(r => ({ complete: true, message: '반 이름 변경에 성공했습니다.' }))
+  .catch(e => ({ complete: false, message: '반 이름 변경에 실패했습니다.' }));
+  res.json(grace);
+
+  },
   async create() {
 /* @codingjoa
    선생님 정보를 새로 생성
 */
+  },
+  async delete(req, res) {
+/* @codingjoa
+   선생님 정보를 새로 생성
+*/
+  const { tid: teacherID } = req.body;
+  const grace = await pool.query(
+    'update teacher SET teacher=null where teacherID=?',
+    [ teacherID ]
+  )
+  .then(r => ({complete: true, message: '선생 삭제에 성공했습니다' }))
+  .catch(e => ({ complete: false, message: '선생 삭제에 실패했습니다.' }));
+  res.json(grace);
 
   },
   async regeneratePassword(req, res) {
