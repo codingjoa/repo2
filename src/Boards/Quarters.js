@@ -22,6 +22,32 @@ import CustomerDelete from './CustomerDelete';
 
 import axios from 'axios';
 
+function TimeString(origin) {
+/* @codingjoa
+   2020-08-12T12:08:34 형태의 시간을
+   한국어로 바꿔주는 코드
+*/
+  return new Date(Date.parse(origin)).toLocaleString('ko-KR', { timeZone: 'UTC' });
+}
+
+function CurrentAge(origin) {
+/* @codingjoa
+   만 나이 계산 공식
+   출처: https://m.blog.naver.com/PostView.nhn?blogId=wow0815&logNo=90178740921&proxyReferer=https:%2F%2Fwww.google.com%2F
+*/
+  const regexp = /^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/;
+  const birthday = regexp.exec(origin);
+  const today = regexp.exec( new Date().toJSON() );
+  const age = today[1] - 0 - birthday[1];
+  if( today[2]-0 < birthday[2]-0 ) return age;
+  if( today[2]-0 === birthday[2]-0) {
+    if( today[3]-0 <= birthday[3]-0 ) {
+      return age;
+    }
+  }
+  return age - 1;
+}
+
 function Students({ select, quarters }) {
   const [ students, setStudents ] = useState(null);
   const [ filtered, setFiltered ] = useState(null);
@@ -85,7 +111,7 @@ function Students({ select, quarters }) {
       <Button variant="contained" color="primary" onClick={Search} endIcon={<SearchIcon />}>검색</Button>
 <AddStudent select={select} setStudents={setStudents} setFiltered={setFiltered} />
 <React.Fragment>
-<Table>
+<Table style={{ minWidth: '800px' }}>
 <TableHead>
       <TableRow style={{textAlign:"center"}}>
         <TableCell></TableCell>
@@ -106,7 +132,7 @@ function Students({ select, quarters }) {
         <TableCell style={{textAlign:"center"}}></TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentID}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentName}</TableCell>
-        <TableCell style={{textAlign:"center"}}>{row.studentBirthday}</TableCell>
+        <TableCell style={{textAlign:"center"}}>{TimeString(row.studentBirthday)}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentGender}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentPhone}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentEmail}</TableCell>

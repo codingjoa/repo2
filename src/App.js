@@ -10,7 +10,6 @@ import More from './Templates/More';
 import TableForm from './Templates/TableForm';
 import Customer from './Boards/Customer';
 import CustomerAdd from './Boards/CustomerAdd';
-import StudentCheck from './Boards/StudentCheck';
 import Quarters from './Boards/Quarters';
 import Test from './Test/TestButton';
 
@@ -38,12 +37,12 @@ const Root = () => {
       <RouteSession per={auth.uid > 0}>
         <div style={{display: 'flex'}}>
           <Navigation>
-<div>
-            <GNB to="/" Icon={DashboardIcon} name="메인" />
-            <GNB to="/student" Icon={PeopleIcon} name="학생 관리" />
-            <GNB to="/quarter" Icon={AssignmentIcon} name="출석 관리" />
-            <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
-</div>
+            <div>
+              <GNB to="/" Icon={DashboardIcon} name="메인" />
+              <GNB to="/student" Icon={PeopleIcon} name="학생 관리" />
+              <GNB to="/quarter" Icon={AssignmentIcon} name="출석 관리" />
+              <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
+            </div>
           </Navigation>
           <Dashboard auth={auth}>
             <Route exact path="/">
@@ -63,7 +62,6 @@ codingjoa@ 아 고치는중임
 */}
                 <Title>학생 관리</Title>
                 <CustomerAdd />
-                <StudentCheck />
                 <More>More</More>
               </Page>
             </Route>
