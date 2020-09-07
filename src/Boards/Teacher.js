@@ -23,7 +23,7 @@ export default function Teacher (props) {
         <TableCell style={{textAlign:"center"}}>{row.teacherID}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.teacherName}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.teacherOp}</TableCell>
-        <TableCell style={{textAlign:"center"}}><TeacherDelete id={row.sid} refresh={Refresh}/></TableCell>
+        <TableCell style={{textAlign:"center"}}><TeacherDelete id={row.tid} refresh={Refresh}/></TableCell>
       </TableRow>
       )}
     </>
