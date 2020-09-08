@@ -18,8 +18,6 @@ import DeleteIcon from '@material-ui/icons/Delete';
 import SearchIcon from '@material-ui/icons/Search';
 import EditIcon from '@material-ui/icons/Edit';
 
-import CustomerDelete from './CustomerDelete';
-
 import axios from 'axios';
 
 function TimeString(origin) {
@@ -139,8 +137,6 @@ function Students({ select, quarters }) {
         <TableCell style={{textAlign:"center"}}>{row.studentAddress}</TableCell>
         <TableCell style={{textAlign:"center"}}>{row.studentUniqueness}</TableCell>
         <TableCell style={{textAlign:"center"}}>
-          { /* 삭제 버튼임 */ }
-          <CustomerDelete id={row.sid} refresh={null} />
           <IconButton>
             <CheckIcon />
           </IconButton>
@@ -287,6 +283,7 @@ export default function Customer (props) {
       .then(setQuarters);
       return;
     }
+    if(quarters?.data === null) return;
     if(select === null) setSelect(quarters.data[0].quarterID ?? null);
   }, [ quarters ]);
 
@@ -296,10 +293,5 @@ export default function Customer (props) {
       <Students quarters={quarters} select={select} />
     </>
   );
-/* @codingjoa
-   처음 페이지를 불러왔을 때,
-   Refresh 콜백으로 인해 datas가 null이 됐을 때
-   실행됨으로써 자료를 다시 불러옴
-*/
 
 }

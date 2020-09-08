@@ -1,4 +1,4 @@
-import { useState, useCallback, useEffect } from 'react';
+import { useState, useCallback } from 'react';
 import axios from 'axios';
 
 let globalsession = null;
@@ -9,28 +9,19 @@ async function getSessionForce() {
   return globalsession;
 }
 
-async function getSession() {
-  // 세션 검사를 이미 했으면 패스
-  if(globalsession) return globalsession;
-  globalsession = await axios.get('/api/auth').then(r => r.data);
-  return globalsession;
-}
-
-export default function useSession() {
+export default function useSession(location) {
   const [ session, setSession ] = useState({});
 
   const refreshSession = useCallback(() => {
     getSessionForce().then(setSession).catch(() => {});
   }, [ setSession ]);
 
-  useEffect(() => {
-    getSession().then(setSession).catch(() => {});
-  }, [ setSession ]);
-
   const signIn = useCallback((id, pw) => {
     axios.post('/api/auth/login', {id, pw})
     .then(r => {
-      if(r.data?.message) alert(r.data.message);
+      if(r.data?.complete === true);
+      else if(r.data?.complete === false) alert(r.data?.message);
+      else alert('인증 서버가 작동하지 않습니다.');
     })
     .then(refreshSession);
   }, []);

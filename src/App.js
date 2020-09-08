@@ -1,5 +1,6 @@
 import React from 'react';
 import { BrowserRouter as Router, Route } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import useSession from './Hooks/useSession';
 import SignIn from './Templates/SignIn';
@@ -7,30 +8,37 @@ import { Dashboard, Navigation } from './Templates/Dashboard';
 import Page from './Templates/Page';
 import Title from './Templates/Title';
 import More from './Templates/More';
-import TableForm from './Templates/TableForm';
-import Customer from './Boards/Customer';
-import CustomerAdd from './Boards/CustomerAdd';
-import Quarters from './Boards/Quarters';
-import Test from './Test/TestButton';
 
+import GNB from './@codingjoa/GNB';
+import Quarters from './@codingjoa/Quarters';
+import Test from './@codingjoa/TestButton';
+import TestComponents from './@codingjoa/TestComponents';
+import Teacher from './@ky/Teacher';
 
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import AssignmentIcon from '@material-ui/icons/Assignment';
-import GNB from './Boards/GNB';
+
+const TouchSession = ({ refreshSession }) => {
+  const location = useLocation();
+  React.useLayoutEffect(() => {
+    refreshSession();
+  }, [ location ]);
+  return (<></>);
+};
 
 const RouteSession = ({ per, children }) => {
   if(per) {
     return (<>{children}</>);
   }
   return null;
-}
+};
 
 const Root = () => {
   const { session: auth, refreshSession, signIn, signOut } = useSession();
-
   return (
     <Router>
+      <TouchSession refreshSession={refreshSession} />
       <Route path="/">
         
       </Route>
@@ -39,6 +47,7 @@ const Root = () => {
           <Navigation>
             <div>
               <GNB to="/" Icon={DashboardIcon} name="메인" />
+              <GNB to="/science" Icon={DashboardIcon} name="실험실" />
               <GNB to="/student" Icon={PeopleIcon} name="학생 관리" />
               <GNB to="/quarter" Icon={AssignmentIcon} name="출석 관리" />
               <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
@@ -81,15 +90,14 @@ codingjoa@ 아 고치는중임
             <Route exact path="/teacher">
               <Page>
                 <Title>선생 목록</Title>
-                <TableForm fields={[
-  'id',         'classes',
-  'name',       'age',
-  'birthday',   'gender',
-  'phone',      'email',
-  'address',    'uniqueness',
-  'createDate', 'isDeleted'
-]} />
+                <Teacher />
                 <></>
+              </Page>
+            </Route>
+            <Route exact path="/science">
+              <Page>
+                <Title>실험실</Title>
+                <TestComponents />
               </Page>
             </Route>
           </Dashboard>

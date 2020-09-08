@@ -27,6 +27,7 @@ module.exports = {
   touchSession(req, res, next) {
     if(req.session?.user) {
       req.session.touch();
+      req.session.save();
     }
     next();
   },
@@ -40,7 +41,7 @@ module.exports = {
       signIn: new Date()
     };
     req.session.save();
-    res.json({message: '로그인 되었습니다.'});
+    res.json({ complete: true, message: '로그인 되었습니다.' });
   },
   deleteSession(req, res) {
 /* @codingjoa

@@ -1,7 +1,7 @@
 import React, { useState, useCallback } from 'react';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import CustomerDelete from './TeacherDelete';
+import TeacherDelete from './TeacherDelete';
 
 import axios from 'axios';
 
