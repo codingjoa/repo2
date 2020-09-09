@@ -56,17 +56,12 @@ function TestButton({ url }) {
 
 
 export default function Testing() {
-  // 경고창 띄우기용 state
-  const [ open, setOpen ] = useState(false);
-
-  // 컴포넌트 뿌리기
   return (
     <div>
       <TestButton url="/api/db/student" />
       <TestButton url="/api/db/quarter" />
       <TestButton url="/api/db/study" />
       <TestButton url="/api/db/teacher/change" />
-
     </div>
   );
 }

@@ -12,6 +12,8 @@ import TablePagination from '@material-ui/core/TablePagination';
 import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import EnhancedTable from '../Templates/EnhancedTable';
+import AddStudent from './AddStudent';
+import Study from './Study';
 
 const arr = [
   { id: 1 },
@@ -94,10 +96,12 @@ function MyTable() {
 
 export default function TestCompoments({ fields, values }) {
   
+// <AddStudent />
   return (
     <>
       <EnhancedTable />
       <MyTable />
+      <Study />
     </>
   );
 

@@ -105,7 +105,7 @@ const grace = await pool.query(
 */
     const { qid: quarterID, date: studyDate } = req.query ?? {};
     const grace = pool.query(
-      'select s.studyID, c.checkingID, s.teacherID, c.studentID, s.studyDate, c.checkModified from study s, checking c where s.studyID=c.studyID and s.studyDate=? and s.quarterID=?',
+      'select s.studyID, c.checkingID, s.teacherID, st.studentID, st.studentName, s.studyDate, c.checkModified from study s, checking c, student st where s.studyID=c.studyID and c.studentID=st.studentID and s.studyDate=? and s.quarterID=?',
       [ studyDate, quarterID ]
     )
     .then(r => {
@@ -124,8 +124,6 @@ const grace = await pool.query(
 이 반에 출석부가 있는지 조사
 select s.studyID, q.teacherID from study s, quarter q where s.quarterID=q.quarterId and s.studyDate="2020-08-30" and q.quarterID=5;
 
-
-async check(sid){
 
 
   { date: studyDate }

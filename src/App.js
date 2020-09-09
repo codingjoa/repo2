@@ -70,7 +70,6 @@ const Root = () => {
 codingjoa@ 아 고치는중임
 */}
                 <Title>학생 관리</Title>
-                <CustomerAdd />
                 <More>More</More>
               </Page>
             </Route>
@@ -83,7 +82,6 @@ codingjoa@ 아 고치는중임
     학생을 이 출석부에서 제거하려면 걍 하세요.
 */}
                 <Title>출석 관리</Title>
-                <CustomerAdd />
                 <Quarters />
               </Page>
             </Route>
