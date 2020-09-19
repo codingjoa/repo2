@@ -7,13 +7,14 @@ import SignIn from './Templates/SignIn';
 import { Dashboard, Navigation } from './Templates/Dashboard';
 import Page from './Templates/Page';
 import Title from './Templates/Title';
-import More from './Templates/More';
 
 import GNB from './@codingjoa/GNB';
+import Study from './@codingjoa/Study';
 import Quarters from './@codingjoa/Quarters';
 import Test from './@codingjoa/TestButton';
 import TestComponents from './@codingjoa/TestComponents';
-import Teacher from './@ky/Teacher';
+import Teacher from './@codingjoa/Teacher';
+import Index from './@codingjoa/Index';
 
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
@@ -44,19 +45,22 @@ const Root = () => {
       </Route>
       <RouteSession per={auth.uid > 0}>
         <div style={{display: 'flex'}}>
-          <Navigation>
+          <Navigation SignOut={signOut}>
             <div>
               <GNB to="/" Icon={DashboardIcon} name="메인" />
               <GNB to="/science" Icon={DashboardIcon} name="실험실" />
               <GNB to="/student" Icon={PeopleIcon} name="학생 관리" />
               <GNB to="/quarter" Icon={AssignmentIcon} name="출석 관리" />
-              <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
+              <RouteSession per={auth.op}>
+                <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
+              </RouteSession>
             </div>
           </Navigation>
           <Dashboard auth={auth}>
             <Route exact path="/">
               <Page>
                 <Title>메인 페이지</Title>
+                <Index tid={auth.tid} />
                 <Test />
               </Page>
             </Route>
@@ -66,11 +70,9 @@ const Root = () => {
 학원 전체의 학생을 보여줍니다. 반에 상관 없이!
 출석 처리는 할 수 없고. 학생들을 추가하거나 제거하거나
 반의 이동을 실시할 수 있습니다.
-
-codingjoa@ 아 고치는중임
 */}
                 <Title>학생 관리</Title>
-                <More>More</More>
+                <Quarters />
               </Page>
             </Route>
             <Route exact path="/quarter">
@@ -82,16 +84,19 @@ codingjoa@ 아 고치는중임
     학생을 이 출석부에서 제거하려면 걍 하세요.
 */}
                 <Title>출석 관리</Title>
-                <Quarters />
+                <Study />
               </Page>
             </Route>
-            <Route exact path="/teacher">
-              <Page>
-                <Title>선생 목록</Title>
-                <Teacher />
-                <></>
-              </Page>
-            </Route>
+            <RouteSession per={auth.op}>
+              <Route exact path="/teacher">
+                <Page>
+                  <Title>선생 목록</Title>
+                  <Teacher />
+                  <></>
+                </Page>
+              </Route>
+            </RouteSession>
+            
             <Route exact path="/science">
               <Page>
                 <Title>실험실</Title>
@@ -99,11 +104,10 @@ codingjoa@ 아 고치는중임
               </Page>
             </Route>
           </Dashboard>
-          <button onClick={signOut}>로그아웃</button>
         </div>
       </RouteSession>
       <RouteSession per={auth.uid === undefined}>
-        <h2>작업중...</h2>
+        <h2>잠시만 기다려 주세요...</h2>
       </RouteSession>
       <RouteSession per={auth.uid === null}>
         <SignIn signIn={signIn} />

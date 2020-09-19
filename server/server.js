@@ -3,19 +3,24 @@ const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
 const db = require('./db');
-const auth0 = require('./auth');
 
 const app = express();
-const port = process.env.PORT || 3307;
+const port = process.env.PORT ?? 3307;
 
 const router = express.Router();
 const database = express.Router();
 const auth = express.Router();
+
+const quarter = express.Router();
+const student = express.Router();
+const study = express.Router();
 const teacher = express.Router();
+const me = express.Router();
 
 app.use(session({
   secret: 'ky',
   resave: false,
+  rolling: true,
   saveUninitialized: true,
   cookie: { secure: false, maxAge: 1000 * 60 * 10 }
 }));
@@ -41,40 +46,84 @@ router.use('/auth', auth); // /api/auth/
    GET #출석부 조회
    POST #출석부 출석 승인
 
+   /teacher
+   GET #선생님 전체 보기
+   POST #선생님 생성
+
+   /teacher/@me
+   GET #자신의 정보 조회
+   PUT #자신의 비밀번호 변경
+
    /teacher/reset
    POST #비밀번호 초기화
-
 */
-database.use(auth0.editableSession);
-database.use(auth0.touchSession);
-database.get('/quarter', db.quarter.fetch);
-database.post('/quarter',
-  db.quarter.create,
-);
-database.put('/quarter', db.quarter.rename);
-database.get('/student',
-  db.permission.editableQuarter,
-  db.student.fetch
-);
-database.post('/student', db.student.add);
-database.delete('/student', db.student.delete);
-database.put('/student', db.student.modify);
-database.get('/study',
-  db.permission.editableQuarter,
-  db.study.fetch
-);
-database.post('/study',
-  db.permission.editableQuarter,
-  db.study.addStudy
-);
+database.use(db.permission.editableSession);
+//database.use(.touchSession);
+
+database.use('/quarter', quarter);
+quarter.use(db.permission.editableQuarter);
+quarter.get('/', db.fetch.quarters);
+quarter.post('/', db.create.quarter);
+quarter.put('/:qid', db.modify.quarter);
+quarter.get('/:qid', db.fetch.students);
+
+database.use('/student', student);
+student.use(db.permission.editableStudent);
+student.post('/', db.create.student);
+student.put('/:stid', db.modify.student);
+student.delete('/:stid', db.remove.student);
+
+/* study
+   반을 관리하는 선생님만 접근할 수 있음(editableQuarter)
+   GET 
+*/
+database.use('/study', study);
+study.use(db.permission.editableQuarter);
+study.get('/', db.fetch.study);
+study.post('/', db.create.study);
+
+/* teacher
+   선생님을 관리하는 선생님만 접근할 수 있음(editableTeacher)
+   GET
+   1. 선생님 정보 조회
+
+   POST
+   1. 선생님 정보 생성
+   2. 비밀번호 초기화
+
+   DELETE
+   1. 선생님 정보 삭제
+*/
 database.use('/teacher', teacher);
-teacher.post('/reset',
-  db.permission.editableTeacher,
-  db.teacher.regeneratePassword
+teacher.use(db.permission.editableTeacher);
+teacher.get('/', db.fetch.teachers);
+teacher.post('/',
+  db.create.teacher,
+  db.password.regeneratePassword
 );
-teacher.put('/change',
-  db.teacher.certification,
-  db.teacher.changeMyPassword
+teacher.put('/:tid', db.modify.teacher)
+teacher.delete('/:tid', db.remove.teacher);
+teacher.post('/reset/:tid',
+  db.password.regeneratePassword,
+  db.password.updateTimeForPasswordChange
+);
+
+/* /api/db/me
+   로그인한 선생님 자신의 정보에 접근
+   GET /
+   1. 선생님 정보를 불러옴
+
+   PUT /
+   1. 인증
+   2. 비밀번호 변경
+   3. 비밀번호 변경 시간 수정
+*/
+database.use('/me', me);
+me.get('/', db.fetch.me);
+me.put('/',
+  db.password.certification,
+  db.password.changeMyPassword,
+  db.password.updateTimeForPasswordChange
 );
 
 
@@ -89,20 +138,18 @@ teacher.put('/change',
    GET #로그아웃
 */
 auth.get('/', 
-  auth0.touchSession,
   (req, res) => {
     console.log(req.session.user);
-    res.json(req.session.user ?? { tid: null, id: null, uid: null, signIn: null });
+    res.json(req.session.user ?? { tid: null, id: null, uid: null, signIn: null, op: null });
   }
 );
 auth.post('/login',
-  auth0.isEmpty,
-  db.teacher.certification,
-  auth0.createSession
+  db.password.certification,
+  db.permission.authorization
 );
 auth.get('/logout',
-  auth0.editableSession,
-  auth0.deleteSession
+  db.permission.editableSession,
+  db.permission.unauthorization
 );
 
 /* @codingjoa

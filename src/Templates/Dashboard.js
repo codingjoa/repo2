@@ -16,7 +16,8 @@ import Grid from '@material-ui/core/Grid';
 import Link from '@material-ui/core/Link';
 import MenuIcon from '@material-ui/icons/Menu';
 import ChevronLeftIcon from '@material-ui/icons/ChevronLeft';
-import NotificationsIcon from '@material-ui/icons/Notifications';
+
+import ExitToAppIcon from '@material-ui/icons/ExitToApp';
 
 function Copyright() {
   return (
@@ -106,7 +107,7 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-export function Navigation({ children }) {
+export function Navigation({ SignOut, children }) {
   const classes = useStyles();
   // codingjoa@ 내비게이션 화면을 여는 state
   const [open, setOpen] = React.useState(false);
@@ -127,10 +128,8 @@ export function Navigation({ children }) {
         <Typography component="h1" variant="h6" color="inherit" noWrap className={classes.title}>
           학원관리 프로그램
         </Typography>
-        <IconButton color="inherit">
-          <Badge badgeContent={4} color="secondary">
-            <NotificationsIcon />
-          </Badge>
+        <IconButton color="inherit" onClick={SignOut}>
+          <ExitToAppIcon />
         </IconButton>
       </Toolbar>
     </AppBar>

@@ -295,3 +295,62 @@ export default function Customer (props) {
   );
 
 }
+
+/*
+export default function Quartet() {
+  const [ axiosResult, setAxiosResult ] = useState(null);
+  const [ qid, setQuarter ] = useState(0);
+  const [ orderby, setOrderby ] = useState(null);
+  const [ searchKeyword, setSearchKeyword ] = useState('');
+
+  const reload = useCallback(() => setTeachers(null), []);
+  useLayoutEffect(() => {
+    if(axiosResult !== null) return;
+    axios.get('/api/db/quarter')
+    .then(r => setAxiosResult(r.data.fetchedData))
+    .catch(e => {
+      e.response?.status===400 && alert(`오류: ${e.response.data.cause}`);
+      e.response?.status===404 && alert('조회된 데이터 없음.');
+      setAxiosResult(false);
+    });
+  }, [ axiosResult ]);
+
+//if(select === null) setSelect(quarters.data[0].quarterID ?? null);
+
+
+  return (
+    <>
+      <Grid container>
+        <Grid item xs={4}>
+          <Create reload={reload} />
+        </Grid>
+        <Grid item xs={4}>
+          ?
+        </Grid>
+        <Grid item xs={4}>
+          <OrderBy
+            orderby={orderby}
+            setOrderby={setOrderby}
+            orderList={[{ key: 'teacherID', visualName: '번호'}, { key: 'teacherName', visualName: '이름'}, { key: 'qlen', visualName: '반'}, { key: 'stlen', visualName: '학생 수'}, { key: 'slen', visualName: '수업 횟수'}]}
+          />
+        </Grid>
+        <Grid item xs={12}>
+          <Search setSearchKeyword={setSearchKeyword} />
+        </Grid>
+      </Grid>
+      <SortedTable
+        Info={TeacherInfo}
+        fieldNames={ ['번호', '이름', '반', '학생 수', '수업 횟수', '아이디', '비밀번호', '삭제'] }
+        axiosResult={teachers}
+        orderby={orderby}
+        searchKeyword={searchKeyword}
+        searchColumn={'teacherName'}
+        reload={reload}
+      />
+    </>
+  );
+}
+
+
+
+*/

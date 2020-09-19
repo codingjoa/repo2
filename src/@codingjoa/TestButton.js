@@ -62,6 +62,7 @@ export default function Testing() {
       <TestButton url="/api/db/quarter" />
       <TestButton url="/api/db/study" />
       <TestButton url="/api/db/teacher/change" />
+      <TestButton url="/api/db/teacher" />
     </div>
   );
 }

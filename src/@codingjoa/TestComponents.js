@@ -13,7 +13,7 @@ import TableSortLabel from '@material-ui/core/TableSortLabel';
 import Checkbox from '@material-ui/core/Checkbox';
 import EnhancedTable from '../Templates/EnhancedTable';
 import AddStudent from './AddStudent';
-import Study from './Study';
+
 
 const arr = [
   { id: 1 },
@@ -101,7 +101,6 @@ export default function TestCompoments({ fields, values }) {
     <>
       <EnhancedTable />
       <MyTable />
-      <Study />
     </>
   );
 

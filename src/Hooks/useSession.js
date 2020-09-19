@@ -18,20 +18,15 @@ export default function useSession(location) {
 
   const signIn = useCallback((id, pw) => {
     axios.post('/api/auth/login', {id, pw})
-    .then(r => {
-      if(r.data?.complete === true);
-      else if(r.data?.complete === false) alert(r.data?.message);
-      else alert('인증 서버가 작동하지 않습니다.');
-    })
-    .then(refreshSession);
+    .then(refreshSession)
+    .catch(e => e.response && alert(`로그인 실패: ${e.response.data.cause}`));
   }, []);
 
   const signOut = useCallback(() => {
-    axios.get('/api/auth/logout')
-    .then(r => {
-      if(r.data?.message) alert(r.data.message);
-    })
-    .then(refreshSession);
+    axios.get('/api/auth/logout', )
+    .then(r => alert('로그아웃 되었습니다.'))
+    .then(refreshSession)
+    .catch(e => e.response.status===401 && alert('로그인 되지 않았습니다.'));
   }, []);
   return { session, refreshSession, signIn, signOut };
 }
