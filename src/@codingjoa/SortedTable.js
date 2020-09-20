@@ -45,6 +45,10 @@ export default function SortedTable({ Info, fieldNames, axiosResult, orderby, se
     return axiosResult.map(r => r);
   }, [ axiosResult ])
   const filtered = useMemo(() => {
+/* @codingjoa
+   RegExp(정규식)을 이용하기 때문에
+   중간, 끝 문자 일치시에도 불러올 수 있어요.
+*/
     if(copied === null) return;
     if(orderby === null) return;
     const rg = new RegExp(searchKeyword ?? '', 'gi');

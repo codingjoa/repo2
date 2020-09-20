@@ -7,29 +7,31 @@ module.exports = function create(pool) { return {
    tid: 담당하게 될 선생 id
 */
     const { tid: teacherID } = req.session?.user ?? {};
-    const grace = await pool.query({
-      namedPlaceholders: true,
-      sql: 'insert into quarter(teacherID) values (:teacherID)'
-    },{ teacherID })
-    .then(r => ({ complete: true, message: '반 생성에 성공했습니다.', data: r.insertId }))
-    .catch(e => ({ complete: false, message: '반 생성에 실패했습니다.', cause: e.message }));
-    res.json(grace);
+    const grace = pool.query(
+      'insert into quarter(teacherID) values (?)',
+      [ teacherID ]
+    )
+    .then(r => r.insertId ? Created(res, { quarterID: r.insertId }) : BadRequest(res, new Error('정보가 생성되지 읺았습니다.')))
+    .catch(e => BadRequest(res, e));
   },
   async student(req, res) {
 /* @codingjoa
    새 학생 정보를 등록
    반을 관리할 권한이 있어야 함
 */
-    const { qid: quarterID, name: studentName, birthday: studentBirthday, gender: studentGender, phone: studentPhone, email: studentEmail, address: studentAddress, uniqueness: studentUniqueness} = req.body ?? {};
-    const grace = pool.query(
-      'insert into student(quarterID, studentName, studentBirthday, studentGender, studentPhone, studentEmail, studentAddress, studentUniqueness) values (?, ?, ?, ?, ?, ?, ?, ?)',
-      [ quarterID ?? null, studentName ?? null, studentBirthday ?? null, studentGender ?? null, studentPhone ?? null, studentEmail ?? null, studentAddress ?? null, studentUniqueness ?? null ]
+    const quarterID = req.body.qid;
+    const studentName = req.body.name;
+    const studentBirthday = req.body.birthday;
+    const studentGender = req.body.gender;
+    const studentPhone = req.body.phone;
+    const studentEmail = req.body.email;
+    const studentAddress = req.body.address;
+    pool.query(
+      'insert into student(quarterID, studentName, studentBirthday, studentGender, studentPhone, studentEmail, studentAddress) values (?, ?, ?, ?, ?, ?, ?)',
+      [ quarterID ?? null, studentName ?? null, studentBirthday ?? null, studentGender ?? null, studentPhone ?? null, studentEmail ?? null, studentAddress ?? null ]
     )
-    .then(r => {
-      if(r.affectedRows === 0) throw { message: 'r.affectedRows === 0' };
-    });
-    grace.then(r => res.json({ complete: true, message: '학생 등록에 성공했습니다.' }))
-    .catch(e => res.json({ complete: false, message: '학생 등록에 실패했습니다.', cause: e.message }));
+    .then(r => r.insertId ? Created(res, { quarterID: r.insertId }) : BadRequest(res, new Error('정보가 생성되지 읺았습니다.')))
+    .catch(e => BadRequest(res, e));
   },
   async study(req, res) {
 /* @codingjoa

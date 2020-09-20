@@ -61,16 +61,18 @@ database.use(db.permission.editableSession);
 //database.use(.touchSession);
 
 database.use('/quarter', quarter);
-quarter.use(db.permission.editableQuarter);
 quarter.get('/', db.fetch.quarters);
 quarter.post('/', db.create.quarter);
-quarter.put('/:qid', db.modify.quarter);
+quarter.use('/:qid', db.permission.editableQuarter);
 quarter.get('/:qid', db.fetch.students);
+quarter.put('/:qid', db.modify.quarter);
+quarter.delete('/:qid', db.remove.quarter);
 
 database.use('/student', student);
-student.use(db.permission.editableStudent);
 student.post('/', db.create.student);
+student.use('/:stid', db.permission.editableStudent);
 student.put('/:stid', db.modify.student);
+student.patch('/:stid', db.modify.studentUniqueness);
 student.delete('/:stid', db.remove.student);
 
 /* study

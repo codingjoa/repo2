@@ -7,7 +7,7 @@ module.exports = function permission(pool) { return {
    선생이 이 학생을 관리할 권한이 있는지 확인
    403 Forbidden
 */
-    const studentID = req.query?.sid ?? req.body?.sid;
+    const studentID = req.params.stid ?? req.query.stid ?? req.body.stid;
     const { tid: teacherID } = req.session.user ?? {};
     pool.query(
       'select t.teacherID, q.quarterID, s.studentId from teacher t, quarter q, student s where t.teacherID=q.teacherID and q.quarterID=s.quarterID and t.teacherID=? and s.studentID=?',
@@ -24,7 +24,8 @@ module.exports = function permission(pool) { return {
    선생이 이 반을 관리할 권한이 있는지 확인
    403 Forbidden
 */
-    const quarterID = req.query?.qid ?? req.body?.qid;
+console.log(req.params, req.query, req.body);
+    const quarterID = req.params.qid ?? req.query.qid ?? req.body.qid;
     const { tid: teacherID } = req.session.user ?? {};
     pool.query(
       'select t.teacherID, q.quarterID from teacher t, quarter q where t.teacherID=q.teacherID and q.teacherID=? and q.quarterID=?',
