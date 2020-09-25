@@ -34,7 +34,7 @@ function FieldNames({ fieldNames }) {
   );
 }
 
-export default function SortedTable({ Info, fieldNames, axiosResult, orderby, searchKeyword, searchColumn, reload }) {
+export default function SortedTable({ style, Info, fieldNames, axiosResult, orderby, searchKeyword, searchColumn, reload }) {
 /* @codingjoa
    학생 목록을 정렬해서 출력하는 컴포넌트
 */
@@ -77,7 +77,7 @@ export default function SortedTable({ Info, fieldNames, axiosResult, orderby, se
   
   return (
     <Paper className={classes.paper}>
-      <Table>
+      <Table style={style}>
         <TableHead>
           <FieldNames
             fieldNames={ fieldNames }

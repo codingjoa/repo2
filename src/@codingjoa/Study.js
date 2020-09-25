@@ -49,7 +49,7 @@ function isTime(string) {
   return /^([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(string);
 }
 
-function StudyFetch({ qid, students, setStudents }) {
+function StudyFetch({ date, setDate }) {
 /* @codingjoa
    해당 반의 선택한 날짜의 출석부를 조사하여
    setStudents로 넘김
@@ -57,60 +57,11 @@ function StudyFetch({ qid, students, setStudents }) {
    결과가 없으면 없다고 알리되 오늘날짜라면
    출석부를 새로 만들어야 한다고 알림
 */
-  const [ date, setDate ] = useState(today()[0]);
-  const { setRecord, setOriginal, setChecked } = useContext(HookCheckBox);
-
-  const fetch = useCallback(() => {
-    if(!qid) return;
-    if(!isTime(date)) return;
-    axios.get(`/api/db/study?qid=${qid}&date=${date}`)
-    .then(r => setStudents(r.data.fetchedData))
-    .catch(e => {
-      if(e.response.status === 400 && !alert(`오류: ${e.data.cause}`)) return;
-      if(e.response.status === 404 && isToday(date) && !newStudy()) return;
-      alert(e);
-      setStudents(false);
-    });
-  }, [ qid, date ]);
-  const newStudy = useCallback(() => {
-    const ok = window.confirm('오늘자 출석부를 새로 만드시겠습니까?');
-    if(!ok) return;
-    axios.post('/api/db/study', { qid, date })
-    .then(r => {
-      fetch();
-    })
-    .catch(e => {
-      if(e.response.state === 400 && !alert(`오류: ${e.data.cause}`)) return;
-      alert(e);
-    });
-  }, [ qid, date ]);
-
-  useLayoutEffect(() => {
-    fetch();
-  }, [ qid, date ]);
-
-  useLayoutEffect(() => {
-    if(!students) return;
-    const newChecked = {};
-    for(const row of students) {
-      newChecked[row.studentID] = row.checkOk===1;
-    }
-    setChecked(newChecked);
-    setOriginal(newChecked);
-    const newRecords = {};
-    for(const row of students) {
-      newRecords[row.studentID] = row.checkModified;
-    }
-    setRecord(newRecords);
-  }, [ students ]);
-
   return (
     <>
       <Input value={date} type="date" onChange={e => setDate(e.target.value)} />
     </>
   );
-  
-  
 }
 
 function QuarterSelect({ qid, setQuarter }) {
@@ -153,6 +104,7 @@ function StudentInfo({ id, name, modifiedAt }) {
    학생 정보를 1줄 출력하는 컴포넌트
 */
   const { checked, setChecked } = useContext(HookCheckBox);
+  if(checked[id] === undefined) return (<></>);
   return (
     <>
       <TableCell>
@@ -228,12 +180,13 @@ function SortedList({ qid, students }) {
 export default function Study() {
   const [ students, setStudents ] = useState(null);
   const [ qid, setQuarter ] = useState(0);
+  const [ date, setDate ] = useState(today()[0]);
+  const [ sid, setSid ] = useState(null);
   const [ checked, setChecked ] = useState({});
   const [ original, setOriginal ] = useState(checked);
   const [ record, setRecord ] = useState({});
-
-
-  const cb = useCallback(() => {
+  const statistics = useMemo(() => {
+/* 배열이 크면 효율이 좀 떨어질 것임 */
     let 총원 = 0;
     let 출석 = 0;
     let 재승인 = 0;
@@ -245,25 +198,103 @@ export default function Study() {
       checked[index] && 출석++;
       !original[index] && record[index] && checked[index] && 재승인++;
       original[index] && record[index] && !checked[index] && 취소++;
-      !(original[index] === checked[index]) && ( 재기록대상[데베재기록++] = { id: index, checked: checked[index] } );
+      !(original[index] === checked[index]) && ( 재기록대상[데베재기록++] = index );
     }
     let 결석 = 총원 - 출석;
-    alert(`총원 ${총원}명, 출석${출석}명(재승인 ${재승인}명) 결석${결석}명(취소 ${취소}명) 재기록 대상 ${데베재기록}명`);
-alert(재기록대상.length);
-  }, [ original, checked, record ]);
+    return { 총원, 출석, 재승인, 취소, 결석, 재기록대상, 데베재기록 };
+  }, [ checked ]);
+
+  const fetch = useCallback((qid, date) => {
+    if(!qid) return;
+    if(!isTime(date)) return;
+    axios.get(`/api/db/study?qid=${qid}&date=${date}`)
+    .then(r => setStudents(r.data.fetchedData))
+    .catch(e => {
+      if(e.response.status === 400 && !alert(`오류: ${e.data.cause}`)) return;
+      if(e.response.status === 404 && isToday(date) && !newStudy(qid, date)) return;
+      alert(e);
+      setStudents(false);
+    });
+  }, []);
+  const newStudy = useCallback((qid, date) => {
+    const ok = window.confirm('오늘자 출석부를 새로 만드시겠습니까?');
+    if(!ok) return;
+    axios.post('/api/db/study', { qid, date })
+    .then(r => {
+      fetch(qid, date);
+    })
+    .catch(e => {
+      if(e.response.state === 400 && !alert(`오류: ${e.data.cause}`)) return;
+      alert(e);
+    });
+  }, []);
+  useLayoutEffect(() => {
+    fetch(qid, date);
+  }, [ qid, date ]);
+  useLayoutEffect(() => {
+    //if(!students) return;
+    setChecked({});
+    setOriginal({});
+    setRecord({});
+    if(!students) return;
+    setSid(students[0].studyID);
+    const newChecked = {};
+    for(const row of students) {
+      newChecked[row.studentID] = row.checkOk===1;
+    }
+    setChecked(newChecked);
+    setOriginal(newChecked);
+    const newRecords = {};
+    for(const row of students) {
+      newRecords[row.studentID] = row.checkModified;
+    }
+    setRecord(newRecords);
+  }, [ students ]);
+
+  const cb = useCallback(() => {
+    if(!sid) return;
+    const r = window.confirm(`총원 ${statistics.총원}명 중, 출석${statistics.출석}명 결석${statistics.결석}명으로 처리하시겠습니까?`);
+    axios.patch(`/api/db/study/${sid}`, { targets: statistics.재기록대상 })
+    .then(r => {
+      fetch(qid, date);
+    })
+    .catch(e => {
+      if(e.response?.status===400 && !alert(`변경 실패: ${e.response.data.cause}`)) return;
+      alert(e);
+    });
+  }, [ sid, statistics, qid, date ]);
 
   return (
     <HookCheckBox.Provider value={{ checked, setChecked, original, setOriginal, record, setRecord }}>
-      <Grid container>
+      <Grid container style={{maxWidth: '300px'}} >
         <Grid item xs={6}>
-          <StudyFetch qid={qid} students={students} setStudents={setStudents} />
+          <StudyFetch date={date} setDate={setDate} />
         </Grid>
         <Grid item xs={6}>
           <QuarterSelect qid={qid} setQuarter={setQuarter} />
         </Grid>
       </Grid>
       <SortedList qid={qid} students={students} />
-<Button onClick={cb}>실험</Button>
+      <Grid container spacing={3} style={{ maxWidth: '600px' }}>
+        <Grid item>
+          <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
+        </Grid>
+        <Grid item>
+          총원: {statistics.총원}
+        </Grid>
+        <Grid item>
+          출석: {statistics.출석}
+        </Grid>
+        <Grid item>
+          재승인:{statistics.재승인}
+        </Grid>
+        <Grid item>
+          취소: {statistics.취소}
+        </Grid>
+        <Grid item>
+          데베재기록: {statistics.데베재기록}
+        </Grid>
+      </Grid>
     </HookCheckBox.Provider>
   );
 }

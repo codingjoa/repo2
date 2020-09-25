@@ -11,11 +11,13 @@ import Title from './Templates/Title';
 import GNB from './@codingjoa/GNB';
 import Study from './@codingjoa/Study';
 import Quarters from './@codingjoa/Quarters';
-import Test from './@codingjoa/TestButton';
-import TestComponents from './@codingjoa/TestComponents';
 import Teacher from './@codingjoa/Teacher';
 import Index from './@codingjoa/Index';
+import Example from './@codingjoa/FormikExample';
 
+/* @codingjoa
+   Material UI Icons
+*/
 import DashboardIcon from '@material-ui/icons/Dashboard';
 import PeopleIcon from '@material-ui/icons/People';
 import AssignmentIcon from '@material-ui/icons/Assignment';
@@ -48,11 +50,10 @@ const Root = () => {
           <Navigation SignOut={signOut}>
             <div>
               <GNB to="/" Icon={DashboardIcon} name="메인" />
-              <GNB to="/science" Icon={DashboardIcon} name="실험실" />
               <GNB to="/student" Icon={PeopleIcon} name="학생 관리" />
               <GNB to="/quarter" Icon={AssignmentIcon} name="출석 관리" />
               <RouteSession per={auth.op}>
-                <GNB to="/teacher" Icon={PeopleIcon} name="선생 관리" />
+                <GNB to="/teacher" Icon={PeopleIcon} name="선생님 관리" />
               </RouteSession>
             </div>
           </Navigation>
@@ -61,15 +62,14 @@ const Root = () => {
               <Page>
                 <Title>메인 페이지</Title>
                 <Index tid={auth.tid} />
-                <Test />
+<Example />
               </Page>
             </Route>
             <Route exact path="/student">
               <Page>
 {/* @codingjoa
-학원 전체의 학생을 보여줍니다. 반에 상관 없이!
-출석 처리는 할 수 없고. 학생들을 추가하거나 제거하거나
-반의 이동을 실시할 수 있습니다.
+    반 추가, 이름 수정, 제거
+    학생 추가, 수정, 제거
 */}
                 <Title>학생 관리</Title>
                 <Quarters />
@@ -78,10 +78,9 @@ const Root = () => {
             <Route exact path="/quarter">
               <Page>
 {/* @codingjoa
-    선생이 자신의 반만 골라서 그 반에 속한 학생들만
-    보여주고 그 학생들의 출석 승인을 실시합니다.
-    학생을 출석부에 추가하려면 추가버튼을 눌러서 소속되지 않은 학생을 추가하세요.
-    학생을 이 출석부에서 제거하려면 걍 하세요.
+    오늘의 출석부를 생성
+    학생 목록으로 출석/결석 처리
+    Note. 학생 목록은 학생 관리에수 해야 함
 */}
                 <Title>출석 관리</Title>
                 <Study />
@@ -90,19 +89,16 @@ const Root = () => {
             <RouteSession per={auth.op}>
               <Route exact path="/teacher">
                 <Page>
-                  <Title>선생 목록</Title>
+{/* @codingjoa
+    선생님 추가, 수정, 제거
+    비밀번호 초기화
+*/}
+                  <Title>선생님 목록</Title>
                   <Teacher />
                   <></>
                 </Page>
               </Route>
             </RouteSession>
-            
-            <Route exact path="/science">
-              <Page>
-                <Title>실험실</Title>
-                <TestComponents />
-              </Page>
-            </Route>
           </Dashboard>
         </div>
       </RouteSession>

@@ -7,6 +7,7 @@ import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Popover from '@material-ui/core/Popover';
 import TextField from '@material-ui/core/TextField';
+import { TimeString } from './TimeString';
 
 import {
   usePopupState,
@@ -116,7 +117,7 @@ export default function Index({ tid }) {
     </Grid>
     <ChangePassword reload={() => setInfo(null)} />
     <Typography variant="button" color="primary">
-      비밀번호 변경일: 2020년 8월 15일(테이블 add column 해야됨)
+      비밀번호 변경일: { (myInfo?.teacherModifiedPassword && TimeString(myInfo?.teacherModifiedPassword)) ?? '기록 없음.'}
     </Typography>
   </>);
 }

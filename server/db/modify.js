@@ -37,7 +37,7 @@ module.exports = function modify(pool) { return {
 
    작업중
 */
-    const grace = pool.query(
+    pool.query(
       'update student set qid=(?), name=(?), age=(?), birthday=(?), gender=(?), phone=(?), email=(?), address=(?), uniqueness=(?) where sid=(?)',
       []
     )
@@ -60,5 +60,18 @@ module.exports = function modify(pool) { return {
     })
     .catch(e => BadRequest(res, e));
 // delete from teacher where teacherID=?
+  },
+  async study(req, res) {
+    const studyID = req.params.sid;
+    const changeTarget = req.body.targets;
+    pool.query(
+      `update checking set checkOk = case checkOk when 1 then 0 else 1 end where studyID=? and studentID in (${changeTarget.toString()})`,
+      [ studyID ]
+    )
+    .then(r => {
+      !r.affectedRows && BadRequest(res, new Error('변경되지 않았습니다.'));
+      r.affectedRows && OK(res);
+    })
+    .catch(e => BadRequest(res, e));
   }
 }}

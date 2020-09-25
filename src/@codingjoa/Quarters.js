@@ -33,47 +33,15 @@ import FormControl from '@material-ui/core/FormControl';
 import FormControlLabel from '@material-ui/core/FormControlLabel';
 import FormLabel from '@material-ui/core/FormLabel';
 
-
-
 import OrderBy from './OrderBy';
 import SortedTable from './SortedTable';
 import Search from './Search';
-
+import { TimeString, CurrentAge } from './TimeString';
 
 import axios from 'axios';
 
-function TimeString(origin) {
-/* @codingjoa
-   2020-08-12T12:08:34 형태의 시간을
-   한국어로 바꿔주는 코드
-*/
-  return new Date(Date.parse(origin)).toLocaleString('ko-KR', { timeZone: 'UTC' });
-}
-
-function CurrentAge(origin) {
-/* @codingjoa
-   만 나이 계산 공식
-   출처: https://m.blog.naver.com/PostView.nhn?blogId=wow0815&logNo=90178740921&proxyReferer=https:%2F%2Fwww.google.com%2F
-*/
-  const regexp = /^([0-9]{1,4})-([0-9]{1,2})-([0-9]{1,2})/;
-  const birthday = regexp.exec(origin);
-  const today = regexp.exec( new Date().toJSON() );
-  const age = today[1] - 0 - birthday[1];
-  if( today[2]-0 < birthday[2]-0 ) return age;
-  if( today[2]-0 === birthday[2]-0) {
-    if( today[3]-0 <= birthday[3]-0 ) {
-      return age;
-    }
-  }
-  return age - 1;
-}
-
-/*
-<Table style={{ minWidth: '800px' }}>
-
-*/
-
 function QuarterSelect({ qid, quarters, selectQuarter }) {
+  /*
   if(quarters === null) {
     return (
       <>반 목록을 불러오는 중...</>
@@ -83,25 +51,21 @@ function QuarterSelect({ qid, quarters, selectQuarter }) {
     return (
       <>반 조회 실패</>
     );
-  }
+  }*/
   return (
-    <Grid container>
-      <Grid container xs={6}>
-        <Grid container item xs={10}>
-          <Select style={{width: '100%'}} value={qid} onChange={e => selectQuarter(e.target.value)}>
-            {quarters.map(row => 
-              <MenuItem value={row.quarterID}>{row.quarterName}</MenuItem>
-            )}
-          </Select>
-        </Grid>
-        <Grid container item xs={2}>
-수정
-        </Grid>
-      </Grid>
-      <Grid container item xs={6}>
-        {quarters.length ?? 0}개 반 조회됨.
-      </Grid>
-    </Grid>
+    <>
+      <Select style={{width: '100%'}} value={qid} onChange={e => selectQuarter(e.target.value)}>
+        {quarters === null && 
+          <MenuItem value={qid}>불러오는 중</MenuItem>
+        }
+        {quarters === false && 
+          <MenuItem value={qid}>조회 실패</MenuItem>
+        }
+        {quarters && quarters.map(row => 
+          <MenuItem value={row.quarterID}>{row.quarterName}</MenuItem>
+        )}
+      </Select>
+    </>
   );
 
 }
@@ -238,7 +202,7 @@ function StudentInfo({ reload, studentID, studentName, studentBirthday, studentG
         {studentName}
       </TableCell>
       <TableCell>
-        {studentBirthday && TimeString(studentBirthday)}
+        {studentBirthday && TimeString(studentBirthday, true)}
         {studentBirthday && `(만 ${CurrentAge(studentBirthday)}세)`}
       </TableCell>
       <TableCell>
@@ -411,31 +375,33 @@ export default function Quarters() {
     <>
       <Grid container>
         <Grid item xs={12}>
-          <Grid item xs={9}>
-            <QuarterSelect
-              qid={qid}
-              quarters={quarters}
-              selectQuarter={selectQuarter}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <QuarterCreate
-              reload={fetchQuarters}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <QuarterEdit
-              qid={qid}
-              name={name}
-              reload={fetchQuarters}
-            />
-          </Grid>
-          <Grid item xs={1}>
-            <QuarterDelete
-              qid={qid}
-              name={name}
-              reload={fetchQuarters}
-            />
+          <Grid container>
+            <Grid item xs={9}>
+              <QuarterSelect
+                qid={qid}
+                quarters={quarters}
+                selectQuarter={selectQuarter}
+              />
+            </Grid>
+            <Grid item xs={1}>
+              <QuarterCreate
+                reload={fetchQuarters}
+              />
+            </Grid>
+            <Grid item xs={1}>
+              <QuarterEdit
+                qid={qid}
+                name={name}
+                reload={fetchQuarters}
+              />
+            </Grid>
+            <Grid item xs={1}>
+              <QuarterDelete
+                qid={qid}
+                name={name}
+                reload={fetchQuarters}
+              />
+            </Grid>
           </Grid>
         </Grid>
         <Grid item xs={6}>
@@ -456,6 +422,7 @@ export default function Quarters() {
         </Grid>
       </Grid>
       <SortedTable
+        style={{ minWidth: '800px' }}
         Info={StudentInfo}
         fieldNames={ [
           '번호',

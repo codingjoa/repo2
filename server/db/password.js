@@ -75,9 +75,9 @@ module.exports = function fetch(pool) { return {
    teacher 첫 생성시에는 실행하지 않음.
 */
     const teacherID = req.session?.user?.tid ?? req.params.tid ?? null;
-    if(tid === null) return;
+    if(teacherID === null) return;
     pool.query(
-      'update teacher set teacherPassword=current_timestamp where teacherID=?',
+      'update teacher set teacherModifiedPassword=current_timestamp where teacherID=?',
       [ teacherID ]
     )
     .catch(e => 0);

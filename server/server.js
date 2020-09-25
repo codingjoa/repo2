@@ -1,3 +1,7 @@
+/*
+const fs = require('fs');
+const https = require('https');
+*/
 const express = require('express');
 const session = require('express-session');
 const cors = require('cors');
@@ -80,9 +84,15 @@ student.delete('/:stid', db.remove.student);
    GET 
 */
 database.use('/study', study);
-study.use(db.permission.editableQuarter);
-study.get('/', db.fetch.study);
-study.post('/', db.create.study);
+study.get('/', 
+  db.permission.editableQuarter,
+  db.fetch.study
+);
+study.post('/',
+  db.permission.editableQuarter,
+  db.create.study
+);
+study.patch('/:sid', db.modify.study);
 
 /* teacher
    선생님을 관리하는 선생님만 접근할 수 있음(editableTeacher)
@@ -160,3 +170,11 @@ auth.get('/logout',
 app.listen(port, ()=>{
     console.log('server opened.');
 })
+/*
+https.createServer({
+  key: fs.readFileSync('/home/ky/ky/server/private.pem'),
+  cert: fs.readFileSync('/home/ky/ky/server/public.pem')
+}, app).listen(port, ()=>{
+    console.log('server opened.');
+})
+*/
