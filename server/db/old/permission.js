@@ -61,24 +61,5 @@ console.log(req.params, req.query, req.body);
     const { user } = req?.session;
     if(!user && Unauthorized(res)) return;
     next(); 
-  },
-  authorization(req, res) {
-/* @codingjoa
-   세션을 생성함 a.k.a 로그인
-*/
-    req.session.user = {
-      ...req.session.user,
-      uid: ++uid,
-      signIn: new Date()
-    };
-    req.session.save();
-    OK(res);
-  },
-  unauthorization(req, res) {
-/* @codingjoa
-   세션 삭제 a.k.a 로그아웃
-*/
-    req.session.destroy();
-    OK(res);
   }
 }};

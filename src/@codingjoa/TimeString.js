@@ -19,11 +19,23 @@ export function CurrentAge(origin) {
   const birthday = regexp.exec(localeString);
   const today = regexp.exec( new Date().toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' }) );
   const age = today[1] - 0 - birthday[1];
-  if( today[2]-0 < birthday[2]-0 ) return age;
+  if( today[2]-0 < birthday[2]-0 ){
+	 return age-1 ;
+  }else if(today[2]-0 > birthday[2]-0){
+	return age-1;
+  }else{
+	if(today[2]-0 <= birthday[2]-0){
+		return age;
+	}else{
+		return age-1;
+	}
+  }
+/*
   if( today[2]-0 === birthday[2]-0) {
     if( today[3]-0 <= birthday[3]-0 ) {
-      return age;
+      return age-1;
     }
   }
+*/
   return age - 1;
 }

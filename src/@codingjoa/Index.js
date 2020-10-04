@@ -44,9 +44,14 @@ function ChangePassword({ reload }) {
 
   return (
     <>
-      <Link {...bindTrigger(popupState)}>
-        비밀번호 변경...
-      </Link>
+      <div style={{ maxWidth: '250px' }}>
+        <Button
+          {...bindTrigger(popupState)}
+          variant="contained"
+        >
+          비밀번호 변경...
+        </Button>
+      </div>
       <Popover
         {...bindPopover(popupState)}
         anchorOrigin={{

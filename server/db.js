@@ -1,11 +1,3 @@
-const mariadb = require('mariadb');
-const pool = mariadb.createPool({
-  host: 'localhost',
-  user: 'ky',
-  database: 'ky',
-  password: '1234',
-  connectionLimit: 5
-});
 
 const fetch = require('./db/fetch')(pool);
 const create = require('./db/create')(pool);
@@ -27,9 +19,6 @@ const utils = {
     return [ res.map(r => r.map(s => s.Field)), names ];
   }
 };
-async function end() {
-  pool.end();
-}
 
 module.exports = {
   fetch,

@@ -3,23 +3,16 @@ const fs = require('fs');
 const https = require('https');
 */
 const express = require('express');
+const app = express();
+const api = express.Router();
+
+
+/* @codingjoa
+   미들웨어 라이브러리
+*/
 const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-const db = require('./db');
-
-const app = express();
-const port = process.env.PORT ?? 3307;
-
-const router = express.Router();
-const database = express.Router();
-const auth = express.Router();
-
-const quarter = express.Router();
-const student = express.Router();
-const study = express.Router();
-const teacher = express.Router();
-const me = express.Router();
 
 app.use(session({
   secret: 'ky',
@@ -30,9 +23,20 @@ app.use(session({
 }));
 app.use(cors());
 app.use(bodyParser.json());
-app.use('/api', router);
-router.use('/db', database); // /api/db/
-router.use('/auth', auth); // /api/auth/
+app.use('/api', api);
+
+
+/* @codingjoa
+   라우터
+*/
+const routeTest = require('./routeTest');
+const routeTeacher = require('./routeTeacher');
+const routeAuth = require('./routeAuth');
+
+api.use('/test', routeTest);
+api.use('/teacher', routeTeacher);
+api.use('/auth', routeAuth);
+
 
 /* @codingjoa
    /quarter
@@ -60,7 +64,19 @@ router.use('/auth', auth); // /api/auth/
 
    /teacher/reset
    POST #비밀번호 초기화
-*/
+*//*
+//const db = require('./db');
+
+const database = express.Router();
+const auth = express.Router();
+
+const quarter = express.Router();
+const student = express.Router();
+const study = express.Router();
+const teacher = express.Router();
+const me = express.Router();
+
+
 database.use(db.permission.editableSession);
 //database.use(.touchSession);
 
@@ -78,11 +94,11 @@ student.use('/:stid', db.permission.editableStudent);
 student.put('/:stid', db.modify.student);
 student.patch('/:stid', db.modify.studentUniqueness);
 student.delete('/:stid', db.remove.student);
-
+*/
 /* study
    반을 관리하는 선생님만 접근할 수 있음(editableQuarter)
    GET 
-*/
+*//*
 database.use('/study', study);
 study.get('/', 
   db.permission.editableQuarter,
@@ -93,7 +109,7 @@ study.post('/',
   db.create.study
 );
 study.patch('/:sid', db.modify.study);
-
+*/
 /* teacher
    선생님을 관리하는 선생님만 접근할 수 있음(editableTeacher)
    GET
@@ -105,7 +121,7 @@ study.patch('/:sid', db.modify.study);
 
    DELETE
    1. 선생님 정보 삭제
-*/
+*//*
 database.use('/teacher', teacher);
 teacher.use(db.permission.editableTeacher);
 teacher.get('/', db.fetch.teachers);
@@ -119,7 +135,7 @@ teacher.post('/reset/:tid',
   db.password.regeneratePassword,
   db.password.updateTimeForPasswordChange
 );
-
+*/
 /* /api/db/me
    로그인한 선생님 자신의 정보에 접근
    GET /
@@ -130,6 +146,7 @@ teacher.post('/reset/:tid',
    2. 비밀번호 변경
    3. 비밀번호 변경 시간 수정
 */
+/*
 database.use('/me', me);
 me.get('/', db.fetch.me);
 me.put('/',
@@ -137,36 +154,15 @@ me.put('/',
   db.password.changeMyPassword,
   db.password.updateTimeForPasswordChange
 );
-
-
-/* @codingjoa
-   /
-   GET #세션 상태 확인
-
-   /login
-   POST #로그인
-
-   /logout
-   GET #로그아웃
 */
-auth.get('/', 
-  (req, res) => {
-    console.log(req.session.user);
-    res.json(req.session.user ?? { tid: null, id: null, uid: null, signIn: null, op: null });
-  }
-);
-auth.post('/login',
-  db.password.certification,
-  db.permission.authorization
-);
-auth.get('/logout',
-  db.permission.editableSession,
-  db.permission.unauthorization
-);
+
 
 /* @codingjoa
    백엔드 서버 릴리즈
 */
+
+const port = process.env.PORT ?? 3307;
+
 app.listen(port, ()=>{
     console.log('server opened.');
 })

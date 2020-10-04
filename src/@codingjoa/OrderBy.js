@@ -18,7 +18,7 @@ export default function OrderBy({ orderby, setOrderby, orderList}) {
 
   if(orderby === null) return (<></>);
   return (
-    <>
+    <div style={{ verticalAlign: 'bottom' }}>
       <Select
         value={orderby}
         onChange={e => setOrderby(e.target.value)}
@@ -27,6 +27,6 @@ export default function OrderBy({ orderby, setOrderby, orderList}) {
           <MenuItem value={row.key}>{row.visualName}</MenuItem>
         )}
       </Select>
-    </>
+    </div>
   );
 }

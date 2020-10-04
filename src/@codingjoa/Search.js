@@ -9,21 +9,23 @@ export default function Search({ setSearchKeyword }) {
   const keyword = useRef();
   return (
     <>
-      <Grid container>
-        <Grid item xs={8}>
-          <TextField fullWidth margin="none" label="검색" type="text" inputRef={keyword} name="search" /><br/>
-        </Grid>
-        <Grid item xs={4}>
-          <Button
-            variant="contained"
-            color="primary"
-            onClick={e => setSearchKeyword(keyword.current?.value ?? '')}
-            endIcon={<SearchIcon />}
-          >
-            검색
-          </Button>
-        </Grid>
-      </Grid>
+      <>
+        <>
+          <div style={{ display: 'inline', verticalAlign: 'bottom' }}>
+            <TextField fullwidth margin="none" label="이름으로 검색" type="text" inputRef={keyword} name="search" />
+          </div>
+          <div style={{ display: 'inline', verticalAlign: 'bottom' }}>
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={e => setSearchKeyword(keyword.current?.value ?? '')}
+              endIcon={<SearchIcon />}
+            >
+              검색
+            </Button>
+          </div>
+        </>
+      </>
     </>
   );
 }

@@ -1,4 +1,13 @@
-import React, { useState, useCallback, useRef, useEffect, useLayoutEffect, useMemo } from 'react';
+import React, {
+  createContext,
+  useContext,
+  useState,
+  useCallback,
+  useRef,
+  useEffect,
+  useLayoutEffect,
+  useMemo
+} from 'react';
 
 import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
@@ -25,6 +34,7 @@ import {
   usePopupState,
   bindTrigger,
   bindPopover,
+  anchorRef
 } from 'material-ui-popup-state/hooks';
 
 import RadioGroup from '@material-ui/core/RadioGroup';
@@ -37,21 +47,12 @@ import OrderBy from './OrderBy';
 import SortedTable from './SortedTable';
 import Search from './Search';
 import { TimeString, CurrentAge } from './TimeString';
-
+import FormikExample from './FormikExample';
 import axios from 'axios';
 
+const QuarterContext = createContext(null); 
+
 function QuarterSelect({ qid, quarters, selectQuarter }) {
-  /*
-  if(quarters === null) {
-    return (
-      <>반 목록을 불러오는 중...</>
-    );
-  }
-  else if(quarters === false) {
-    return (
-      <>반 조회 실패</>
-    );
-  }*/
   return (
     <>
       <Select style={{width: '100%'}} value={qid} onChange={e => selectQuarter(e.target.value)}>
@@ -177,13 +178,15 @@ function StudentUniqueness({ stid, studentUniqueness, reload }) {
           horizontal: 'center',
         }}
       >
-        <Typography color="primary" variant="h6" >
-          학생 특이사항
-        </Typography>
-        <TextField value={text} onChange={e => setText(e.target.value)} fullWidth multiline rows={3} rowsMax={10} />
-        <Button disabled={text === origin} onClick={send}>
-          수정
-        </Button>
+        <div style={{ maxWidth: '200px', padding: '1em' }}>
+          <Typography color="primary" variant="h6" >
+            학생 특이사항
+          </Typography>
+          <TextField value={text} onChange={e => setText(e.target.value)} fullWidth multiline rows={3} rowsMax={10} />
+          <Button disabled={text === origin} onClick={send}>
+            수정
+          </Button>
+        </div>
       </Popover>
     </>
   );
@@ -193,6 +196,7 @@ function StudentInfo({ reload, studentID, studentName, studentBirthday, studentG
 /* @codingjoa
    학생 정보를 1줄 출력하는 컴포넌트
 */
+  const { editStudent, editor } = useContext(QuarterContext);
   return (
     <>
       <TableCell>
@@ -206,7 +210,7 @@ function StudentInfo({ reload, studentID, studentName, studentBirthday, studentG
         {studentBirthday && `(만 ${CurrentAge(studentBirthday)}세)`}
       </TableCell>
       <TableCell>
-        {studentGender}
+        {studentGender===0 ? '여자' : studentGender===1 ? '남자' : null}
       </TableCell>
       <TableCell>
         {studentPhone}
@@ -223,10 +227,26 @@ function StudentInfo({ reload, studentID, studentName, studentBirthday, studentG
       <TableCell>
         <Grid container>
           <Grid item xs={6}>
-            수정
+            <IconButton
+              onClick={e => {
+                editStudent({
+                  stid: studentID,
+                  name: studentName,
+                  birthday: studentBirthday,
+                  gender: studentGender,
+                  phone: studentPhone,
+                  email: studentEmail,
+                  address: studentAddress,
+                })
+                editor.open(e);
+              }}
+              color="action"
+            >
+              <EditIcon />
+            </IconButton>
           </Grid>
           <Grid item xs={6}>
-            삭제
+            <StudentDelete stid={studentID} name={studentName} reload={reload} />
           </Grid>
         </Grid>
       </TableCell>
@@ -234,90 +254,70 @@ function StudentInfo({ reload, studentID, studentName, studentBirthday, studentG
   );
 }
 
-function StudentCreate({ qid, reload }) {
-  const ni = useRef(null);
-  const bi = useRef(null);
-  const gi = useRef(null);
-  const pi = useRef(null);
-  const ei = useRef(null);
-  const ai = useRef(null);
-  const [ value, setValue ] = useState('0');
 
-  const popupState = usePopupState({
-    variant: 'popover',
-    popupId: 'demoPopover',
-  });
-  const trying = useCallback(() => {
-    const [ name, birthday, gender, phone, email, address ] = [
-      ni.current?.value,
-      bi.current?.value,
-      gi.current?.value,
-      pi.current?.value,
-      ei.current?.value,
-      ai.current?.value
-    ];/*
-    axios.post('/api/db/student', { qid, name, birthday, gender, phone, email, address })
+
+function StudentEditor({ qid, popupState, targets, reload }) {
+  const trySending = useCallback(values => {
+    const { name, birthday, gender, phone, email, address } = values;
+    ( targets?.stid ?
+      axios.put(`/api/db/student/${targets?.stid}`, { name, birthday, gender, phone, email, address }) :
+      axios.post('/api/db/student', { qid, name, birthday, gender, phone, email, address })
+    )
     .then(r => {
-      reload();
+      popupState.close();
       popupState.setAnchorEl(null);
+      reload();
     })
     .catch(e => {
-      if(e.response?.status===400 && !alert(`생성 실패: ${e.response.data.cause}`)) return;
+      if(e.response?.status===400 && !alert(`적용 실패: ${e.response.data.cause}`)) return;
       alert(e);
     });
-*/
-alert(name);
-alert(birthday);
-alert(gender);
-alert(phone);
-alert(email);
-alert(address);
-  }, []);
+  }, [ qid, targets]);
+  if(targets === undefined) return(<></>);
+  return (
+    <Popover
+      {...bindPopover(popupState)}
+      anchorOrigin={{
+        vertical: 'bottom',
+        horizontal: 'center',
+      }}
+      transformOrigin={{
+        vertical: 'top',
+        horizontal: 'center',
+      }}
+    >
+      <div style={{ maxWidth: '600px', padding: '1em' }}>
+        <Typography variant="h6">학생 추가</Typography>
+        <FormikExample trySending={trySending} {...targets} />
+      </div>
+    </Popover>
+  );
 
+
+}
+
+function StudentDelete({ stid, name, reload }) {
+  const question = useCallback(() => {
+    const r = window.confirm(`${name} 학생을 명부에서 삭제합니다.`);
+    if(!r) return;
+    axios.delete(`/api/db/student/${stid}`)
+    .then(() => {
+      reload();
+    })
+    .catch(e => {
+      if(e.response?.status===400 && !alert(`삭제 실패: ${e.response.data.cause}`)) return;
+      alert(e);
+    });
+  }, [ stid ]);
+  
   return (
     <div>
-      <Button onClick={trying} color="primary" variant="contained" {...bindTrigger(popupState)}>
-        학생 추가
-      </Button>
-      <Popover style={{ padding: '1em', maxWidth: '300px' }}
-        {...bindPopover(popupState)}
-        anchorOrigin={{
-          vertical: 'bottom',
-          horizontal: 'center',
-        }}
-        transformOrigin={{
-          vertical: 'top',
-          horizontal: 'center',
-        }}
-      >
-        <Typography color="primary" variant="h6">새로운 학생 추가</Typography>
-        <TextField fullWidth inputRef={ni} type="text" label="이름" />
-        <TextField fullWidth inputRef={bi} type="date" label="생년월일" />
-        <FormControl component="fieldset">
-          <FormLabel component="legend">성별</FormLabel>
-          <RadioGroup aria-label="gender" name="gender1" inputRef={gi} value={value} onChange={e => setValue(e.target.value)}>
-            <FormControlLabel value="0" control={<Radio />} label="여자" />
-            <FormControlLabel value="1" control={<Radio />} label="남자" />
-          </RadioGroup>
-        </FormControl>
-        <TextField fullWidth inputRef={pi} type="text" label="전화번호" />
-        <TextField fullWidth inputRef={ei} type="email" label="이메일" />
-        <TextField fullWidth inputRef={ai} type="text" label="주소" />
-        <Button
-          style={{ textAlign: 'center' }}
-          variant="contained" 
-          onClick={trying}
-        >
-          학생 추가
-        </Button>
-      </Popover>
+      <IconButton onClick={question} color="secondary">
+        <DeleteIcon />
+      </IconButton>
     </div>
   );
 }
-
-function StudentDelete() {}
-
-function StudentModify() {}
 
 export default function Quarters() {
   const [ students, setStudents ] = useState(null);
@@ -325,6 +325,11 @@ export default function Quarters() {
   const [ orderby, setOrderby ] = useState(null);
   const [ searchKeyword, setSearchKeyword ] = useState('');
   const [ quarters, setQuarters ] = useState(null);
+  const [ targets, editStudent ] = useState(null);
+  const editor = usePopupState({
+    variant: 'popover',
+    popupId: 'demoPopover',
+  });
 
   const fetchQuarters = useCallback(want => {
     axios.get(`/api/db/quarter`)
@@ -353,7 +358,7 @@ export default function Quarters() {
   const name = useMemo(() => {
     if(!quarters) return null;
     if(!(qid > 0)) return null;
-    return quarters.find(r => r.quarterID === qid).quarterName
+    return quarters.find(r => r.quarterID === qid).quarterName;
   }, [ qid ]);
 
   const reloadStudent = useCallback(() => setStudents(null), []);
@@ -372,40 +377,48 @@ export default function Quarters() {
   }, [ qid, students ]);
 
   return (
-    <>
-      <Grid container>
-        <Grid item xs={12}>
-          <Grid container>
-            <Grid item xs={9}>
-              <QuarterSelect
-                qid={qid}
-                quarters={quarters}
-                selectQuarter={selectQuarter}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <QuarterCreate
-                reload={fetchQuarters}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <QuarterEdit
-                qid={qid}
-                name={name}
-                reload={fetchQuarters}
-              />
-            </Grid>
-            <Grid item xs={1}>
-              <QuarterDelete
-                qid={qid}
-                name={name}
-                reload={fetchQuarters}
-              />
-            </Grid>
-          </Grid>
+    <QuarterContext.Provider value={{ editStudent, editor }}>
+      <Grid container justify="space-between">
+        <Grid item xs={12} sm={8}>
+          <div>
+            <QuarterSelect
+              qid={qid}
+              quarters={quarters}
+              selectQuarter={selectQuarter}
+            />
+          </div>
+        </Grid>
+        <Grid item xs={12} sm={4}>
+          <div style={{ display: 'inline-block' }}>
+            <QuarterCreate
+              reload={fetchQuarters}
+            />
+          </div>
+          <div style={{ display: 'inline-block' }}>
+            <QuarterEdit
+              qid={qid}
+              name={name}
+              reload={fetchQuarters}
+            />
+          </div>
+          <div style={{ display: 'inline-block' }}>
+            <QuarterDelete
+              qid={qid}
+              name={name}
+              reload={fetchQuarters}
+            />
+          </div>
         </Grid>
         <Grid item xs={6}>
-          <StudentCreate qid={qid} reload={reloadStudent}/>
+          <Button
+            onClick={e => {
+              editStudent(null);
+              editor.open(e);
+            }}
+            color="primary"
+            variant="contained"
+          >학생 추가</Button>
+          <StudentEditor qid={qid} reload={reloadStudent} popupState={editor} targets={targets}/>
         </Grid>
         <Grid item xs={6}>
           <OrderBy
@@ -413,7 +426,9 @@ export default function Quarters() {
             setOrderby={setOrderby}
             orderList={[
               { key: 'studentID', visualName: '번호'},
-              { key: 'studentName', visualName: '이름'}
+              { key: 'studentName', visualName: '이름'},
+              { key: 'studentBirthday', visualName: '생일'},
+              { key: 'studentGender', visualName: '성별'}
             ]}
           />
         </Grid>
@@ -421,8 +436,9 @@ export default function Quarters() {
           <Search setSearchKeyword={setSearchKeyword} />
         </Grid>
       </Grid>
+      <br />
       <SortedTable
-        style={{ minWidth: '800px' }}
+        style={{ minWidth: '1200px' }}
         Info={StudentInfo}
         fieldNames={ [
           '번호',
@@ -441,7 +457,7 @@ export default function Quarters() {
         searchColumn={'studentName'}
         reload={reloadStudent}
       />
-    </>
+    </QuarterContext.Provider>
   );
 }
 

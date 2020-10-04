@@ -1,4 +1,9 @@
-import React, { useState, useCallback, useLayoutEffect, useRef } from 'react';
+import React, { 
+  useState,
+  useCallback,
+  useLayoutEffect,
+  useRef
+} from 'react';
 import axios from 'axios';
 
 import OrderBy from './OrderBy';
@@ -33,14 +38,14 @@ function TeacherInfo({ reload, teacherID: tid, teacherName: name, teacherOp: op,
         {tid}
       </TableCell>
       <TableCell>
-        <Grid container>
-          <Grid item xs={6}>
+        <>
+          <div style={{ display: 'inline', verticalAlign: 'middle' }}>
             {name}
-          </Grid>
-          <Grid item xs={6}>
+          </div>
+          <div style={{ display: 'inline', verticalAlign: 'middle' }}>
             <Rename tid={tid} name={name} reload={reload} />
-          </Grid>
-        </Grid>
+          </div>
+        </>
       </TableCell>
       <TableCell>
         {qlen}
@@ -105,16 +110,18 @@ function Create({ reload }) {
           horizontal: 'center',
         }}
       >
-        <Typography color="primary" variant="h6">새로운 선생님 추가</Typography>
-        <TextField fullWidth inputRef={idi} type="email" autoComplete="username" label="아이디" />
-        <TextField fullWidth inputRef={nmi} type="text" autoComplete="name" label="이름" />
-        <Button
-          style={{ textAlign: 'center' }}
-          variant="contained" 
-          onClick={trying}
-        >
-          선생님 추가
-        </Button>
+        <div style={{ maxWidth: '200px', padding: '1em' }}>
+          <Typography color="primary" variant="h6">새로운 선생님 추가</Typography>
+          <TextField fullWidth inputRef={idi} type="email" autoComplete="username" label="아이디" />
+          <TextField fullWidth inputRef={nmi} type="text" autoComplete="name" label="이름" />
+          <Button
+            style={{ textAlign: 'center' }}
+            variant="contained" 
+            onClick={trying}
+          >
+            선생님 추가
+          </Button>
+        </div>
       </Popover>
     </div>
   );
@@ -205,13 +212,12 @@ export default function Teacher() {
   return (
     <>
       <Grid container>
-        <Grid item xs={4}>
-          <Create reload={reload} />
+        <Grid item xs={6} sm={2}>
+          <div style={{ display: 'inline' }}>
+            <Create reload={reload} />
+          </div>
         </Grid>
-        <Grid item xs={4}>
-          ?
-        </Grid>
-        <Grid item xs={4}>
+        <Grid item xs={6} sm={2}>
           <OrderBy
             orderby={orderby}
             setOrderby={setOrderby}
@@ -222,6 +228,7 @@ export default function Teacher() {
           <Search setSearchKeyword={setSearchKeyword} />
         </Grid>
       </Grid>
+      <br />
       <SortedTable
         Info={TeacherInfo}
         fieldNames={ ['번호', '이름', '반', '학생 수', '수업 횟수', '아이디', '비밀번호', '삭제'] }

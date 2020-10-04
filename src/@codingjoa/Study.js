@@ -8,6 +8,7 @@ import React, {
   useEffect,
   useLayoutEffect
 } from 'react';
+import { useParams } from 'react-router-dom';
 import axios from 'axios';
 
 import Grid from '@material-ui/core/Grid';
@@ -93,10 +94,6 @@ function QuarterSelect({ qid, setQuarter }) {
   );
 }
 
-function StudentCheck({ id }) {
-  
-}
-
 const HookCheckBox = createContext(null);
 
 function StudentInfo({ id, name, modifiedAt }) {
@@ -140,13 +137,10 @@ function FieldNames({ fields }) {
   );
 }
 
-function SortedList({ qid, students }) {
+function SortedList({ students }) {
 /* @codingjoa
    학생 목록을 정렬해서 출력하는 컴포넌트
 */
-  if(qid === 0) {
-    return (<>검색할 반을 선택하세요.</>);
-  }
   if(students === null) {
     return (<>불러오는 중...</>);
   }
@@ -158,7 +152,7 @@ function SortedList({ qid, students }) {
       <Table>
         <TableHead>
           <FieldNames
-            fields={ ['이름', '승인/취소 시간'] }
+            fields={ ['이름', '승인/취소 시간', '출석 여부'] }
           />
         </TableHead>
         <TableBody>
@@ -178,10 +172,10 @@ function SortedList({ qid, students }) {
 }
 
 export default function Study() {
+  const { quarterID, lessonMonth, weekNum } = useParams();
+  
   const [ students, setStudents ] = useState(null);
-  const [ qid, setQuarter ] = useState(0);
-  const [ date, setDate ] = useState(today()[0]);
-  const [ sid, setSid ] = useState(null);
+
   const [ checked, setChecked ] = useState({});
   const [ original, setOriginal ] = useState(checked);
   const [ record, setRecord ] = useState({});
@@ -204,40 +198,22 @@ export default function Study() {
     return { 총원, 출석, 재승인, 취소, 결석, 재기록대상, 데베재기록 };
   }, [ checked ]);
 
-  const fetch = useCallback((qid, date) => {
-    if(!qid) return;
-    if(!isTime(date)) return;
-    axios.get(`/api/db/study?qid=${qid}&date=${date}`)
+  useLayoutEffect(() => {
+    if(students !== null) return;
+    axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`)
     .then(r => setStudents(r.data.fetchedData))
     .catch(e => {
-      if(e.response.status === 400 && !alert(`오류: ${e.data.cause}`)) return;
-      if(e.response.status === 404 && isToday(date) && !newStudy(qid, date)) return;
+      if(e.response.status === 400 && !alert(`오류: ${e.response.data.cause}`)) return;
       alert(e);
       setStudents(false);
     });
-  }, []);
-  const newStudy = useCallback((qid, date) => {
-    const ok = window.confirm('오늘자 출석부를 새로 만드시겠습니까?');
-    if(!ok) return;
-    axios.post('/api/db/study', { qid, date })
-    .then(r => {
-      fetch(qid, date);
-    })
-    .catch(e => {
-      if(e.response.state === 400 && !alert(`오류: ${e.data.cause}`)) return;
-      alert(e);
-    });
-  }, []);
-  useLayoutEffect(() => {
-    fetch(qid, date);
-  }, [ qid, date ]);
+  }, [ students]);
   useLayoutEffect(() => {
     //if(!students) return;
     setChecked({});
     setOriginal({});
     setRecord({});
     if(!students) return;
-    setSid(students[0].studyID);
     const newChecked = {};
     for(const row of students) {
       newChecked[row.studentID] = row.checkOk===1;
@@ -252,29 +228,21 @@ export default function Study() {
   }, [ students ]);
 
   const cb = useCallback(() => {
-    if(!sid) return;
     const r = window.confirm(`총원 ${statistics.총원}명 중, 출석${statistics.출석}명 결석${statistics.결석}명으로 처리하시겠습니까?`);
-    axios.patch(`/api/db/study/${sid}`, { targets: statistics.재기록대상 })
+    axios.patch(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`, { targets: statistics.재기록대상 })
     .then(r => {
-      fetch(qid, date);
+      setStudents(null);
     })
     .catch(e => {
       if(e.response?.status===400 && !alert(`변경 실패: ${e.response.data.cause}`)) return;
       alert(e);
     });
-  }, [ sid, statistics, qid, date ]);
+  }, [ statistics ]);
 
   return (
     <HookCheckBox.Provider value={{ checked, setChecked, original, setOriginal, record, setRecord }}>
-      <Grid container style={{maxWidth: '300px'}} >
-        <Grid item xs={6}>
-          <StudyFetch date={date} setDate={setDate} />
-        </Grid>
-        <Grid item xs={6}>
-          <QuarterSelect qid={qid} setQuarter={setQuarter} />
-        </Grid>
-      </Grid>
-      <SortedList qid={qid} students={students} />
+      <SortedList students={students} />
+      <br />
       <Grid container spacing={3} style={{ maxWidth: '600px' }}>
         <Grid item>
           <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
@@ -292,7 +260,7 @@ export default function Study() {
           취소: {statistics.취소}
         </Grid>
         <Grid item>
-          데베재기록: {statistics.데베재기록}
+          변경됨: {statistics.데베재기록}
         </Grid>
       </Grid>
     </HookCheckBox.Provider>

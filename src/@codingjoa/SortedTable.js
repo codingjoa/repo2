@@ -16,11 +16,6 @@ const useStyles = makeStyles((theme) => ({
   }
 }));
 
-const state100 = Symbol('불러오는 중');
-const state101 = Symbol('작업 실패');
-const state200 = Symbol('작업 성공');
-const state201 = Symbol('데이터 있음');
-
 function FieldNames({ fieldNames }) {
 /* @codingjoa
    필드 이름들을 1줄 출력하는 컴포넌트
@@ -33,6 +28,15 @@ function FieldNames({ fieldNames }) {
     </>
   );
 }
+
+/*
+function DataViewer({ fetchURI, handleError }) {
+  
+  const { axiosResult, tryFetch } = useAxiosGet(fetchURI, handleError);
+
+}
+*/
+
 
 export default function SortedTable({ style, Info, fieldNames, axiosResult, orderby, searchKeyword, searchColumn, reload }) {
 /* @codingjoa
