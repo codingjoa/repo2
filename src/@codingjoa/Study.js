@@ -3,19 +3,17 @@ import React, {
   useContext,
   useState,
   useCallback,
-  useRef,
   useMemo,
-  useEffect,
   useLayoutEffect
 } from 'react';
-import { useParams } from 'react-router-dom';
+import { useParams, useHistory } from 'react-router-dom';
 import axios from 'axios';
 
+import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
 import Table from '@material-ui/core/Table';
 import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
-
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
 import Input from '@material-ui/core/Input';
@@ -24,6 +22,8 @@ import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import Button from '@material-ui/core/Button';
+import Link from '@material-ui/core/Link';
+import Page from '../Templates/Page';
 
 const DO = new Date();
 
@@ -42,57 +42,7 @@ function today() {
   return today;
 }
 
-function isToday(string) {
-  return today()[0] === string;
-}
 
-function isTime(string) {
-  return /^([0-9]{4}-[0-9]{2}-[0-9]{2})/.test(string);
-}
-
-function StudyFetch({ date, setDate }) {
-/* @codingjoa
-   해당 반의 선택한 날짜의 출석부를 조사하여
-   setStudents로 넘김
-
-   결과가 없으면 없다고 알리되 오늘날짜라면
-   출석부를 새로 만들어야 한다고 알림
-*/
-  return (
-    <>
-      <Input value={date} type="date" onChange={e => setDate(e.target.value)} />
-    </>
-  );
-}
-
-function QuarterSelect({ qid, setQuarter }) {
-/* @codingjoa
-   반을 선택하는 컴포넌트
-   1. 반 목록을 불러옴(1회만)
-   2. 
-*/
-  const [ quarters, setQuarters ] = useState(null);
-
-  useLayoutEffect(() => {
-    axios.get('/api/db/quarter')
-    .then(r => setQuarters(r.data.fetchedData))
-    .catch(e => {
-      if(e.response.state === 400 && !alert(`오류: ${e.data.cause}`)) return;
-      alert(e);
-    });
-  }, []);
-
-  return (
-    <>
-      <Select value={qid ?? 0} onChange={e => setQuarter(e.target.value)}>
-        <MenuItem value={0}>반 선택</MenuItem>
-        {quarters && quarters.map(row => 
-          <MenuItem value={row.quarterID}>{row.quarterName}</MenuItem>
-        )}
-      </Select>
-    </>
-  );
-}
 
 const HookCheckBox = createContext(null);
 
@@ -207,7 +157,7 @@ export default function Study() {
       alert(e);
       setStudents(false);
     });
-  }, [ students]);
+  }, [ students, weekNum ]);
   useLayoutEffect(() => {
     //if(!students) return;
     setChecked({});
@@ -238,31 +188,38 @@ export default function Study() {
       alert(e);
     });
   }, [ statistics ]);
+  const history = useHistory();
 
   return (
     <HookCheckBox.Provider value={{ checked, setChecked, original, setOriginal, record, setRecord }}>
+    <Link
+      color="primary"
+      onClick={e => history.goBack()}
+    >돌아가기</Link>
+    <Page>
       <SortedList students={students} />
       <br />
-      <Grid container spacing={3} style={{ maxWidth: '600px' }}>
-        <Grid item>
-          <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
+      <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
+      <Box mt={2}>
+        <Grid container spacing={3} style={{ maxWidth: '600px' }}>
+          <Grid item>
+            총원: {statistics.총원}
+          </Grid>
+          <Grid item>
+            출석: {statistics.출석}
+          </Grid>
+          <Grid item>
+            재승인:{statistics.재승인}
+          </Grid>
+          <Grid item>
+            취소: {statistics.취소}
+          </Grid>
+          <Grid item>
+            변경됨: {statistics.데베재기록}
+          </Grid>
         </Grid>
-        <Grid item>
-          총원: {statistics.총원}
-        </Grid>
-        <Grid item>
-          출석: {statistics.출석}
-        </Grid>
-        <Grid item>
-          재승인:{statistics.재승인}
-        </Grid>
-        <Grid item>
-          취소: {statistics.취소}
-        </Grid>
-        <Grid item>
-          변경됨: {statistics.데베재기록}
-        </Grid>
-      </Grid>
+      </Box>
+    </Page>
     </HookCheckBox.Provider>
   );
 }

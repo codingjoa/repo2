@@ -1,13 +1,28 @@
 const mariadb = require('mariadb');
-const pool = mariadb.createPool({
-  host: 'localhost',
-  user: 'ky',
-  database: 'ky',
-  password: '1234',
-  connectionLimit: 5
-});
+const config = require('./poolConfig');
+const pool = mariadb.createPool(process.env.DEV ? config.dev : config.release);
 
-module.exports = { pool };
+function transaction(queries, err) {
+  pool.getConnection()
+  .then(conn => {
+    conn.beginTransaction()
+    .then(() => {
+      try {
+        queries(conn);
+      }
+      catch(e) {
+        throw e;
+      }
+      conn.commit();
+    })
+  })
+  .catch(e => {
+    conn.rollback();
+    //err && err instanceof Function && err(e);
+  });
+}
+
+module.exports = { pool, transaction };
 
 async function end() {
   pool.end();
