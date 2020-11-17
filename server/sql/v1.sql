@@ -132,34 +132,9 @@ insert into teacher(
   teacherAccount,
   teacherPassword,
   teacherOp
-) select
-  teacherName,
-  teacherAccount,
-  teacherPassword,
-  teacherOp
-from
-  (select
-    newTeacher.*,
-    (select
-      teacherAccount
-    from
-      teacher
-    where
-      teacherAccount='admin'
-    ) as isCanBe
-  from
-    teacher right join (
-    select
-      '관리자' as teacherName,
-      'admin' as teacherAccount,
-      '$2b$10$jH8iAs4oqMZqQ14/S/anX.dPW7QodtUiLq2HcX9bBrjZtPjtEY6Fa' as teacherPassword,
-      1 as teacherOp
-    ) as newTeacher
-    on
-      teacher.teacherAccount=newTeacher.teacherAccount
-  ) as teacher1
-where
-  teacher1.isCanBe=null;
-
-where
-  teacherAccount
+) values (
+  '관리자',
+  'admin',
+  '$2b$10$jH8iAs4oqMZqQ14/S/anX.dPW7QodtUiLq2HcX9bBrjZtPjtEY6Fa',
+  1
+)
