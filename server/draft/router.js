@@ -6,9 +6,6 @@ const fetchBillingTypes = require('./db/fetchBillingTypes');
 const fetchRefundExamples = require('./db/fetchRefundExamples');
 const addRefundExample = require('./db/addRefundExample');
 const editRefundExample = require('./db/editRefundExample');
-const deleteRefundExample = require('./db/deleteRefundExample');
-const calculateProceeds = require('./db/calculateProceeds');
-
 router.get('/misc/billing',
   fetchBillingTypes
 );
@@ -25,15 +22,8 @@ router.post('/misc/refund',
 router.patch('/misc/refund/:editID',
   editRefundExample
 );
-
-router.delete('/misc/refund/:editID',
-  deleteRefundExample
-);
 router.get('/misc/salary',
   fetchSalary
-);
-router.get('/misc/proceeds/:lessonMonth',
-  calculateProceeds
 );
 
 module.exports = router;

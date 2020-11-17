@@ -55,6 +55,7 @@ const addBilling = require('./addBilling');
 const deleteBilling = require('./deleteBilling');
 
 const addRefund = require('./addRefund');
+const calculateProceeds = require('./calculateProceeds');
 
 router.use('/teacher',
   isAuthorized
@@ -212,6 +213,10 @@ router.post('/admin/billing/:lessonMonth',
 router.delete('/admin/billing/:studentID/:lessonMonth',
   isRetractableBilling,
   deleteBilling
+);
+
+router.get('/admin/calculator/proceed/:lessonMonth',
+  calculateProceeds
 );
 
 

@@ -25,7 +25,7 @@ export default ({ list, isCanBeClosed }) => (<>
           <Detail quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={false}/>
         </Box>
         <Box>
-          <Close quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={false ?? !isCanBeClosed} quarterName={quarterName}/>
+          <Close quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={!isCanBeClosed} quarterName={quarterName}/>
         </Box>
       </Box>
       <Box

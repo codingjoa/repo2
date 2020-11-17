@@ -77,7 +77,13 @@ export default ({ checking }) => {
     <Grid item xs={12}>
       <Box display="flex" flexDirection="row-reverse">
         <Box>
-          <Button onClick={e => getTargets(goNext)}>실행</Button>
+          <Button
+            color="secondary"
+            variant="contained"
+            onClick={e => getTargets(goNext)}
+          >
+            출석/환불 마감하기
+          </Button>
         </Box>
       </Box>
     </Grid>

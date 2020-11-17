@@ -15,7 +15,9 @@ export default ({ list }) => (<>
       >
         {studentName}{studentBirthday && `(만 ${CurrentAge(studentBirthday)}세)`}{!isCanBeClosed ? '(수업 예정/진행중)' : null}
       </Box>
-      <Box>
+      <Box
+        alignSelf="center"
+      >
         <Button
           variant="contained"
           component={Link}

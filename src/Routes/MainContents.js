@@ -9,6 +9,7 @@ import LessonChargeList from '../Contents/LessonChargeList/Main';
 import LessonChargeRegister from '../Contents/LessonChargeRegister/Main';
 import LessonDetails from '../Contents/LessonDetails/Main';
 import LessonDetailsAdmin from '../Contents/LessonDetailsAdmin/Main';
+import LessonEndedList from '../Contents/LessonEndedList/Main';
 import LessonEndRefund from '../Contents/LessonEndRefund/Main';
 import LessonEndReview from '../Contents/LessonEndReview/Main';
 import LessonList from '../Contents/LessonList/Main';
@@ -29,7 +30,7 @@ export default function MainContents() {
     <Route exact path="/">
       <LessonList />
     </Route>
-
+    {auth && auth.op ? (<>
     <Route exact path="/account/password">
       <ChangeMyPassword />
     </Route>
@@ -73,16 +74,14 @@ export default function MainContents() {
     <Route exact path="/admin/student/add">
       <StudentAdd />
     </Route>
+    <Route exact path="/admin/lessonEnded">
+      <LessonEndedList />
+    </Route>
     <Route exact path="/admin/calculator">
       <Calculator />
     </Route>
+    </>) : null}
 
-
-
-
-    <Route exact path="/admin/student/detail/:studentID">
-
-    </Route>
     <Route exact path="/lesson/detail/:quarterID/:lessonMonth">
       <LessonDetails />
     </Route>

@@ -1,8 +1,9 @@
 const mariadb = require('mariadb');
 const config = require('./poolConfig');
-const pool = mariadb.createPool(process.env.DEV ? config.dev : config.release);
+const pool = mariadb.createPool(config);
 
 function transaction(queries, err) {
+  // not stable
   pool.getConnection()
   .then(conn => {
     conn.beginTransaction()
