@@ -56,6 +56,10 @@ select
   from studentInfo
   where studentInfo.studentID=billing.studentID
   ) as studentName,
+  (select studentBirthday
+  from studentInfo
+  where studentInfo.studentID=billing.studentID
+  ) as studentBirthday,
   (select checkOK
   from checking
   where

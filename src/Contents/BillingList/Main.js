@@ -28,7 +28,7 @@ function fetchBillingList({ year: needYear, month: needMonth }, callback) {
   let isPast = true;
   if(currentYear < needYear) isPast = false;
   else if(currentYear === needYear && currentMonth <= needMonth) isPast = false;
-  const pathname = isPast ? `/api/dev/admin/billing/registered/${needYear}-${needMonth}-01` : `/api/dev/admin/billing/all/${needYear}-${needMonth}-01`; 
+  const pathname = isPast ? `/api/admin/billing/registered/${needYear}-${needMonth}-01` : `/api/admin/billing/all/${needYear}-${needMonth}-01`; 
   axios.get(pathname)
   .then(r => callback(null, r))
   .catch(callback);

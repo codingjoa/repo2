@@ -41,12 +41,13 @@ function today() {
   const today = /^([0-9]{4}-[0-9]{2}-[0-9]{2})/.exec( DO.toJSON() );
   return today;
 }
-
-
+function toYear(origin) {
+  return (new Date(origin)).getFullYear();
+}
 
 const HookCheckBox = createContext(null);
 
-function StudentInfo({ id, name, modifiedAt }) {
+function StudentInfo({ id, name, birthday, modifiedAt }) {
 /* @codingjoa
    학생 정보를 1줄 출력하는 컴포넌트
 */
@@ -55,7 +56,7 @@ function StudentInfo({ id, name, modifiedAt }) {
   return (
     <>
       <TableCell>
-        {name}
+        {name}{birthday && `(${toYear(birthday)}년)`}
       </TableCell>
       <TableCell>
         {TimeString(modifiedAt)}
@@ -111,6 +112,7 @@ function SortedList({ students }) {
               <StudentInfo 
                 id={row.studentID}
                 name={row.studentName}
+                birthday={row.studentBirthday}
                 modifiedAt={row.checkModified}
               />
             </TableRow>

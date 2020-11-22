@@ -14,8 +14,11 @@ function Group(code) {
   code === 2 ? '그룹 레슨(5~6)' :
   '?';
 }
+function toYear(origin) {
+  return (new Date(origin)).getFullYear();
+}
 
-export default ({ studentID, studentName, quarterName, billingPrice, billingPayment, billingGroup, billingRetractable, studentUnused, quarterUnused }) => (
+export default ({ studentID, studentBirthday, studentName, quarterName, billingPrice, billingPayment, billingGroup, billingRetractable, studentUnused, quarterUnused }) => (
   <Page>
     <Box display="flex">
       <Box
@@ -23,7 +26,7 @@ export default ({ studentID, studentName, quarterName, billingPrice, billingPaym
         alignSelf="center"
       >
         <Typography variant="subtitle1">
-          {studentName}{studentUnused ? '(미사용)' : null}/{quarterName}{quarterUnused ? '(미사용)' : null}
+          {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}{studentUnused ? '(퇴학)' : null}/{quarterName}{quarterUnused ? '(미사용)' : null}
         </Typography>
         <Typography variant="subtitle2">
           {Payment(billingPayment)}/{Group(billingGroup)}

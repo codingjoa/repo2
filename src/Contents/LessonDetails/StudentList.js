@@ -4,6 +4,9 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Typography from '@material-ui/core/Typography';
 import Page from '../../Templates/Page';
+function toYear(origin) {
+  return (new Date(origin)).getFullYear();
+}
 
 export default ({ students }) => {
   const { quarterID, lessonMonth } = useParams();
@@ -12,14 +15,14 @@ export default ({ students }) => {
       <Typography variant="subtitle1">
         학생 목록
       </Typography>
-      {students && students.map(({ studentID, studentName }) => <Page>
+      {students && students.map(({ studentID, studentName, studentBirthday }) => <Page>
         <Box display="flex">
           <Box
             flexGrow={1}
             alignSelf="center"
           >
             <Typography variant="h6">
-              {studentName}
+              {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}
             </Typography>
           </Box>
           <Box>

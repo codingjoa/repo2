@@ -7,8 +7,11 @@ import Zoom from '@material-ui/core/Zoom';
 import Typography from '@material-ui/core/Typography';
 import MenuItem from '@material-ui/core/MenuItem';
 import Page from '../../Templates/Page';
+function toYear(origin) {
+  return (new Date(origin)).getFullYear();
+}
 
-export default ({ studentID, studentName, useState, QuarterList }) => {
+export default ({ studentID, studentName, studentBirthday, useState, QuarterList }) => {
   const { checkbox, quarter, group, payment, price } = useState(studentID, studentName);
   return (
   <Page>
@@ -18,7 +21,7 @@ export default ({ studentID, studentName, useState, QuarterList }) => {
         alignSelf="center"
       >
         <Typography variant="subtitle1">
-          {studentName}
+          {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}
         </Typography>
       </Box>
       <Box>

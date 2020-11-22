@@ -8,11 +8,26 @@ module.exports = async function(
   const quarterID = req.params?.quarterID;
   const lessonMonth = req.params?.lessonMonth;
   pool.query(`
-    select checking.*,
-    (select studentName from studentInfo where checking.studentID=studentInfo.studentID) as studentName
-    from checking
-    where
-    date_format(lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and quarterID=? and studyWeek=?`,
+select
+  checking.*,
+  (select
+    studentName
+  from
+    studentInfo
+  where
+    checking.studentID=studentInfo.studentID
+  ) as studentName,
+  (select
+    studentBirthday
+  from
+    studentInfo
+  where
+    checking.studentID=studentInfo.studentID
+  ) as studentBirthday
+from
+  checking
+where
+  date_format(lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and quarterID=? and studyWeek=?`,
     [ lessonMonth, quarterID, weekNum-0 ]
   )
   .then(r => {

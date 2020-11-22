@@ -16,6 +16,9 @@ function alerter(iter) {
 function isDisabled(week1, week2, week3, week4) {
   return !(!week2 && !week3 && !week4);
 }
+function toYear(origin) {
+  return (new Date(origin)).getFullYear();
+}
 
 export default ({ checking }) => {
   const { useHandlar, getTargets } = Handlar(checking);
@@ -48,10 +51,10 @@ export default ({ checking }) => {
       출결표
     </Typography>
     <Page>
-      {checking && checking.map(({ studentID, studentName, week1, week2, week3, week4, refundReason }) =>
+      {checking && checking.map(({ studentID, studentName, studentBirthday, week1, week2, week3, week4, refundReason }) =>
       <>
         <Box display="flex">
-          <Box flexGrow={1} alignSelf="center">{studentName}</Box>
+          <Box flexGrow={1} alignSelf="center">{studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}</Box>
           <Box alignSelf="center"><Icon color={week1 ? 'secondary' : 'disabled'}><CheckIcon /></Icon></Box>
           <Box alignSelf="center"><Icon color={week2 ? 'secondary' : 'disabled'}><CheckIcon /></Icon></Box>
           <Box alignSelf="center"><Icon color={week3 ? 'secondary' : 'disabled'}><CheckIcon /></Icon></Box>
