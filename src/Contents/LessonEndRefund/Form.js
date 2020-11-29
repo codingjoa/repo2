@@ -48,10 +48,10 @@ export default ({ list, callback }) => {
     <Grid item xs={12}>
       <Box display="flex" flexDirection="row-reverse">
         <Box>
-          <Button variant="contained" color="secondary" onClick={e => history.goBack()}>이전</Button>
+          <Button variant="contained" onClick={e => history.goBack()}>이전</Button>
         </Box>
         <Box>
-          <Button variant="contained" color="primary" onClick={e => goNext(callback)}>다음</Button>
+          <Button variant="contained" color="secondary" onClick={e => goNext(callback)}>다음</Button>
         </Box>
       </Box>
     </Grid>

@@ -36,11 +36,11 @@ alert(err.response.data.cause);
       const lessonMonth = location?.state?.lessonMonth;
       const regex = /^(\d{4})\-(\d{1,2})\-\d{1,2}/;
       if(regex.test(lessonMonth)) {
-        history.push('/admin/calculator');
+        history.push('/admin/lessonEnded');
       }
       const [ _, year, month ] = regex.exec(lessonMonth);
       history.push({
-        pathname: '/admin/calculator',
+        pathname: '/admin/lessonEnded',
         state: {
           year,
           month
@@ -59,10 +59,16 @@ alert(err.response.data.cause);
         <Box m={2}>
           <Button
             variant="contained"
-            color="primary"
+            color="secondary"
             onClick={submit}
           >
             확인
+          </Button>
+          <Button
+            variant="contained"
+            onClick={e => history.goBack()}
+          >
+            취소
           </Button>
         </Box>
       </Box>

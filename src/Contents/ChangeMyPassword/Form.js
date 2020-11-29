@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import axios from 'axios';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import Button from '@material-ui/core/Button';
 import Box from '@material-ui/core/Box';
@@ -57,6 +58,7 @@ export default () => {
     tryPasswordChange(callback, { password, newpw });
   };
   return (
+  <><Typography variant="subtitle1">비밀번호 변경</Typography>
     <Grid item xs={12}>
       <Box m={2}>
       <TextField
@@ -107,5 +109,5 @@ export default () => {
       </Button>
       </Box>
     </Grid>
-  );
+  </>);
 }

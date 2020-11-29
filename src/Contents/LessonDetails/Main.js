@@ -1,42 +1,50 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import * as ReactRouter from 'react-router-dom';
 import axios from 'axios';
 import General from './General';
 import StudyList from './StudyList';
 import StudentList from './StudentList';
 function fetchDetails(callback, { quarterID, lessonMonth }) {
-  axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}`)
+  axios.get(`/api/dev/teacher/lesson/${quarterID}/${lessonMonth}`)
   .then(r => callback(null, r))
   .catch(callback);
 }
 
 export default () => {
-  const [ status, setStatus ] = React.useState(null);
-  const [ students, setStudents ] = React.useState(null);
-  const [ general, setGeneral ] = React.useState(null);
-  const { quarterID, lessonMonth } = useParams();
+  const [ count, setCount ] = React.useState(0);
+  const history = ReactRouter.useHistory();
+  const location = ReactRouter.useLocation();
+  const { quarterID, lessonMonth } = ReactRouter.useParams();
   const handleState = (err, result) => {
     if(err) {
-      setStatus(err.response.status);
-alert(err.response.data.cause);
+      history.replace({
+        state: {
+          status: err.response.status ?? 400,
+          message: err.response.data.cause
+        }
+      });
       return;
     }
-    setStudents(result.data.fetchedData.students);
-    setGeneral(result.data.fetchedData.general);
-    setStatus(result.status);
+    history.replace({
+      state: {
+        status: 200,
+        data: result.data.fetchedData
+      }
+    });
   }
   React.useLayoutEffect(() => {
     fetchDetails(handleState, { quarterID, lessonMonth });
   }, []);
   return (
     <>
-      {status === 404 && <>조회된 정보 없음.</>}
-      {status === 400 && <>알 수 없는 오류.</>}
-      {status === 200 &&
+      {!location?.state?.status && <>...</>}
+      {!location?.state?.status === 404 && <>조회된 정보 없음.</>}
+      {location?.state?.status === 400 && <>알 수 없는 오류.</>}
+      {location?.state?.status === 200 &&
       <>
-        <General {...general}/>
+        <General {...location.state.data}/>
         <StudyList />
-        {students && <StudentList students={students}/>}
+        {location.state.data.students && <StudentList students={location.state.data.students}/>}
       </>
       }
     </>

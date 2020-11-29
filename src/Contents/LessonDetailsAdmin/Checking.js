@@ -48,7 +48,10 @@ export default ({ checking }) => {
   return (
   <>
     <Typography variant="subtitle1">
-      출결표
+      {location?.state?.isCanBeClosed ?
+        <>환불/이월할 학생 선택</> :
+        <>출결표</>
+      }
     </Typography>
     <Page>
       {checking && checking.map(({ studentID, studentName, studentBirthday, week1, week2, week3, week4, refundReason }) =>

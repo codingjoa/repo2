@@ -12,16 +12,16 @@ export default ({ list }) => (<>
         flexGrow={1}
         alignSelf="center"
       >
-        {teacherOp ? '[원장]' : null}{teacherName}({teacherAccount}){!isCanBeClosed ? '(수업중)' : null}
+        {teacherOp ? '[원장급]' : null}{teacherName}({teacherAccount}){!isCanBeClosed ? '(수업중)' : null}
       </Box>
       <Box>
         <Rename id={teacherID} name={teacherName} />
       </Box>
       <Box>
-        <PasswordReset id={teacherID} name={teacherName} disabled={teacherOp}/>
+        <PasswordReset id={teacherID} name={teacherName} disabled={teacherName === 'admin'}/>
       </Box>
       <Box>
-        <Close id={teacherID} name={teacherName} disabled={teacherOp || !isCanBeClosed}/>
+        <Close id={teacherID} name={teacherName} disabled={teacherName === 'admin' || !isCanBeClosed}/>
       </Box>
     </Box>
   </Page>)}

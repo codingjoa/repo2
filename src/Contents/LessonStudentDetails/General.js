@@ -1,5 +1,6 @@
 import React from 'react';
 import { useParams } from 'react-router-dom';
+import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
 import Box from '@material-ui/core/Box';
@@ -68,6 +69,7 @@ export default ({
     alert('변경되었습니다.');
   };
   return (
+  <><Typography variant="subtitle1">학생 정보 조회/수정</Typography>
     <Grid item xs={12}>
       <Box m={2}>
       <TextField
@@ -164,5 +166,5 @@ export default ({
       </Button>
       </Box>
     </Grid>
-  );
+  </>);
 }

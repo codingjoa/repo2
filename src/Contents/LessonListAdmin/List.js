@@ -21,11 +21,11 @@ export default ({ list, isCanBeClosed }) => (<>
   {list && list.map(({ quarterID, quarterName, lessonMonth, teacherName }) => <Page>
     <Box display="flex" flexDirection="row-reverse">
       <Box display="flex" flexDirection="column">
-        <Box b={1}>
+        <Box mb={1}>
           <Detail quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={false}/>
         </Box>
         <Box>
-          <Close quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={!isCanBeClosed} quarterName={quarterName}/>
+          <Close quarterID={quarterID} lessonMonth={toDateFormat(lessonMonth)} disabled={false && !isCanBeClosed} quarterName={quarterName}/>
         </Box>
       </Box>
       <Box

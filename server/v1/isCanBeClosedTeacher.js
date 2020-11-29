@@ -7,6 +7,7 @@ const { pool } = require('../poolManager');
    조건2. 이 teacher가 사용된 lesson이 lessonEnded이거나 없어야 함
    조건3. 실존 선생이어야 함
    조건4. 실존 선생이고 이미 미사용이 아니어야 함
+   조건5. admin이 아니어야 함
 */
 
 module.exports = async function(
@@ -18,7 +19,8 @@ select
   0 as when1,
   0 as when2,
   0 as when3,
-  0 as when4
+  0 as when4,
+  0 as when5
 union
 select
   case when teacherOp=0 then 1 else 0 end as when1,
@@ -31,7 +33,8 @@ select
     lesson.lessonEnded=0
   ) as when2,
   1 as when3,
-  case when unused=0 then 1 else 0 end as when4
+  case when unused=0 then 1 else 0 end as when4,
+  case when teacherAccount='admin' then 0 else 1 end as when5
 from
   teacher
 where
@@ -43,8 +46,8 @@ limit 1`,
     [ teacherID ]
   )
   .then(r => {
-    const { when1, when2, when3, when4 } = r[0];
-    when1 && when2 && when3 && when4 ? next() : Forbidden(res);
+    const { when1, when2, when3, when4, when5 } = r[0];
+    when1 && when2 && when3 && when4 && when5 ? next() : Forbidden(res);
   })
   .catch(e => BadRequest(res, e));
 };

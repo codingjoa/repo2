@@ -22,9 +22,8 @@ function transaction(queries, err) {
     //err && err instanceof Function && err(e);
   });
 }
-
-module.exports = { pool, transaction };
-
 async function end() {
   pool.end();
 }
+
+module.exports = { pool, transaction, end };

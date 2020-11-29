@@ -1,7 +1,9 @@
 import React from 'react';
 
 export default (validateFunction) => {
-  const values = {};
+  const values = {
+    teacherOp: 0
+  };
   const helperLabels = {};
   const handleHelper = (key, value) => {
     helperLabels[key](value);
@@ -25,6 +27,13 @@ export default (validateFunction) => {
           setValue(e.target.value);
         }
       };
+    },
+    useHandlarCheckbox(key) {
+      return {
+        onChange: e => {
+          values[key] = e.target.checked===true ? 1 : 0;
+        }
+      }
     }
   };
 }

@@ -1,17 +1,9 @@
 const { OK, BadRequest, NotFound } = require('../format');
-const { pool } = require('../poolManager');
+const { pool, end } = require('../poolManager');
+const execAsync = require('../execAsync');
 
-/* @codingjoa
-   해당 레슨 하위 정보 조회
-*/
-
-module.exports = async function(
-  req, res
-) {
-  const quarterID = req.params?.quarterID;
-  const lessonMonth = req.params?.lessonMonth;
-  const general = await pool.query(`
-select
+const getLessonGeneral = (
+`select
   quarterID,
   (select quarterName
   from quarter
@@ -41,30 +33,125 @@ select
 from lesson
 where
   quarterID=? and
-  lessonMonth=?`,
-    [ quarterID ?? null,
-      lessonMonth ?? null
-    ]
-  )
-  .then(r => r.length ? r[0] : undefined)
-  .catch(e => BadRequest(res, e));
-  if(!general) {
-    NotFound(res);
-    return;
-  }
-  const students = await pool.query(`
-select studentInfo.*
-from studentInfo, billing
+  lessonMonth=?
+`);
+const getLessonStudents = (
+`select
+  studentInfo.studentID,
+  studentInfo.studentBirthday,
+  studentInfo.studentName
+from
+  studentInfo,
+  billing
 where
   billing.studentID=studentInfo.studentID and
   billing.quarterID=? and
-  date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')`,
-    [ quarterID ?? null,
-      lessonMonth ?? null
+  date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')
+`);
+const getLessonStudies = (
+`select 
+  studySize,
+  studyWeek,
+  studyProgressed
+from
+  (select
+    lessonMonth,
+    quarterID,
+    count(studyWeek) as studySize
+  from
+    study
+  group by
+    lessonMonth,
+    quarterID
+  ) as a,
+  (select
+    study.lessonMonth,
+    study.quarterID,
+    study.studyWeek,
+    case when count(checkModified)>0 then 1 else 0 end as studyProgressed
+  from
+    study, checking
+  where
+    study.lessonMonth=checking.lessonMonth and
+    study.quarterID=checking.quarterID and
+    study.studyWeek=checking.studyWeek
+  group by
+    study.studyWeek,
+    study.lessonMonth,
+    study.quarterID
+  order by
+    study.studyWeek desc
+  limit
+    100
+  ) as b
+where
+  a.lessonMonth=b.lessonMonth and
+  a.quarterID=b.quarterID and
+  date_format(?, '%Y-%m')=date_format(a.lessonMonth, '%Y-%m') and
+  ?=a.quarterID
+`);
+
+/* @codingjoa
+   해당 레슨 하위 정보 조회
+*/
+
+async function fetchLessonDetails(quarterID, lessonMonth) {
+  const general = await pool.query(getLessonGeneral,
+    [ quarterID,
+      lessonMonth
     ]
-  ).then(r => r.length ? r : undefined)
-  .catch(e => BadRequest(res, e));
-  OK(res, {
-    general, students
-  });
+  )
+  .then(r => r.length ? r[0] : undefined);
+  if(!general) {
+    return null;
+  }
+  const students = await pool.query(getLessonStudents,
+    [ quarterID,
+      lessonMonth
+    ]
+  ).then(r => r.length ? r : undefined);
+  const studies = await pool.query(getLessonStudies,
+    [ lessonMonth,
+      quarterID
+    ]
+  ).then(r => r.length ? r : {});
+
+  return {
+    ...general,
+    students,
+    studySize: studies.length,
+    studies: studies.map(({
+      studyWeek,
+      studyProgressed
+    })=>({
+      studyWeek,
+      studyProgressed
+    }))
+  };
+}
+
+
+
+module.exports = function(
+  req, res
+) {
+  const quarterID = req.params?.quarterID ?? null;
+  const lessonMonth = req.params?.lessonMonth ?? null;
+  execAsync(fetchLessonDetails, (err, ok) => {
+    if(err) {
+      BadRequest(res, err);
+      return;
+    } 
+    ok === null && NotFound(res);
+    ok !== null && OK(res, ok)
+  })(quarterID, lessonMonth);
 };
+module.id === require.main.id && (() => {
+  setTimeout(() => (
+
+  execAsync(fetchLessonDetails, (err, ok) => {
+    err && console.error(err);
+    ok && console.log(ok);
+    end();
+  })(17, '2020-10-01')), 3000);
+})();

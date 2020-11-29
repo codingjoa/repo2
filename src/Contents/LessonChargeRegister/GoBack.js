@@ -7,7 +7,10 @@ import Button from '@material-ui/core/Button';
 export default () => {
   const history = useHistory();
   return (
-    <Button onClick={e => history.goBack()} color="primary">
+    <Button
+      onClick={e => history.goBack()}
+      variant="contained"
+    >
       취소
     </Button>
   );

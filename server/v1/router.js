@@ -172,7 +172,7 @@ router.patch('/admin/teacher/:teacherID',
 router.get('/admin/lesson/available',
   fetchAvailableLesson
 );
-router.post('/admin/lesson/:quarterID/:teacherID',
+router.post('/admin/lesson/:quarterID/:teacherID/:studySize',
   isAvailableLesson,
   addLesson
 );

@@ -16,9 +16,14 @@ module.exports = async function(
 */
   const teacherName = req.body?.teacherName;
   const teacherAccount = req.body?.id;
+  const teacherOp = req.body?.teacherOp ?? 0;
+  if(teacherAccount==='admin') {
+    BadRequest(res, new Error('admin 계정은 생성할 수 없습니다.'));
+    return;
+  }
   pool.query(
-    'insert into teacher(teacherName, teacherAccount, teacherPassword) values(?, ?, 0)',
-    [ teacherName, teacherAccount ]
+    'insert into teacher(teacherName, teacherAccount, teacherPassword, teacherOp) values(?, ?, 0, ?)',
+    [ teacherName, teacherAccount, teacherOp ]
   )
   .then(r => ( ( req.next.teacherID = r.insertId ) > 0 ) ? next() : BadRequest(res, new Error('정보가 생성되지 않았습니다.')))
   .catch(e => BadRequest(res, e));
