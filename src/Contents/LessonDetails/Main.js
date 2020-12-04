@@ -5,7 +5,7 @@ import General from './General';
 import StudyList from './StudyList';
 import StudentList from './StudentList';
 function fetchDetails(callback, { quarterID, lessonMonth }) {
-  axios.get(`/api/dev/teacher/lesson/${quarterID}/${lessonMonth}`)
+  axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}`)
   .then(r => callback(null, r))
   .catch(callback);
 }

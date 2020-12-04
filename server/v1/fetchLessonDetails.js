@@ -29,7 +29,15 @@ const getLessonGeneral = (
     billing.quarterID=lesson.quarterID and
     billing.lessonMonth=lesson.lessonMonth and
     billingGroup>0
-  ) as groupStudents
+  ) as groupStudents,
+  (select
+    count(studyWeek) as studySize
+  from
+    study
+  where
+    study.quarterID=lesson.quarterID and
+    study.lessonMonth=lesson.lessonMonth
+  ) as studySize
 from lesson
 where
   quarterID=? and
@@ -50,20 +58,9 @@ where
 `);
 const getLessonStudies = (
 `select 
-  studySize,
   studyWeek,
   studyProgressed
 from
-  (select
-    lessonMonth,
-    quarterID,
-    count(studyWeek) as studySize
-  from
-    study
-  group by
-    lessonMonth,
-    quarterID
-  ) as a,
   (select
     study.lessonMonth,
     study.quarterID,
@@ -80,15 +77,13 @@ from
     study.lessonMonth,
     study.quarterID
   order by
-    study.studyWeek desc
+    study.studyWeek asc
   limit
     100
   ) as b
 where
-  a.lessonMonth=b.lessonMonth and
-  a.quarterID=b.quarterID and
-  date_format(?, '%Y-%m')=date_format(a.lessonMonth, '%Y-%m') and
-  ?=a.quarterID
+  date_format(?, '%Y-%m')=date_format(b.lessonMonth, '%Y-%m') and
+  ?=b.quarterID
 `);
 
 /* @codingjoa
@@ -119,18 +114,9 @@ async function fetchLessonDetails(quarterID, lessonMonth) {
   return {
     ...general,
     students,
-    studySize: studies.length,
-    studies: studies.map(({
-      studyWeek,
-      studyProgressed
-    })=>({
-      studyWeek,
-      studyProgressed
-    }))
+    studies
   };
 }
-
-
 
 module.exports = function(
   req, res
@@ -153,5 +139,5 @@ module.id === require.main.id && (() => {
     err && console.error(err);
     ok && console.log(ok);
     end();
-  })(17, '2020-10-01')), 3000);
+  })(6, '2020-10-01')), 3000);
 })();

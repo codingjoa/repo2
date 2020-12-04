@@ -18,7 +18,7 @@ export default () => {
         component={ReactRouter.Link}
         to={`/lesson/detail/${quarterID}/${lessonMonth}/study/${studyWeek}`}
       >
-        {studyWeek}주차
+        {studyWeek}회차
       </Button>
     </Grid>
   );

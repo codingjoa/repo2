@@ -8,22 +8,26 @@ function fetchDetails(callback, { quarterID, lessonMonth }) {
   .then(r => callback(null, r))
   .catch(callback);
 }
+let status = 0;
+let data = null;
 
 export default () => {
-  const [ status, setStatus ] = React.useState(null);
-  const [ checking, setChecking ] = React.useState(null);
-  const [ general, setGeneral ] = React.useState(null);
+  const [ count, setCount ] = React.useState(0);
   const { quarterID, lessonMonth } = useParams();
   const handleState = (err, result) => {
     if(err) {
-      setStatus(err.response.status);
+      status = err?.response?.status ?? 400;
+      setCount(count => count+1);
       return;
     }
-    setChecking(result.data.fetchedData.checking);
-    setGeneral(result.data.fetchedData.general);
-    setStatus(result.status);
+    data = result.data.fetchedData;
+    status = 200;
+    setCount(count => count+1);
   }
   React.useLayoutEffect(() => {
+    status = 0;
+    data = null;
+    setCount(0);
     fetchDetails(handleState, { quarterID, lessonMonth });
   }, []);
   return (
@@ -32,8 +36,13 @@ export default () => {
       {status === 400 && <>알 수 없는 오류.</>}
       {status === 200 &&
       <>
-        <General {...general} />
-        <Checking checking={checking} />
+        <General
+          {...data}
+        />
+        <Checking
+          studySize={data.studySize}
+          students={data.students}
+        />
       </>
       }
     </>
