@@ -41,6 +41,8 @@ where
 );
 
 async function addLesson(quarterID, teacherID, studySize) {
+  let success = false;
+
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
@@ -56,11 +58,13 @@ async function addLesson(quarterID, teacherID, studySize) {
     }
     conn.query(updateBillingRetractable, [ quarterID ]);
     await conn.commit();
+    success = true;
   } catch(err) {
     console.error(err);
     await conn.rollback();
   }
   await conn.release();
+  return success;
 }
 
 /* @codingjoa
@@ -79,9 +83,11 @@ module.exports = function(
     if(err) {
       BadRequest(res, err);
       return;
-    } 
-    ok === null && NotFound(res);
-    ok !== null && OK(res, ok)
+    }
+    // 실패했고 롤백함
+    ok === false && BadRequest(res);
+    // 성공함
+    ok === true && OK(res, ok);
   })(quarterID, teacherID, studySize);
 };
 module.id === require.main.id && (() => {

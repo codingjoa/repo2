@@ -12,29 +12,34 @@ function fetchQuarters(callback) {
   .catch(callback);
 }
 
+let fd, status;
+
 export default () => {
-  const [ status, setStatus ] = React.useState(0);
-  const [ fd, setFd ] = React.useState(null);
+  const [ count, setCount ] = React.useState(null);
   const [ searchKeyword, setSearchKeyword ] = React.useState('');
+  React.useLayoutEffect(() => setCount(0), []);
   React.useLayoutEffect(() => {
-    if(fd !== null) return;
+    if(count !== 0) return;
     fetchQuarters((err, result) => {
       if(err) {
         if(!err?.response?.status) {
           alert(err);
-          setStatus(400);
+          status = 400;
+          setCount(count => count+1);
           return;
         }
         else if(err.response.status === 400) {
           alert(err.response.data.cause);
         }
-        setStatus(err.response.status)
+        status = err.response.status;
+        setCount(count => count+1);
         return;
       }
-      setFd(result.data.fetchedData);
-      setStatus(200);
+      fd = result.data.fetchedData;
+      status = 200;
+      setCount(count => count+1);
     });
-  }, [ fd ]);
+  }, [ count ]);
   const filtering = React.useCallback(value => {
 /* @codingjoa
    RegExp(정규식)을 이용하기 때문에
@@ -46,20 +51,22 @@ export default () => {
   return (
     <Context.Provider
       value={{
-        reload: () => setFd(null)
+        reload: () => setCount(0)
       }}
     >
       <Typography variant="subtitle1">반 관리</Typography>
       <Search setSearchKeyword={setSearchKeyword} />
       <Tools />
-      {status === 0 &&
-        <CircularProgress />
-      }
-      {status === 404 && 
-        <>반이 없습니다. 새 반을 생성하세요.</>
-      }
-      {status === 200 && fd &&
-        <List list={fd.filter(filtering)} />
+      {count === 0 ?
+        <CircularProgress /> :
+        <>
+          {status === 404 && 
+            <>반이 없습니다. 새 반을 생성하세요.</>
+          }
+          {status === 200 && fd &&
+            <List list={fd.filter(filtering)} />
+          }
+        </>
       }
     </Context.Provider>
   );

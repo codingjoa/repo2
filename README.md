@@ -50,4 +50,10 @@ pm2 stop all
 1. 주차수 선택 가능
 2. 수업 결과 창 변경
 
+1.2.1
+1. server: addLesson에 포함되지 않는 NotFound 함수를 호출하는 버그 수정
+2. src: QuarterList의 렌더링 방식 변경
+3. `poolConfig.js` 에서 `poolManager.config.js`로 변경
+4. pm2: ecosystem.config.js 변경
+
 참 쉽죠?

@@ -1,7 +1,7 @@
 
 create user if not exists ky@localhost identified by '1234';
 create database if not exists v1;
-grant insert, select, update on v1.* to ky@localhost;
+grant insert, select, update, delete on v1.* to ky@localhost;
 flush privileges;
 
 

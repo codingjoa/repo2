@@ -7,8 +7,12 @@ module.exports = {
   }, {
     name: 'restAPI',
     script: './server/server.js',
-    watch: ['./server'],
-    restart_delay: 10000
+    watch: false,
+    restart_delay: 10000,
+    env: {
+      'MARIADB_PORT': 3307,
+      'MARIADB_NAME': 'v1'
+    }
   }],
 
   deploy : {
