@@ -49,20 +49,6 @@ function NotFound(res) {
 }
 
 module.exports = {
-  Success(message, data) {
-    return r => ({
-      complete: true,
-      message,
-      data
-    });
-  },
-  anError(message) {
-    return e => ({
-      complete: false,
-      message,
-      cause: e.message
-    });
-  },
   OK,
   Created,
   NoContent,

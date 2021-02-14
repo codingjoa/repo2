@@ -1,0 +1,6 @@
+// NoContent로 보내면 axios 프로미스에서 result가 없어서 후 처리가 안됨.
+
+테이블
+ billingTypes
+ refundExample
+ salary

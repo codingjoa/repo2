@@ -4,7 +4,6 @@ create database if not exists v1;
 grant insert, select, update, delete on v1.* to ky@localhost;
 flush privileges;
 
-
 create table if not exists v1.studentID (
   studentID int unsigned not null AUTO_INCREMENT,
   studentCreated timestamp not null default current_timestamp,
@@ -46,7 +45,7 @@ create table if not exists v1.quarter (
   primary key quarterID
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE if not exists `v1.lesson` (
+CREATE TABLE if not exists v1.lesson (
   quarterID int unsigned DEFAULT NULL,
   lessonMonth date DEFAULT NULL,
   lessonEnded boolean not null default 0,
@@ -57,7 +56,7 @@ CREATE TABLE if not exists `v1.lesson` (
   foreign key (teacherID) REFERENCES teacher(teacherID) on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE if not exists `v1.study` (
+CREATE TABLE if not exists v1.study (
   `quarterID` int unsigned DEFAULT NULL,
   `lessonMonth` date DEFAULT NULL,
   `lessonDate` date DEFAULT NULL,
@@ -65,7 +64,7 @@ CREATE TABLE if not exists `v1.study` (
   FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE if not exists `v1.checking` (
+CREATE TABLE if not exists v1.checking (
   `checkingID` int unsigned NOT NULL AUTO_INCREMENT,
   `quarterID` int unsigned DEFAULT NULL,
   `lessonMonth` date DEFAULT NULL,
@@ -78,7 +77,7 @@ CREATE TABLE if not exists `v1.checking` (
   FOREIGN KEY (`studentID`) REFERENCES `studentID`(`studentID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE if not exists `v1.billing` (
+CREATE TABLE if not exists v1.billing (
   `studentID` int unsigned DEFAULT NULL,
   `quarterID` int unsigned DEFAULT NULL,
   `lessonMonth` date DEFAULT NULL,
@@ -90,7 +89,7 @@ CREATE TABLE if not exists `v1.billing` (
   FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-CREATE TABLE if not exists `v1.refund` (
+CREATE TABLE if not exists v1.refund (
   `studentID` int(10) unsigned DEFAULT NULL,
   `quarterID` int(10) unsigned DEFAULT NULL,
   `lessonMonth` date DEFAULT NULL,

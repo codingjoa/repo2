@@ -9,7 +9,6 @@ const api = express.Router();
 const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-
 app.use(session({
   secret: 'ky',
   resave: false,
@@ -26,11 +25,10 @@ app.use('/api', api);
    라우터
 */
 const version1 = require('./v1/router');
-const development = require('./dev/router');
-
 api.use('/v1', version1);
-api.use('/dev', development);
 api.use(version1);
+const development = require('./dev/router');
+api.use('/dev', development);
 
 
 /* @codingjoa

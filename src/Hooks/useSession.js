@@ -1,38 +1,58 @@
-import { useState, useCallback } from 'react';
+import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import axios from 'axios';
-
-let globalsession = null;
-
+function signInFunction(
+  setState,
+  handleError
+) {
+  return (
+    id,
+    password
+  ) => {
+    axios.post('/api/auth', {
+      id, password
+    })
+    .then(setState)
+    .catch(handleError);
+  }
+}
+function signOutFunction(
+  setState,
+  handleError
+) {
+  return () => {
+    axios.delete('/api/auth')
+    .then(setState)
+    .catch(handleError);
+  }
+}
 async function getSessionForce() {
   // 무조건 세션 검사
-  globalsession = await axios.get('/api/auth').then(r => r.data?.fetchedData);
-  return globalsession;
+  return await axios.get('/api/auth').then(r => r.data?.fetchedData);
 }
-
-export default function useSession(location) {
-  const [ session, setSession ] = useState(undefined);
-
-  const refreshSession = useCallback(() => {
-    getSessionForce().then(setSession).catch(e => {
-      //setSession(e.response?.status);
+export default () => {
+  const [ session, setSession ] = React.useState(undefined);
+  const location = ReactRouter.useLocation();
+  const refreshSession = React.useCallback(() => {
+    getSessionForce().then(result => {
+      setSession(result);
+      if(!sessionStorage?.teacherName) {
+        sessionStorage.setItem('teacherName', result.name);
+      }
+    }).catch(e => {
       setSession(null);
+      sessionStorage.clear();
     });
   }, [ setSession ]);
-
-  const signIn = useCallback((id, password) => {
-    axios.post('/api/auth', {id, password})
-    .then(refreshSession)
-    .catch(e => {
-      if(e.response && !alert(`로그인 실패: ${e.response.data.cause}`)) return;
-
-    });
-  }, []);
-
-  const signOut = useCallback(() => {
-    axios.delete('/api/auth')
-    .then(r => alert('로그아웃 되었습니다.'))
-    .then(refreshSession)
-    .catch(e => e.response.status===401 && alert('로그인 되지 않았습니다.'));
-  }, []);
+  const signIn = React.useCallback(signInFunction(refreshSession, err => {
+    if(err.response && !alert(`로그인 실패: ${err.response.data.cause}`)) return;
+  }), []);
+  const signOut = React.useCallback(signOutFunction(() => {
+    alert('로그아웃 되었습니다.');
+    refreshSession();
+  }, err => {
+    if(err.response.status===401) alert('로그인 되지 않았습니다.')
+  }), []);
+  React.useLayoutEffect(refreshSession, [ location ]);
   return { session, refreshSession, signIn, signOut };
 }

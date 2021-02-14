@@ -215,7 +215,7 @@ router.delete('/admin/billing/:studentID/:lessonMonth',
   deleteBilling
 );
 
-router.get('/admin/calculator/proceed/:lessonMonth',
+router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',
   calculateProceeds
 );
 
