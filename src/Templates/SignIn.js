@@ -1,28 +1,24 @@
 import React, { useCallback, useRef } from 'react';
 import Avatar from '@material-ui/core/Avatar';
-import Button from '@material-ui/core/Button';
-import CssBaseline from '@material-ui/core/CssBaseline';
-import TextField from '@material-ui/core/TextField';
-import Link from '@material-ui/core/Link';
 import Box from '@material-ui/core/Box';
+import Button from '@material-ui/core/Button';
+import Container from '@material-ui/core/Container';
+import CssBaseline from '@material-ui/core/CssBaseline';
+import Link from '@material-ui/core/Link';
 import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
+import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-import Container from '@material-ui/core/Container';
 
-function Copyright() {
-  return (
-    <Typography variant="body2" color="textSecondary" align="center">
-      {'Copyright © '}
-      <Link color="inherit" href="https://material-ui.com/">
-        ky
-      </Link>{' '}
-      {new Date().getFullYear()}
-      {'.'}
-    </Typography>
-  );
-}
-
+const Copyright = () => (
+  <Typography variant="body2" color="textSecondary" align="center">
+    Copyright &copy;
+    <Link color="inherit" href="https://material-ui.com/">
+      ky
+    </Link>{' '}
+    {new Date().getFullYear()}.
+  </Typography>
+);
 const useStyles = makeStyles((theme) => ({
   paper: {
     marginTop: theme.spacing(8),
@@ -57,14 +53,24 @@ export default function SignIn({ signIn }) {
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
-      <div className={classes.paper}>
-        <Avatar className={classes.avatar}>
+      <div
+        className={classes.paper}
+      >
+        <Avatar
+          className={classes.avatar}
+        >
           <LockOutlinedIcon />
         </Avatar>
-        <Typography component="h1" variant="h5">
+        <Typography
+          component="h1"
+          variant="h5"
+        >
           학원관리 프로그램
         </Typography>
-        <form className={classes.form} noValidate>
+        <form
+          className={classes.form}
+          noValidate
+        >
           <TextField
             variant="outlined"
             margin="normal"
@@ -101,7 +107,9 @@ export default function SignIn({ signIn }) {
           </Button>
         </form>
       </div>
-      <Box mt={8}>
+      <Box
+        mt={8}
+      >
         <Copyright />
       </Box>
     </Container>
