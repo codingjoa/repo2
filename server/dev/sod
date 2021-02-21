@@ -44,16 +44,192 @@ function three(
 function eight(
   ?
 ) {
-  
+  return 
 }
 
 function nine(
   과세표준
 ) {
-  
+  if(과세표준<=1200) return 과세표준 * 0.06;
+  if(과세표준<=4600) return 72 + ((과세표준 - 1200) * 0.15);
+  if(과세표준<=8800) return 582 + ((과세표준 - 4600) * 0.24);
+  if(과세표준<=15000) return 1590 + ((과세표준 - 8800) * 0.35);
+  if(과세표준<=30000) return 3760 + ((과세표준 - 15000) * 0.38);
+  if(과세표준<=50000) return 9460 + ((과세표준 - 30000) * 0.40);
+  return 17460 + ((과세표준 - 50000) * 0.42);
 }
+
 function (
   산출세액
 ) {
 
 }
+
+
+
+// alise eight
+function gongje(
+  person,
+  total_salary,
+  under_twenty
+) {
+  let person, allperson, total_salary,
+    sicone, sictwo, sicthree,
+    sicfour, sicfive, sicsix,
+    sicseven, siceight;
+  if(under_twenty != 0) {
+    allperson = person + under_twenty;
+  } else {
+    allperson = person;
+  }
+  if(allperson === 1) {
+    if(total_salary <= 30000000) {
+      sicone = total_salary * 0.04;
+      sictwo = 3100000 + sicone;
+      return sictwo;
+    } else if(total_salary > 30000000 && total_salary <= 45000000) {
+      sicone = total_salary * 0.04;
+      sictwo = 3100000 + sicone;
+      sicthree = total_salary - 30000000;
+      sicfour = sicthree * 0.05;
+      sicfive = sictwo - sicfour;
+      return sicfive;
+    } else if(total_salary > 45000000 && total_salary <= 70000000){
+        sicone = total_salary * 0.015;
+        sictwo = 3100000 + sicone;
+        return sictwo;
+      }else if(total_salary > 70000000 && total_salary <= 120000000){
+        sicone = total_salary * 0.005;
+        sictwo = 3100000 + sicone;
+        return sictwo;
+      } else {
+        //1명 공식 끝
+      }
+    } else if(allperson === 2) {
+      if(total_salary <= 30000000) {
+        sicone = total_salary * 0.04;
+        sictwo = 3600000 + sicone;
+        return sictwo;
+      } else if(total_salary > 30000000 && total_salary <= 45000000) {
+        sicone = total_salary * 0.04;
+        sictwo = 3600000 + sicone;
+        sicthree = total_salary - 30000000;
+        sicfour = sicthree * 0.05;
+        sicfive = sictwo - sicfour;
+        return sicfive;
+      } else if(total_salary > 45000000 && total_salary <= 70000000) {
+        sicone = total_salary * 0.02;
+        sictwo = 3600000 + sicone;
+        return sictwo;
+      } else if(total_salary > 70000000 && total_salary <= 120000000) {
+        sicone = total_salary * 0.01;
+        sictwo = 3600000 + sicone;
+        return sictwo;
+      } else {
+        //2명 공식 끝
+      }
+    } else if(allperson >= 3) {
+      if(total_salary <= 30000000) {
+        sicone = total_salary * 0.07;
+        sictwo = 5000000 + sicone;
+        return sictwo;
+      } else if(total_salary > 30000000 && total_salary <= 45000000) {
+        sicone = total_salary * 0.07;
+        sictwo = 5000000 + sicone;
+        sicthree = total_salary - 30000000;
+        sicfour = sicthree * 0.05;
+        sicfive = sictwo - sicfour;
+        sicsix = total_salary - 40000000;
+        sicseven = sicsix * 0.05;
+        siceight = sicfive - sicseven;
+        return siceight;
+      } else if(total_salary > 45000000 && total_salary <= 70000000) {
+        sicone = total_salary * 0.05;
+        sictwo = 5000000 + sicone;
+        sicthree = total_salary - 40000000;
+        sicfour = sicthree * 0.04;
+        sicfive = sictwo + sicfour;
+        return sicfive;
+      } else if(total_salary > 70000000 && total_salary <= 120000000) {
+        // 5,000,000 + (84,120,000 × 0.03) + [(84,120,000 - 40,000,000 )× 4%] = 7,730,800
+        sicone = total_salary * 0.03;
+        sictwo = 5000000 + sicone;
+        sicthree = total_salary - 40000000;
+        sicfour = sicthree * 0.04;
+        sicfive = sictwo + sicfour;
+        return sicfive;
+      } else {
+        //3명 공식 끝
+      }
+    }
+  }
+}
+//console.log(gongje(2, 48120000, 2));
+//10번에 대한 설명
+
+//아래는 공식 입니다.
+//275,000원 + [(산출세액 - 500,000) × 0.3]
+//산출세액이 1,633,170원 이라고 칩니다.
+let sanchul;
+// 275,000 + [(1,633,170 - 500,000) × 30%] = 614,950
+let sicone;
+let sictwo;
+let sicthree;
+let sicfour;
+let total_salary;
+function geunlo(
+  sanchul,
+  total_salary
+) {
+  sicone = sanchul - 500000;
+  sictwo = sicone * 0.3;
+  sicthree = 275000 + sictwo;
+  sicfour = Math.floor(sicthree/10) * 10;
+  if(sicfour >= 660000){
+    if(total_salary <= 55000000){
+      sicfour = 660000;
+      return sicfour;
+    }else if (total_salary > 55000000 && total_salary <= 70000000) {
+      sicfour = 660000;
+      return sicfour;
+    }else if(total_salary > 70000000){
+      sicfour = 500000;
+      return sicfour;
+    }
+  }else{
+    return sicfour;
+  }
+}
+//console.log(geunlo(1633170,36120000));
+
+이 식은 근로소득세액공제의 값이 614,950원 한도를 넘지 않습니다. 함수는 같아서 값만 변경해줬습니다.//산출세액이  3,191,520 원 이라고 칩니다.
+// 275,000 + [(3,191,520 - 500,000) × 30%] = 614,950
+let sicone;
+let sictwo;
+let sicthree;
+let sicfour;
+let total_salary;
+function geunlo(
+  sanchul,
+  total_salary
+) {
+  sicone = sanchul - 500000;
+  sictwo = sicone * 0.3;
+  sicthree = 275000 + sictwo;
+  sicfour = Math.floor(sicthree/10) * 10;
+  if(sicfour >= 660000){
+    if(total_salary <= 55000000){
+      sicfour = 660000;
+      return sicfour;
+    }else if (total_salary > 55000000 && total_salary <= 70000000) {
+      sicfour = 660000;
+      return sicfour;
+    }else if(total_salary > 70000000){
+      sicfour = 500000;
+      return sicfour;
+    }
+  }else{
+    return sicfour;
+  }
+}
+//console.log(geunlo(3191520,48120000));

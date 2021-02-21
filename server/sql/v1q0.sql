@@ -16,12 +16,19 @@ insert into v1.teacherLeaving select
 from
   v1.teacher;
 
-create table if not exists v1.deductionsMonth (
+create table if not exists deductionsMonth (
   lessonMonth date not null,
   createdAt timestamp not null default current_timestamp,
   modifiedAt timestamp null on update current_timestamp,
-  
-   int unsigned not null default 0,
+  version varchar(10) not null default 'undefined',
+  NP int unsigned null,
+  HI int unsigned null,
+  LCI int unsigned null,
+  EI int unsigned null,
+  EIC int unsigned null,
+  LIT int unsigned null,
+  SAT int unsigned null,
+  toPresident int unsigned null,
   unique (lessonMonth)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
@@ -48,4 +55,9 @@ create table if not exists deductionsPrice (
   lesson int unsigned null,
   income int unsigned null,
   foreign key (teacherID) references teacher(teacherID) on update cascade
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
+create table if not exists dbProfile (
+  version int unsigned not null default 0
+  
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

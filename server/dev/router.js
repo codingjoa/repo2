@@ -3,14 +3,12 @@ const router = require('express').Router();
 const isAuthorized = require('../v1/isAuthorized');
 const isMaster = require('../v1/isMaster');
 const calculateProceeds = require('./calculateProceeds');
-/*
 const fetchProceeds = require('./fetchProceeds');
 const fetchDeductions = require('./fetchDeductions');
 const addProceeds = require('./addProceeds');
 const addDeductions = require('./addDeductions');
 const editProceeds = require('./editProceeds');
 const editDeductions = require('./editDeductions');
-*/
 router.use('/teacher',
   isAuthorized
 );
@@ -21,7 +19,6 @@ router.use('/admin',
 router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',
   calculateProceeds
 );
-/*
 router.get('/admin/settlement/proceeds/:lessonMonth',
   fetchProceeds
 );
@@ -40,5 +37,4 @@ router.post('/admin/settlement/deductions/:lessonMonth',
 router.put('/admin/settlement/deductions/:lessonMonth',
   editDeductions
 );
-*/
 module.exports = router;
