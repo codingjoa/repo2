@@ -1,6 +1,7 @@
 const express = require('express');
 const app = express();
 const api = express.Router();
+const db = require('./poolManager');
 
 
 /* @codingjoa
@@ -35,6 +36,7 @@ api.use('/dev', development);
    백엔드 서버 릴리즈
 */
 const port = process.env.PORT ?? 3307;
-app.listen(port, ()=>{
-    console.log('server opened.');
-})
+(async () => {
+  // DB 연결 실패시 restAPI 서버를 실행시키지 않습니다.
+  (await db.Boot()) && app.listen(port, () => console.log('server opened.'));
+})();

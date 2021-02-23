@@ -1,29 +1,22 @@
 const mariadb = require('mariadb');
 const config = require('./poolManager.config.js');
 const pool = mariadb.createPool(config);
-
-function transaction(queries, err) {
-  // not stable
-  pool.getConnection()
-  .then(conn => {
-    conn.beginTransaction()
-    .then(() => {
-      try {
-        queries(conn);
-      }
-      catch(e) {
-        throw e;
-      }
-      conn.commit();
-    })
-  })
-  .catch(e => {
-    conn.rollback();
-    //err && err instanceof Function && err(e);
-  });
+const exportObj = {
+  Boot,
+  pool: null,
+  end: null
+};
+async function Boot() {
+  try {
+    const pool = await mariadb.createPool(config);
+    exportObj.pool = pool;
+    exportObj.end = async () => {
+      pool.end();
+    }
+  } catch(err) {
+    console.error(err);
+    return false;
+  }
+  return true;
 }
-async function end() {
-  pool.end();
-}
-
-module.exports = { pool, transaction, end };
+module.exports = exportObj;
