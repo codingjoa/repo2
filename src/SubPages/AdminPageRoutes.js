@@ -2,6 +2,7 @@ import React from 'react';
 import { Route } from 'react-router-dom';
 import BillingList from './BillingList/Main';
 import Calculator from './Calculator/Main';
+import DeductionsEditor from './DeductionsEditor/Main';
 import LessonChargeList from './LessonChargeList/Main';
 import LessonChargeRegister from './LessonChargeRegister/Main';
 import LessonDetailsAdmin from './LessonDetailsAdmin/Main';
@@ -22,6 +23,9 @@ export default () => (
     </Route>
     <Route exact path="/admin/calculator">
       <Calculator />
+    </Route>
+    <Route exact path="/admin/settle">
+      <DeductionsEditor />
     </Route>
     <Route exact path="/admin/lessonCharge">
       <LessonChargeList />

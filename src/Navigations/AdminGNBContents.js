@@ -15,6 +15,8 @@ export default () => (
     <GNB to="/admin/lessonCharge" Icon={PostAddIcon} name="선생님 수업 배정" />
     <GNB to="/admin/lesson" Icon={DashboardIcon} name="수업 조회/마감" />
     <GNB to="/admin/lessonEnded" Icon={DashboardIcon} name="마감된 출석부" />
+    <Divider />
+    <GNB to="/admin/settle" Icon={DashboardIcon} name="실험" />
     <GNB to="/admin/calculator" Icon={DashboardIcon} name="수업료 정산" />
   </>
 );
