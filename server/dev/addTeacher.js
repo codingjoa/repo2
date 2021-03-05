@@ -1,6 +1,5 @@
 const { BadRequest } = require('../format');
 const { pool } = require('../poolManager');
-
 const insertTeacherQuery = (
 `insert into teacher(
   teacherName,
@@ -21,7 +20,6 @@ const insertTeacherLeavingQuery = (
   ?,
   ?
 )`);
-
 async function addTeacher(
   teacherName,
   teacherAccount,
@@ -58,7 +56,6 @@ async function addTeacher(
   }
   
 }
-
 module.exports = async function(
   req, res, next
 ) {

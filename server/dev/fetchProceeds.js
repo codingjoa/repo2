@@ -1,8 +1,8 @@
 /* @codingjoa
    모듈
 */
-
-const { pool } = require('../poolManager');
+const { OK, NotFound, BadRequest } = require('../format');
+const db = require('../poolManager');
 /* @codingjoa
    SQL 쿼리
 */
@@ -61,7 +61,7 @@ const fetchQuery = (
   SAT,
   deductions,
   taxable,
-  taxFree
+  taxFree,
   proceeds,
   income,
   proceeds - deductions as toTeacher,
@@ -116,7 +116,7 @@ deductionsPrice => 등록한 공제/지급 정보
 
 
 select
-  
+
 from
   lesson left join
   billing
@@ -153,18 +153,43 @@ async function fetchProceeds(
     SAT 농특세
 */
 
-module.exports = (
+module.exports = async (
   req,
   res
 ) => {
-  
+  const lessonMonth = req.param.id ?? '2020-11-01';
+  try {
+    const result = await pool.query(fetchQuery, [
+      lessonMonth,
+      lessonMonth,
+      lessonMonth
+    ]);
+    if(!result.length) {
+      NotFound(res);
+    }
+    else {
+      OK(res, result);
+    }
+  } catch(err) {
+    BadRequest(res, err);
+  }
 };
 module.id === require.main.id && (async () => {
   const lessonMonth = process.env.LM ?? '2020-11-01';
-  await pool.query(fetchQuery,
-    [ lessonMonth,
+  await db.Boot();
+  if(!db.pool) {
+    console.log('DB가 준비되지 않음.');
+    return;
+  }
+  try {
+    await db.pool.query(fetchQuery,[
+      lessonMonth,
       lessonMonth,
       lessonMonth
-    ]).then(console.log, console.error);
-  pool.end();
+    ]).then(console.log);
+  } catch(err) {
+    console.error(err);
+  }
+  //db.pool.end();
+  db.end();
 })();

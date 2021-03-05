@@ -1,7 +1,7 @@
 async function addDeductions(
-
+  
 ) {
-
+  
 }
 /* @codingjoa
    insert select로
@@ -17,9 +17,9 @@ module.exports = (
 };
 module.id === require.main.id && (async () => {
 /*
-  const 사대보험세율
-  const 고용보험세율
-  const 장기요양보험세율
-  const 지방소득세율
-  */
+	const 사대보험세율
+	const 고용보험세율
+	const 장기요양보험세율
+	const 지방소득세율
+*/
 })();

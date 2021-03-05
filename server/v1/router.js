@@ -1,62 +1,64 @@
 const router = require('express').Router();
+
+
+/* @codingjoa
+   기능 별 함수
+*/
+const addBilling = require('./addBilling');
+const addLesson = require('./addLesson');
+const addQuarter = require('./addQuarter');
+const addRefund = require('./addRefund');
+const addStudent = require('./addStudent');
+const addTeacher = require('./addTeacher');
+const authorization = require('./authorization');
+const calculateProceeds = require('./calculateProceeds');
+const closeLesson = require('./closeLesson');
+const closeQuarter = require('./closeQuarter');
+const closeStudent = require('./closeStudent');
+const closeTeacher = require('./closeTeacher');
+const deleteBilling = require('./deleteBilling');
+const editQuarter = require('./editQuarter');
+const editStudent = require('./editStudent');
+const editStudentUniqueness = require('./editStudentUniqueness');
+const editStudyForLesson = require('./editStudyForLesson');
+const editTeacher = require('./editTeacher');
+const fetchAvailableLesson = require('./fetchAvailableLesson');
+const fetchAvailableQuarter = require('./fetchAvailableQuarter');
+const fetchBilling = require('./fetchBilling');
+const fetchEndedLessons = require('./fetchEndedLessons');
+const fetchLessonDetails = require('./fetchLessonDetails');
+const fetchLessonDetailsAdmin = require('./fetchLessonDetailsAdmin');
+const fetchLessons = require('./fetchLessons');
+const fetchLessonsOwn = require('./fetchLessonsOwn');
+const fetchQuarters = require('./fetchQuarters');
+const fetchRegisteredBilling = require('./fetchRegisteredBilling');
+const fetchStudyForLesson = require('./fetchStudyForLesson');
+const fetchStudentForLesson = require('./fetchStudentForLesson');
+const fetchStudents = require('./fetchStudents');
+const fetchStudentDetails = require('./fetchStudentDetails');
+const fetchTeachers = require('./fetchTeachers');
+const getAuthorizationInfo = require('./getAuthorizationInfo');
+const isAuthorized = require('./isAuthorized');
+const isAvailableLesson = require('./isAvailableLesson');
+const isAvailableBilling = require('./isAvailableBilling');
+const isCanBeClosedQuarter = require('./isCanBeClosedQuarter');
+const isCanBeClosedTeacher = require('./isCanBeClosedTeacher');
+const isCanBeClosedStudent = require('./isCanBeClosedStudent');
+const isCanBeClosedLesson = require('./isCanBeClosedLesson');
+const isEditableLesson = require('./isEditableLesson');
+const isMaster = require('./isMaster');
+const isOwnLesson = require('./isOwnLesson');
+const isRetractableBilling = require('./isRetractableBilling');
 const passwordCertification = require('./passwordCertification');
 const passwordChange = require('./passwordChange');
 const passwordModified = require('./passwordModified');
-const authorization = require('./authorization');
-const unauthorization = require('./unauthorization');
-const isAuthorized = require('./isAuthorized');
-const getAuthorizationInfo = require('./getAuthorizationInfo');
-
-const fetchLessons = require('./fetchLessons');
-const fetchLessonDetails = require('./fetchLessonDetails');
-const fetchStudyForLesson = require('./fetchStudyForLesson');
-const isEditableLesson = require('./isEditableLesson');
-const editStudyForLesson = require('./editStudyForLesson');
-
-const fetchStudentForLesson = require('./fetchStudentForLesson');
-const isOwnLesson = require('./isOwnLesson');
-
-const isMaster = require('./isMaster');
-const fetchStudents = require('./fetchStudents');
-const fetchStudentDetails = require('./fetchStudentDetails');
-const addStudent = require('./addStudent');
-const editStudent = require('./editStudent');
-const editStudentUniqueness = require('./editStudentUniqueness');
-const fetchQuarters = require('./fetchQuarters');
-const addQuarter = require('./addQuarter');
-const editQuarter = require('./editQuarter');
 const passwordReset = require('./passwordReset');
-const fetchTeachers = require('./fetchTeachers');
-const addTeacher = require('./addTeacher');
-const editTeacher = require('./editTeacher');
+const unauthorization = require('./unauthorization');
 
-const isCanBeClosedQuarter = require('./isCanBeClosedQuarter');
-const closeQuarter = require('./closeQuarter');
-const isCanBeClosedTeacher = require('./isCanBeClosedTeacher');
-const closeTeacher = require('./closeTeacher');
-const isCanBeClosedStudent = require('./isCanBeClosedStudent');
-const closeStudent = require('./closeStudent');
 
-const isCanBeClosedLesson = require('./isCanBeClosedLesson');
-const closeLesson = require('./closeLesson');
-const fetchLessonsOwn = require('./fetchLessonsOwn');
-const fetchLessonDetailsAdmin = require('./fetchLessonDetailsAdmin');
-const fetchAvailableLesson = require('./fetchAvailableLesson');
-const isAvailableLesson = require('./isAvailableLesson');
-const addLesson = require('./addLesson');
-const fetchEndedLessons = require('./fetchEndedLessons');
-
-const fetchAvailableQuarter = require('./fetchAvailableQuarter');
-const fetchBilling = require('./fetchBilling');
-const fetchRegisteredBilling = require('./fetchRegisteredBilling');
-const isRetractableBilling = require('./isRetractableBilling');
-const isAvailableBilling = require('./isAvailableBilling');
-const addBilling = require('./addBilling');
-const deleteBilling = require('./deleteBilling');
-
-const addRefund = require('./addRefund');
-const calculateProceeds = require('./calculateProceeds');
-
+/* @codingjoa
+   라우팅
+*/
 router.use('/teacher',
   isAuthorized
 );
@@ -219,11 +221,5 @@ router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',
   calculateProceeds
 );
 
-
-/* @codingjoa
-   GET #세션 상태 확인
-   POST #로그인
-   DELETE #로그아웃
-*/
 
 module.exports = router;

@@ -1,8 +1,10 @@
 /* @codingjoa
    모듈
 */
-
+const { OK, NotFound, BadRequest } = require('../format');
 const { pool } = require('../poolManager');
+
+
 /* @codingjoa
    SQL 쿼리
 */
@@ -50,10 +52,11 @@ from
   ) as P on
     Q.lessonMonth=P.lessonMonth
 `);
+
+
 /* @codingjoa
    함수
 */
-
 async function fetchProceeds(
   lessonMonth
 ) {
@@ -62,6 +65,8 @@ async function fetchProceeds(
   // join쿼리 써서 합치고 proceeds테이블쪽에 tid가 없으면 등록0 있으면 등록1
   // refundPrice, allPrice도 같이 구해서 수당 구할때 쓸거임
 }
+
+
 /* @codingjoa
    deductionsPrice 테이블 필드 약자
     NP 국민연금
@@ -76,12 +81,21 @@ async function fetchProceeds(
     LIT 지방소득세
     SAT 농특세
 */
-
 module.exports = (
   req,
   res
 ) => {
-  
+  const lessonMonth = req.param.lessonMonth;
+  try {
+    if(!result.length) {
+      NotFound(res);
+    }
+    else {
+      OK(res, result);
+    }
+  } catch(err) {
+    BadRequest(res, err);
+  }
 };
 module.id === require.main.id && (async () => {
   const lessonMonth = process.env.LM ?? '2020-11-01';
