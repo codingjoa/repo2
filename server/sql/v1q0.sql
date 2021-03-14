@@ -54,10 +54,11 @@ create table if not exists deductionsPrice (
   students int unsigned null,
   lesson int unsigned null,
   income int unsigned null,
+  refunds int unsigned null,
   foreign key (teacherID) references teacher(teacherID) on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 create table if not exists dbProfile (
   version int unsigned not null default 0
-  
+
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

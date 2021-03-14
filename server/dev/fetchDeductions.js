@@ -99,10 +99,15 @@ module.exports = (
 };
 module.id === require.main.id && (async () => {
   const lessonMonth = process.env.LM ?? '2020-11-01';
-  await pool.query(fetchQuery,
-    [ lessonMonth,
+  try {
+    await pool.query(fetchQuery, [
+      lessonMonth,
       lessonMonth,
       lessonMonth
     ]).then(console.log, console.error);
+  } catch(err) {
+    console.error(err);
+  }
+
   pool.end();
 })();

@@ -2,7 +2,7 @@
    모듈
 */
 const { OK, NotFound, BadRequest } = require('../format');
-const db = require('../poolManager');
+const pool = require('../poolManager');
 /* @codingjoa
    SQL 쿼리
 */
@@ -176,13 +176,8 @@ module.exports = async (
 };
 module.id === require.main.id && (async () => {
   const lessonMonth = process.env.LM ?? '2020-11-01';
-  await db.Boot();
-  if(!db.pool) {
-    console.log('DB가 준비되지 않음.');
-    return;
-  }
   try {
-    await db.pool.query(fetchQuery,[
+    await pool.query(fetchQuery,[
       lessonMonth,
       lessonMonth,
       lessonMonth
@@ -191,5 +186,5 @@ module.id === require.main.id && (async () => {
     console.error(err);
   }
   //db.pool.end();
-  db.end();
+  pool.end();
 })();

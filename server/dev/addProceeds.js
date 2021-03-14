@@ -16,13 +16,11 @@
 농특세 = ?
 */
 
-const db = require('../poolManager');
+const pool = require('../poolManager');
 
 
 const addProceedsQuery = (
 `insert into deductionsPrice(
-  teacherID,
-  lessonMonth,
   NP,
   NPC,
   HI,
@@ -38,43 +36,77 @@ const addProceedsQuery = (
   basic,
   taxable,
   taxFree,
-  proceeds
-) values (
-  ?,?,?,?,?,
-  ?,?,?,?,?,
-  ?,?,?,?,?,
-  ?,?,?
-  select
-    ? as teacherID,
-    ? as lessonMonth,
-    ? as NP,
-    ? as NPC,
-    ? as HI,
-    ? as HIC,
-    ? as LCI,
-    ? as LCIC,
-    ? as EI,
-    ? as EIC,
-    ? as IT,
-    ? as LIT,
-    ? as SAT,
-    ? as deductions,
-    ? as basic,
-    ? as taxable,
-    ? as taxFree,
-    ? as proceeds,
+  proceeds,
+  teacherID,
+  lessonMonth,
+  income,
+  students,
+  lesson,
+  refunds
+) select
+    *
+  from
     (select
-      teacher.teacherName,
-      lesson.lessonMonth,
-      billing.studentID,
-      sum(billing.billingPrice) as income,
-      count(billing.studentID) as students,
-      count(DISTINCT (lesson.quarterID)) as lessons
+      ? as NP,
+      ? as NPC,
+      ? as HI,
+      ? as HIC,
+      ? as LCI,
+      ? as LCIC,
+      ? as EI,
+      ? as EIC,
+      ? as IT,
+      ? as LIT,
+      ? as SAT,
+      ? as deductions,
+      ? as basic,
+      ? as taxable,
+      ? as taxFree,
+      ? as proceeds
+    ) as K,
+    (select
+      teacher.teacherID,
+      teacher.lessonMonth,
+      sum(
+        case
+          when lesson.lessonEnded=1 and billing.billingRetractable=0
+          then billing.billingPrice * (0.01 * (100 - case when refund.studentID is null then 0 else refund.refundPercent end))
+          else 0
+        end
+      ) as income,
+      count(
+        case
+          when lesson.lessonEnded=1 and billing.billingRetractable=0
+          then billing.studentID
+          else null
+        end
+      ) as students,
+      count(DISTINCT (
+        case
+          when lesson.lessonEnded=1
+          then lesson.quarterID
+          else null
+        end
+      )) as lesson,
+      sum(
+        case
+          when refund.studentID is null
+          then 0
+          else 1
+        end
+      ) as refunds
     from
-      teacher left join
+      (select
+        teacher.*,
+        concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+      from
+        teacher
+      ) as teacher left join
       lesson on
+        teacher.lessonMonth=lesson.lessonMonth and
         teacher.teacherID=lesson.teacherID left join
       deductionsPrice on
+        lesson.lessonEnded=1 and
         lesson.teacherID=deductionsPrice.teacherID and
         lesson.lessonMonth=deductionsPrice.lessonMonth left join
       billing on
@@ -84,33 +116,258 @@ const addProceedsQuery = (
         billing.studentID=refund.studentID and
         billing.quarterID=refund.quarterID and
         billing.lessonMonth=refund.lessonMonth
-    where
-      billing.lessonMonth=lesson.
     group by
-      lesson.teacherID,
-      lesson.lessonMonth;
-    )
+      teacher.teacherID,
+      lesson.lessonMonth
+    ) as L
+  where
+    L.teacherID=?`);
+const editProceedsQuery = (
+`update
+  deductionsPrice,
+  (select
+      *
+    from
+      (select
+        ? as NP,
+        ? as NPC,
+        ? as HI,
+        ? as HIC,
+        ? as LCI,
+        ? as LCIC,
+        ? as EI,
+        ? as EIC,
+        ? as IT,
+        ? as LIT,
+        ? as SAT,
+        ? as deductions,
+        ? as basic,
+        ? as taxable,
+        ? as taxFree,
+        ? as proceeds
+      ) as K,
+      (select
+        teacher.teacherID,
+        teacher.lessonMonth,
+        sum(
+          case
+            when lesson.lessonEnded=1 and billing.billingRetractable=0
+            then billing.billingPrice * (0.01 * (100 - case when refund.studentID is null then 0 else refund.refundPercent end))
+            else 0
+          end
+        ) as income,
+        count(
+          case
+            when lesson.lessonEnded=1 and billing.billingRetractable=0
+            then billing.studentID
+            else null
+          end
+        ) as students,
+        count(DISTINCT (
+          case
+            when lesson.lessonEnded=1
+            then lesson.quarterID
+            else null
+          end
+        )) as lesson,
+        sum(
+          case
+            when refund.studentID is null
+            then 0
+            else 1
+          end
+        ) as refunds
+      from
+        (select
+          teacher.*,
+          concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+        from
+          teacher
+        ) as teacher left join
+        lesson on
+          teacher.lessonMonth=lesson.lessonMonth and
+          teacher.teacherID=lesson.teacherID left join
+        deductionsPrice on
+          lesson.lessonEnded=1 and
+          lesson.teacherID=deductionsPrice.teacherID and
+          lesson.lessonMonth=deductionsPrice.lessonMonth left join
+        billing on
+          lesson.quarterID=billing.quarterID and
+          lesson.lessonMonth=billing.lessonMonth left join
+        refund on
+          billing.studentID=refund.studentID and
+          billing.quarterID=refund.quarterID and
+          billing.lessonMonth=refund.lessonMonth
+      group by
+        teacher.teacherID,
+        lesson.lessonMonth
+      ) as L
+    where
+      L.teacherID=?
+  ) as A
+set
+  deductionsPrice.NP=A.NP,
+  deductionsPrice.NPC=A.NPC,
+  deductionsPrice.HI=A.HI,
+  deductionsPrice.HIC=A.HIC,
+  deductionsPrice.LCI=A.LCI,
+  deductionsPrice.LCIC=A.LCIC,
+  deductionsPrice.EI=A.EI,
+  deductionsPrice.EIC=A.EIC,
+  deductionsPrice.IT=A.IT,
+  deductionsPrice.LIT=A.LIT,
+  deductionsPrice.SAT=A.SAT,
+  deductionsPrice.deductions=A.deductions,
+  deductionsPrice.basic=A.basic,
+  deductionsPrice.taxable=A.taxable,
+  deductionsPrice.taxFree=A.taxFree,
+  deductionsPrice.proceeds=A.proceeds,
+  deductionsPrice.income=A.income,
+  deductionsPrice.students=A.students,
+  deductionsPrice.lesson=A.lesson,
+  deductionsPrice.refunds=A.refunds
+where
+  deductionsPrice.teacherID=A.teacherID and
+  deductionsPrice.lessonMonth=A.lessonMonth`);
 
-)`);
+const testQuery0 = (
+`select
+  concat('{', group_concat(concat('"', teacherID, '": ', RegCode)), '}') as json
+from
+  (select
+    1 as Groups,
+    teacher.teacherID,
+    case
+      when deductionsPrice.teacherID is null
+      then 0
+      else 1
+    end as RegCode
+  from
+    (select
+      teacher.*,
+      concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+    from
+      teacher
+    ) as teacher left join
+    deductionsPrice on
+      teacher.teacherID=deductionsPrice.teacherID and
+      teacher.lessonMonth=deductionsPrice.lessonMonth
+  ) as Groups
+group by
+  Groups.Groups
+`);
+const testQuery = (
+`select
+    *
+  from
+    (select
+      ? as NP,
+      ? as NPC,
+      ? as HI,
+      ? as HIC,
+      ? as LCI,
+      ? as LCIC,
+      ? as EI,
+      ? as EIC,
+      ? as IT,
+      ? as LIT,
+      ? as SAT,
+      ? as deductions,
+      ? as basic,
+      ? as taxable,
+      ? as taxFree,
+      ? as proceeds
+    ) as K,
+    (select
+      teacher.teacherID,
+      teacher.lessonMonth,
+      sum(
+        case
+          when lesson.lessonEnded=1 and billing.billingRetractable=0
+          then billing.billingPrice * (0.01 * (100 - case when refund.studentID is null then 0 else refund.refundPercent end))
+          else 0
+        end
+      ) as income,
+      count(
+        case
+          when lesson.lessonEnded=1 and billing.billingRetractable=0
+          then billing.studentID
+          else null
+        end
+      ) as students,
+      count(DISTINCT (
+        case
+          when lesson.lessonEnded=1
+          then lesson.quarterID
+          else null
+        end
+      )) as lesson,
+      sum(
+        case
+          when refund.studentID is null
+          then 0
+          else 1
+        end
+      ) as refunds
+    from
+      (select
+        teacher.*,
+        concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+      from
+        teacher
+      ) as teacher left join
+      lesson on
+        teacher.lessonMonth=lesson.lessonMonth and
+        teacher.teacherID=lesson.teacherID left join
+      deductionsPrice on
+        lesson.lessonEnded=1 and
+        lesson.teacherID=deductionsPrice.teacherID and
+        lesson.lessonMonth=deductionsPrice.lessonMonth left join
+      billing on
+        lesson.quarterID=billing.quarterID and
+        lesson.lessonMonth=billing.lessonMonth left join
+      refund on
+        billing.studentID=refund.studentID and
+        billing.quarterID=refund.quarterID and
+        billing.lessonMonth=refund.lessonMonth
+    group by
+      teacher.teacherID,
+      lesson.lessonMonth
+    ) as L
+  where
+    L.teacherID=?
+`);
 
 const p10 = p => (Math.floor(p*0.1)) * 10;
 
 async function InsertAll(
-  mapped
+  mapped,
+  lessonMonth
 ) {
-  if(!db.pool) {
-    await db.Boot();
-  }
-  const conn = await db.pool.getConnection();
+  const conn = await pool.getConnection();
   await conn.beginTransaction();
-
   try {
-    await conn.batch(addProceedsQuery,
-      mapped
-    );
+    // deductionsPrice 테이블에 기록이 있는지 없는지 여부를 확인
+    const result = await conn.query(testQuery0, [ lessonMonth ]);
+    const Regs = JSON.parse(result[0].json);
+    for(const map of mapped) {
+      // map[17] === teacherID
+      const code = Regs[map[17]];
+      if(code === 1) {
+        //console.log(`${map[17]}: 이미 기록이 있습니다.`);
+        // 기록이 있으므로 deductionsPrice의 기록을 수정합니다.
+        conn.query(editProceedsQuery, map);
+      }
+      else if(code === 0) {
+        //console.log(`${map[17]}: 기록이 없습니다.`);
+        // 기록이 없으므로 deductionsPrice에 등록합니다.
+        conn.query(addProceedsQuery, map);
+      }
+      else {
+        //console.log(`${map[17]}: 존재하지 않는 ID.`);
+      }
+    }
     //await conn.commit();
-    const result = await conn.query('select * from deductionsPrice');
-    console.log(result);
     await conn.rollback();
   } catch(err) {
     console.error(err);
@@ -119,8 +376,6 @@ async function InsertAll(
   conn.release();
 }
 function mapper({
-  수익,
-  공제,
   teacherID,
   NP,
   NPC,
@@ -140,8 +395,6 @@ function mapper({
   proceeds
 }, lessonMonth) {
   return [
-    teacherID,
-    lessonMonth,
     NP,
     NPC,
     HI,
@@ -157,7 +410,9 @@ function mapper({
     basic,
     taxable,
     taxFree,
-    proceeds
+    proceeds,
+    lessonMonth,
+    teacherID
   ];
 }
 function calculate({
@@ -225,7 +480,8 @@ async function addProceeds(
   deductions
 ) {
   await InsertAll(
-    (await teachers.map(p => calculate(p, deductions)).map(p => mapper(p, lessonMonth)))
+    (await teachers.map(p => calculate(p, deductions)).map(p => mapper(p, lessonMonth))),
+    lessonMonth
   );
 }
 
@@ -262,10 +518,22 @@ module.id === require.main.id && (async () => {
     basic: 1800000,
     taxable: 1200000
   }, {
-    teacherID: 1231,
+    teacherID: 1236,
     basic: 2000000,
     taxable: 0
+  }, {
+    teacherID: 1234,
+    basic: 1800000,
+    taxable: 1200000
+  }, {
+    teacherID: 1231,
+    basic: 1800000,
+    taxable: 1200000
+  }, {
+    teacherID: 1246,
+    basic: 1800000,
+    taxable: 1200000
   }];
   await addProceeds(lessonMonth, teachers, deductions);
-  //pool.end();
+  pool.end();
 })();
