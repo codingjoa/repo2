@@ -25,17 +25,15 @@ app.use('/api', api);
 /* @codingjoa
    라우터
 */
-const version1 = require('./v1/router');
-api.use('/v1', version1);
-api.use(version1);
-const development = require('./dev/router');
-api.use('/dev', development);
+const development = require('./dev/router.dev');
+api.use(development);
+//api.use('/dev', development);
 
 
 /* @codingjoa
    백엔드 서버 릴리즈
 */
-const port = process.env.PORT ?? 3307;
+const port = process.env.PORT ?? 6060;
 (async () => {
   // DB 연결 실패시 restAPI 서버를 실행시키지 않습니다.
   (await db.Boot()) && app.listen(port, () => console.log('server opened.'));
