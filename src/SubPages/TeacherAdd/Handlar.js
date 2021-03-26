@@ -39,9 +39,17 @@ export default (validateFunction) => {
       };
     },
     useHandlarCheckbox(key) {
+      const [ checked, setChecked ] = React.useState(values[key]===1 ? 1 : 0);
+      values[key] = checked;
       return {
+        checked,
         onChange: e => {
-          values[key] = e.target.checked===true ? 1 : 0;
+          if(checked===1) {
+            setChecked(0);
+          }
+          else if(checked===0) {
+            setChecked(1);
+          }
         }
       }
     }
