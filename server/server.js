@@ -29,6 +29,8 @@ app.use('/api', api);
 const version1 = require('./v1/router');
 api.use('/v1', version1);
 api.use(version1);
+const development = require('./dev/router');
+api.use('/dev', development);
 
 
 /* @codingjoa
