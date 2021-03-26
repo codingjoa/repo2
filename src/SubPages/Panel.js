@@ -1,4 +1,6 @@
 import React from 'react';
+import * as ReactRouter from 'react-router-dom';
+import queryString from 'query-string';
 import AdminPages from './AdminPageRoutes';
 import UserPages from './UserPageRoutes';
 import Box from '@material-ui/core/Box';
@@ -30,10 +32,12 @@ export default function({
   children
 }) {
   const classes = useStyles();
+  const location = ReactRouter.useLocation();
+  const query = queryString.parse(location.search);
   return (
     <main className={classes.content}>
       <div className={classes.appBarSpacer} />
-      <Container maxWidth="sm" className={classes.container}>
+      <Container maxWidth={(query?.pg) ? 'lg' : 'sm'} className={classes.container}>
         <Grid container spacing={2}>
           <UserPages/>
           {auth && auth.op ? <AdminPages /> : null}

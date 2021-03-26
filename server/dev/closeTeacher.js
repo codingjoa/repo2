@@ -7,6 +7,7 @@ const setUnusedQuery = (
 set
   unused=1
 where
+  unused=0 and
   teacherID=?
 limit
   1`);
@@ -14,7 +15,7 @@ const setTeacherLeavedQuery = (
 `update
   teacherLeaving
 set
-  teacherLeaved=concat(date_format(current_date, '%Y-%m'), '-01')
+  teacherLeaved=current_date
 where
   teacherID=?
 limit
@@ -29,17 +30,18 @@ async function closeTeacher(
     const result = await conn.query(setUnusedQuery,
       [ teacherID ]
     );
-    await conn.query(setTeacherLeavedQuery,
+    if(!result?.affectedRows) throw new Error('변경되지 않았습니다.')
+    const result2 = await conn.query(setTeacherLeavedQuery,
       [ teacherID ]
     );
+    if(!result2?.affectedRows) throw new Error('변경되지 않았습니다.')
     const k = await conn.query('select * from teacherLeaving');
     console.log(k);
-    conn.rollback();
-    conn.release();
-    if(!result?.affectedRows) throw new Error('변경되지 않았습니다.')
+    await conn.commit();
+    await conn.release();
   } catch(err) {
-    conn.rollback();
-    conn.release();
+    await conn.rollback();
+    await conn.release();
     throw err;
   }
 }

@@ -21,6 +21,9 @@ import Handlar from './Handlar';
 function alerter(iter) {
   alert(JSON.stringify( iter ));
 }
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 function toYear(origin) {
   return (new Date(origin)).getFullYear();
 }
@@ -34,22 +37,41 @@ const Row = ({
   studentID,
   studentName,
   studentBirthday,
+  billingPrice,
+  billingScholarshipCode,
+  billingTaxCode,
   checkOks,
   refundReason,
+  refundPercent,
   Checkbox
 }) => {
   return (
   <TableRow>
-    <TableCell>
+    <TableCell
+      padding="small"
+      size="small"
+    >
       {Checkbox}
     </TableCell>
     <TableCell
+      padding="small"
+      size="small"
       style={{ minWidth: '10rem'}}
     >
       {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}
     </TableCell>
+    <TableCell
+      padding="small"
+      size="small"
+      style={{ minWidth: '10rem'}}
+    >
+      {(billingScholarshipCode===1 ? '장학' : (billingTaxCode===1 ? `${numberWithCommas(billingPrice)}원(특수)` : (refundPercent===null || refundPercent===undefined ? `${numberWithCommas(billingPrice)}원` : `${numberWithCommas(billingPrice)}원(${refundPercent}% 환불)`)))}
+    </TableCell>
     {checkOks ? Object.entries(checkOks).map(([ key, val ]) =>
-      <TableCell>
+      <TableCell
+        padding="small"
+        size="small"
+      >
         <Icon color={val ? 'secondary' : 'disabled'}><CheckIcon /></Icon>
       </TableCell>
     ) : null}
@@ -112,14 +134,29 @@ export default ({
         >
           <TableHead>
             <TableRow>
-              <TableCell>
+              <TableCell
+                padding="small"
+                size="small"
+              >
                 환불
               </TableCell>
-              <TableCell>
+              <TableCell
+                padding="small"
+                size="small"
+              >
                 학생 이름
               </TableCell>
+              <TableCell
+                padding="small"
+                size="small"
+              >
+                수업료
+              </TableCell>
               {iter(studySize).map((a, i) =>
-                <TableCell>
+                <TableCell
+                  padding="small"
+                  size="small"
+                >
                   {i+1}
                 </TableCell>
               )}

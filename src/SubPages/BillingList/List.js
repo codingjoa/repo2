@@ -3,6 +3,9 @@ import Box from '@material-ui/core/Box';
 import Typography from '@material-ui/core/Typography';
 import Page from '../../Templates/Page';
 import Withdraw from './Withdraw';
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 function Payment(code) {
   return code === 0 ? '현금' :
   code === 1 ? '카드' :
@@ -32,7 +35,7 @@ export default ({ studentID, studentBirthday, studentName, quarterName, billingP
           {Payment(billingPayment)}/{Group(billingGroup)}
         </Typography>
         <Typography variant="h6">
-          {billingPrice} 원
+          {numberWithCommas(billingPrice)} 원
         </Typography>
       </Box>
       <Box>

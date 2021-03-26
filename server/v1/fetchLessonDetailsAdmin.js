@@ -2,48 +2,57 @@ const { OK, BadRequest, NotFound } = require('../format');
 const { pool, end } = require('../poolManager');
 const execAsync = require('../execAsync');
 
-const getLessonGeneral = (
+const getLessonGeneralJoin = (
 `select
-  quarterID,
-  (select quarterName
-  from quarter
-  where quarter.quarterID=lesson.quarterID
-  ) as quarterName,
-  (select teacherName
-  from teacher
-  where teacher.teacherID=lesson.teacherID
-  ) as teacherName,
-  lessonMonth,
-  lessonEnded,
-  lessonCreatedAt,
-  lessonEndedAt,
-  (select count(*)
-  from billing
-  where
-    billing.quarterID=lesson.quarterID and
-    billing.lessonMonth=lesson.lessonMonth and
-    billingGroup=0
+  quarter.quarterID,
+  quarter.quarterName,
+  teacher.teacherID,
+  lesson.lessonMonth,
+  lesson.lessonCreatedAt,
+  lesson.lessonEndedAt,
+  lesson.lessonEnded,
+  count(
+    distinct (case
+      when billing.billingGroup=0
+      then billing.studentID
+      else null
+    end)
   ) as singleStudents,
-  (select count(*)
-  from billing
-  where
-    billing.quarterID=lesson.quarterID and
-    billing.lessonMonth=lesson.lessonMonth and
-    billingGroup>0
+  count(
+    distinct (case
+      when billing.billingGroup>0
+      then billing.studentID
+      else null
+    end)
   ) as groupStudents,
+  sum(
+    billing.billingPrice
+  ) as totalPrice,
+  A.studySize
+from
+  lesson left join
+  quarter on
+    quarter.quarterID=lesson.quarterID left join
+  teacher on
+    teacher.teacherID=lesson.teacherID left join
+  billing on
+    billing.quarterID=lesson.quarterID and
+    billing.lessonMonth=lesson.lessonMonth left join
   (select
-    count(studyWeek) as studySize
+    quarterID,
+    lessonMonth,
+    count(*) as studySize
   from
     study
-  where
-    study.quarterID=lesson.quarterID and
-    study.lessonMonth=lesson.lessonMonth
-  ) as studySize
-from lesson
+  group by
+    quarterID,
+    lessonMonth
+  ) as A on
+    A.quarterID=lesson.quarterID and
+    A.lessonMonth=lesson.lessonMonth
 where
-  ?=quarterID and
-  date_format(?, '%Y-%m')=date_format(lessonMonth, '%Y-%m')`
-);
+  ?=lesson.quarterID and
+  date_format(?, '%Y-%m')=date_format(lesson.lessonMonth, '%Y-%m')`);
 const getLessonChecking = (
 `select
   a.studentID,
@@ -52,7 +61,10 @@ const getLessonChecking = (
   a.billingPrice,
   a.billingPayment,
   a.billingGroup,
+  a.billingScholarshipCode,
+  a.billingTaxCode,
   a.refundReason,
+  a.refundPercent,
   b.json
 from
   (select
@@ -70,6 +82,8 @@ from
     billingPrice,
     billingPayment,
     billingGroup,
+    billingScholarshipCode,
+    billingTaxCode,
     (select
       refundReason
     from refund
@@ -77,7 +91,15 @@ from
       refund.quarterID=billing.quarterID and
       refund.lessonMonth=billing.lessonMonth and
       refund.studentID=billing.studentID
-    ) as refundReason
+    ) as refundReason,
+    (select
+      refundPercent
+    from refund
+    where
+      refund.quarterID=billing.quarterID and
+      refund.lessonMonth=billing.lessonMonth and
+      refund.studentID=billing.studentID
+    ) as refundPercent
   from billing
   ) as a,
   (select
@@ -106,7 +128,7 @@ async function fetchLessonDetailsAdmin(
   quarterID,
   lessonMonth
 ) {
-  const general = await pool.query(getLessonGeneral,
+  const general = await pool.query(getLessonGeneralJoin,
     [ quarterID,
       lessonMonth
     ]

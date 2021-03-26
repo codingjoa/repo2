@@ -58,7 +58,8 @@ create table if not exists deductionsPrice (
   foreign key (teacherID) references teacher(teacherID) on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-create table if not exists dbProfile (
-  version int unsigned not null default 0
-
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+alter table studentInfo add studentUniformNumber int unsigned default null;
+alter table billing add billingScholarshipCode int unsigned not null default 0;
+alter table billing add billingTaxCode int unsigned not null default 0;
+alter table teacher add isForeigner int unsigned not null default 0;
+alter table teacher add permission int unsigned not null default 0;

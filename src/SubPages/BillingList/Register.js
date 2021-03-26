@@ -12,7 +12,7 @@ function toYear(origin) {
 }
 
 export default ({ studentID, studentName, studentBirthday, useState, QuarterList }) => {
-  const { checkbox, quarter, group, payment, price } = useState(studentID, studentName);
+  const { checkbox, quarter, group, payment, price, billingScholarshipCode, billingTaxCode } = useState(studentID, studentName);
   return (
   <Page>
     <Box display="flex">
@@ -31,7 +31,9 @@ export default ({ studentID, studentName, studentBirthday, useState, QuarterList
       </Box>
     </Box>
     {checkbox.checked && <>
-    <Box display="flex">
+    <Box
+      display="flex"
+    >
       <Box
         flexGrow={1}
       >
@@ -42,7 +44,7 @@ export default ({ studentID, studentName, studentBirthday, useState, QuarterList
           variant="outlined"
           {...quarter}
         >
-          {QuarterList.map(row => 
+          {QuarterList.map(row =>
             <MenuItem value={row.quarterID}>
               {row.quarterName}
             </MenuItem>
@@ -85,15 +87,42 @@ export default ({ studentID, studentName, studentBirthday, useState, QuarterList
         </TextField>
       </Box>
     </Box>
-    <Box>
-      <Box>
+    <Box
+      alignItems="center"
+      display="flex"
+      mt={1}
+    >
+      <Box
+        flexGrow={1}
+      >
         <TextField
           size="small"
           label="납입한 수업료"
           type="number"
           variant="outlined"
+          disabled={billingScholarshipCode.value === true}
           {...price}
         />
+      </Box>
+      <Box
+        ml={1}
+      >
+        <Typography
+          variant="subtitle2"
+        >
+          전액장학
+        </Typography>
+        <Checkbox {...billingScholarshipCode} />
+      </Box>
+      <Box
+        ml={1}
+      >
+        <Typography
+          variant="subtitle2"
+        >
+          특수
+        </Typography>
+        <Checkbox {...billingTaxCode} />
       </Box>
     </Box>
     </>}

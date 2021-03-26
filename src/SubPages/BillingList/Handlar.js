@@ -13,13 +13,17 @@ export default (validateFunction, callback, effect) => {
       const [ billingGroup, setBillingGroup ] = React.useState(0);
       const [ billingPayment, setBillingPayment ] = React.useState(0);
       const [ billingPrice, setBillingPrice ] = React.useState(0);
+      const [ billingScholarshipCode, setBillingScholarshipCode ] = React.useState(false);
+      const [ billingTaxCode, setBillingTaxCode ] = React.useState(false);
       values[id] = {
         name,
         checked,
         quarterID,
         billingGroup,
         billingPayment,
-        billingPrice
+        billingPrice,
+        billingScholarshipCode,
+        billingTaxCode
       };
       React.useLayoutEffect(() => {
         let checklen = 0;
@@ -67,6 +71,18 @@ export default (validateFunction, callback, effect) => {
             else if(/^\d/.test(e.target.value)) setBillingPrice(e.target.value - 0);
             else setBillingPrice(0);
           }
+        },
+        billingScholarshipCode: {
+          value: billingScholarshipCode,
+          onChange: e => {
+            setBillingScholarshipCode(!billingScholarshipCode)
+          }
+        },
+        billingTaxCode: {
+          value: billingTaxCode,
+          onChange: e => {
+            setBillingTaxCode(!billingTaxCode)
+          }
         }
       }
     },
@@ -97,7 +113,7 @@ export default (validateFunction, callback, effect) => {
 */
     },
     getValues(callback) {
-      
+
     },
     useHandlar(key) {
       const [ value, setValue ] = React.useState(null);

@@ -50,24 +50,24 @@ const fetchQuery = (
       else 0
     end))
   end as totalRefundPrice,
-  NP,
-  NPC,
-  HI,
-  HIC,
-  LCI,
-  LCIC,
-  EI,
-  EIC,
-  IT,
-  LIT,
-  SAT,
-  deductions,
-  basic,
-  taxable,
-  taxFree,
-  proceeds,
-  income,
-  proceeds - deductions as toTeacher,
+  sum(NP) as NP,
+  sum(NPC) as NPC,
+  sum(HI) as HI,
+  sum(HIC) as HIC,
+  sum(LCI) as LCI,
+  sum(LCIC) as LCIC,
+  sum(EI) as EI,
+  sum(EIC) as EIC,
+  sum(IT) as IT,
+  sum(LIT) as LIT,
+  sum(SAT) as SAT,
+  sum(deductions) as deductions,
+  sum(basic) as basic,
+  sum(taxable) as taxable,
+  sum(taxFree) as taxFree,
+  sum(proceeds) as proceeds,
+  sum(income) as income,
+  sum(proceeds - deductions) as toTeacher,
   case
     when deductionsPrice.teacherID is null
     then 0
@@ -80,8 +80,7 @@ from
   lesson on
     teacher.teacherID=lesson.teacherID left join
   deductionsPrice on
-    teacher.teacherID=deductionsPrice.teacherID and
-    ?=deductionsPrice.lessonMonth left join
+    teacher.teacherID=deductionsPrice.teacherID left join
   billing on
     lesson.quarterID=billing.quarterID and
     lesson.lessonMonth=billing.lessonMonth left join
@@ -90,19 +89,24 @@ from
     billing.quarterID=refund.quarterID and
     billing.lessonMonth=refund.lessonMonth
 where
-  ( date_format(?, '%Y-%m')=date_format(lesson.lessonMonth, '%Y-%m') or
-    lesson.lessonMonth is null) and
   ( concat(date_format(?, '%Y-%m'), '-01') between
       concat(date_format(teacherLeaving.teacherJoined, '%Y-%m'), '-01') and
       case
         when teacherLeaving.teacherLeaved is null
-        then '9999-12-02'
-        else concat(date_format(teacherLeaving.teacherLeaved, '%Y-%m'), '-02')
+        then '9999-12-01'
+        else concat(date_format(teacherLeaving.teacherLeaved, '%Y-%m'), '-01')
+      end
+  ) or
+  ( concat(date_format(?, '%Y-%m'), '-01') between
+      concat(date_format(teacherLeaving.teacherJoined, '%Y-%m'), '-01') and
+      case
+        when teacherLeaving.teacherLeaved is null
+        then '9999-12-01'
+        else concat(date_format(teacherLeaving.teacherLeaved, '%Y-%m'), '-01')
       end
   )
 group by
-  teacher.teacherID,
-  lesson.lessonMonth;
+  teacher.teacherID
 `);
 /* @codingjoa
    함수
@@ -143,12 +147,12 @@ module.exports = async (
   req,
   res
 ) => {
-  const lessonMonth = req.params.lessonMonth ?? '2020-11-01';
+  const lessonMonth = req.params.lessonMonth ?? '2020-10-01';
+  const lastMonth = req.params.lastMonth ?? '2020-12-01';
   try {
     const result = await pool.query(fetchQuery, [
       lessonMonth,
-      lessonMonth,
-      lessonMonth
+      lastMonth
     ]);
     if(!result.length) {
       NotFound(res);
@@ -161,12 +165,12 @@ module.exports = async (
   }
 };
 module.id === require.main.id && (async () => {
-  const lessonMonth = process.env.LM ?? '2020-11-01';
+  const lessonMonth = process.env.LM ?? '2020-10-01';
+  const lastMonth = process.env.LLM ?? '2020-12-01';
   try {
     await pool.query(fetchQuery,[
       lessonMonth,
-      lessonMonth,
-      lessonMonth
+      lastMonth
     ]).then(console.log);
   } catch(err) {
     console.error(err);

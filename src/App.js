@@ -8,7 +8,7 @@ export default () => {
   // 네비게이션 바 스테이트
   const [ navOpen, setNavOpen ] = React.useState(false);
   // 세션관리
-  const { session: auth, refreshSession, signIn, signOut } = useSession();
+  const { session: auth, signIn, signOut } = useSession();
   if(auth === undefined) {
     return (<h2>잠시만 기다려 주세요...</h2>);
   }

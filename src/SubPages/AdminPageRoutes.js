@@ -16,6 +16,7 @@ import StudentDetails from './StudentDetails/Main';
 import StudentList from './StudentList/Main';
 import TeacherAdd from './TeacherAdd/Main';
 import TeacherList from './TeacherList/Main';
+import TestPage from './TestPage/Main';
 export default () => (
   <>
     <Route exact path="/admin/billing">
@@ -65,6 +66,9 @@ export default () => (
     </Route>
     <Route exact path="/admin/teacher">
       <TeacherList />
+    </Route>
+    <Route exact path="/test/0316">
+      <TestPage />
     </Route>
   </>
 );

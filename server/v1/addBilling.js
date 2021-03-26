@@ -6,10 +6,22 @@ const { pool } = require('../poolManager');
    학생을 반에 수강 등록
 */
 const addQuery = (
-`insert into billing values(
+`insert into billing(
+  studentID,
+  quarterID,
+  lessonMonth,
+  billingPayment,
+  billingGroup,
+  billingPrice,
+  billingScholarshipCode,
+  billingTaxCode,
+  billingRetractable
+) values (
   ?,
   ?,
   concat(date_format(?, '%Y-%m'), '-01'),
+  ?,
+  ?,
   ?,
   ?,
   ?,
@@ -32,17 +44,23 @@ async function addBilling(
       quarterID,
       billingPayment,
       billingGroup,
-      billingPrice
+      billingPrice,
+      billingScholarshipCode,
+      billingTaxCode
     } of reqIter) {
-      yield conn.query(addQuery, [
+      await conn.query(addQuery, [
         studentID,
         quarterID,
         lessonMonth,
         billingPayment,
         billingGroup,
-        billingPrice 
+        (billingScholarshipCode===1 ? 0 : billingPrice),
+        billingScholarshipCode,
+        (billingScholarshipCode===1 ? 0 : billingTaxCode)
       ]);
     }
+    await conn.commit();
+    await conn.release();
   } catch(err) {
     await conn.rollback();
     await conn.release();
@@ -59,13 +77,17 @@ module.exports = async function(
     return;
   }
   try {
-    await addBilling()
+    await addBilling(
+      lessonMonth,
+      reqIter
+    );
+    OK(res);
   } catch(err) {
     BadRequest(res, err);
   }
 
 
-  
+/*
   const promise = reqIter.map(({
     studentID,
     quarterID,
@@ -77,5 +99,5 @@ module.exports = async function(
   ));
   Promise.all(promise)
   .then(r => OK(res))
-  .catch(e => BadRequest(res, e));
+  .catch(e => BadRequest(res, e));*/
 };

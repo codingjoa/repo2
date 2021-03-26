@@ -16,7 +16,8 @@
 농특세 = ?
 */
 
-const pool = require('../poolManager');
+const { pool } = require('../poolManager');
+const { OK, BadRequest } = require('../format');
 
 
 const addProceedsQuery = (
@@ -344,6 +345,7 @@ async function InsertAll(
   mapped,
   lessonMonth
 ) {
+  console.log(mapped);
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
@@ -368,12 +370,14 @@ async function InsertAll(
       }
     }
     //await conn.commit();
-    await conn.rollback();
+    await conn.commit();
+    conn.release();
   } catch(err) {
     console.error(err);
     await conn.rollback();
+    conn.release();
+    throw err;
   }
-  conn.release();
 }
 function mapper({
   teacherID,
@@ -429,10 +433,12 @@ function calculate({
   LIT: 지방소득세율
 }) {
   // 지급합계
-  const proceeds = basic + taxable;
-  const 국민연금 = p10(basic * 사대보험세율);
+  const basic0 = basic === null ? 0 : basic;
+  const taxable0 = taxable === null ? 0 : taxable;
+  const proceeds = basic0 + taxable0;
+  const 국민연금 = p10(basic0 * 사대보험세율);
   const 국민연금회사부담 = 국민연금;
-  const 건강보험 = p10(basic * 건강보험세율);
+  const 건강보험 = p10(basic0 * 건강보험세율);
   const 건강보험회사부담 = 건강보험;
   const 장기요양보험 = p10(건강보험 * 장기요양보험세율);
   const 장기요양보험회사부담 = 0;
@@ -445,8 +451,8 @@ function calculate({
   const deductions = 국민연금 + 건강보험 + 장기요양보험 + 고용보험 + 소득세 + 지방소득세 + 농특세;
   return {
     teacherID,
-    basic,
-    taxable,
+    basic: basic0,
+    taxable: taxable0,
     taxFree,
     proceeds,
     NP: 국민연금,
@@ -479,10 +485,14 @@ async function addProceeds(
   teachers,
   deductions
 ) {
-  await InsertAll(
-    (await teachers.map(p => calculate(p, deductions)).map(p => mapper(p, lessonMonth))),
-    lessonMonth
-  );
+  try {
+    await InsertAll(
+      (await teachers.map(p => calculate(p, deductions)).map(p => mapper(p, lessonMonth))),
+      lessonMonth
+    );
+  } catch(err) {
+    throw err;
+  }
 }
 
 
@@ -490,13 +500,24 @@ module.exports = async (
   req, res
 ) => {
   //PUT
-  const lessonMonth = req.param?.lessonMonth;
-  const deductions = req.body?.deductions;
-  const teachers = req.body?.teachers;
-  const result = await addProceeds(
-    lessonMonth, teachers, deductions
-  );
-  OK(res, result);
+  const lessonMonth = req.params?.lessonMonth;
+  const deductions = {
+    NP: 0.045, // 사대보험세율
+    HI: 0.0343, // 건강보험세율
+    LCI: 0.1152, // 장기요양보험세율
+    EI: 0.008, // 고용보험세율
+    EIC: 0.0105, // 고용보험회사세율
+    LIT: 0.1 // 지방소득세율
+  };
+  const teachers = req.body?.teachers ?? [];
+  try {
+    const result = await addProceeds(
+      lessonMonth, teachers, deductions
+    );
+    OK(res, result);
+  } catch(err) {
+    BadRequest(res, err);
+  }
 };
 
 

@@ -11,7 +11,6 @@ function fetchDetails(callback, { quarterID, lessonMonth }) {
 }
 
 export default () => {
-  const [ count, setCount ] = React.useState(0);
   const history = ReactRouter.useHistory();
   const location = ReactRouter.useLocation();
   const { quarterID, lessonMonth } = ReactRouter.useParams();

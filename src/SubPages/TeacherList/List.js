@@ -6,13 +6,13 @@ import Rename from './Rename';
 import PasswordReset from './PasswordReset';
 
 export default ({ list }) => (<>
-  {list && list.map(({ teacherName, teacherID, teacherAccount, teacherOp, isCanBeClosed }) => <Page>
+  {list && list.map(({ teacherName, teacherID, teacherAccount, teacherOp, isForeigner, isCanBeClosed }) => <Page>
     <Box display="flex">
       <Box
         flexGrow={1}
         alignSelf="center"
       >
-        {teacherOp ? '[원장급]' : null}{teacherName}({teacherAccount}){!isCanBeClosed ? '(수업중)' : null}
+        {teacherOp ? '[원장급]' : null}{teacherName}({isForeigner===1 ? `외/` : null}{teacherAccount}){!isCanBeClosed ? '(수업중)' : null}
       </Box>
       <Box>
         <Rename id={teacherID} name={teacherName} />

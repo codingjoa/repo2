@@ -28,7 +28,7 @@ function fetchBillingList({ year: needYear, month: needMonth }, callback) {
   let isPast = true;
   if(currentYear < needYear) isPast = false;
   else if(currentYear === needYear && currentMonth <= needMonth) isPast = false;
-  const pathname = isPast ? `/api/admin/billing/registered/${needYear}-${needMonth}-01` : `/api/admin/billing/all/${needYear}-${needMonth}-01`; 
+  const pathname = isPast ? `/api/admin/billing/registered/${needYear}-${needMonth}-01` : `/api/admin/billing/all/${needYear}-${needMonth}-01`;
   axios.get(pathname)
   .then(r => callback(null, r))
   .catch(callback);
@@ -65,7 +65,16 @@ export default function() {
       addBilling({
         year,
         month,
-        reqIter: values.map(({ studentID, quarterID, billingGroup, billingPayment, billingPrice }) => ({ studentID, quarterID, billingGroup, billingPayment, billingPrice }))
+        reqIter: values.map(({
+          studentID, quarterID, billingGroup,
+          billingPayment, billingPrice, billingScholarshipCode,
+          billingTaxCode
+        }) => ({
+          studentID, quarterID, billingGroup,
+          billingPayment, billingPrice,
+          billingScholarshipCode: (billingScholarshipCode===true ? 1 : 0),
+          billingTaxCode: (billingTaxCode===true ? 1 : 0)
+        }))
       },(err, result) => {
         if(err) {
           alert(err?.response?.data?.cause ?? err);

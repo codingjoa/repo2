@@ -9,23 +9,29 @@
 [node.js] (https://nodejs.org/ko/download/)
 3. mariadb(10.3.25 버전 이상) 설치할 것(mysql에서 테스트 안 해봄!!)
 [mariadb] (https://mariadb.org/download/#entry-header)
-4. heidisql을 설치
+4. heidisql을 설치(옵션)
 [HeidiSQL] (https://www.heidisql.com/download.php)
 
 ### 2. node.js 모듈을 모두 설치
 1. repo2 폴더에서 node modules 설치 `npm i` 또는 `npm install` 필요한 모듈들을 **알아서 설치해** 줍니다.
 2. pm2 설치 `npm i pm2@latest -g`
+3. 이미 설치된 경우라도 queryString 모듈이 1.4.0 버전부터 추가되었으니 실행해주세요.
 
 ### 3. mariadb 세팅하기
-1. `./server/sql/v1.sql` SQL을 **root 계정에서** 실행할 것
+1. `./server/sql/v1p0.sql` SQL을 **root 계정에서** 실행할 것
 ```bash
-sudo mysql -u root -p {비밀번호} < ./server/sql/v1.sql
+sudo mysql -u root -p {비밀번호} < ./server/sql/v1p0.sql
+# heidisql 쿼리 입력창에 v1.sql 내용 복붙
+```
+2. 만약 사용한 적이 있는 db라면 새로운 테이블을 만들기 위해 ` ./server/sql/v1q0.sql`을 실행 p0과 q0을 헷갈리지 마세욧!
+```bash
+sudo mysql -u root -p {비밀번호} < ./server/sql/v1q0.sql
 # heidisql 쿼리 입력창에 v1.sql 내용 복붙
 ```
 
 ## 3. 시작하는 방법
 
-1. 처음 실행할 때
+1. 처음 실행할 때(혹은 재부팅 시마다)
 ```bash
 pm2 start ecosystem.config.js
 ```
@@ -45,6 +51,9 @@ pm2 stop all
 ```
 
 ### 번외1. changelog
+1.4.0 (2021-03-26)
+0. 너무 많은 변경사항
+
 1.3.0 (2021-02-14)
 1. src: 일반유저는 비밀번호 변경 페이지에 접근할 수 없던 버그 수정
 2. src: useSession 코드 개선

@@ -1,7 +1,57 @@
 const { OK, BadRequest, NotFound } = require('../format');
-const { pool, end } = require('../poolManager');
+const { pool } = require('../poolManager');
 const execAsync = require('../execAsync');
 
+const getLessonGeneralJoin = (
+`select
+  quarter.quarterID,
+  quarter.quarterName,
+  teacher.teacherID,
+  lesson.lessonMonth,
+  lesson.lessonCreatedAt,
+  lesson.lessonEnded,
+  count(
+    distinct (case
+      when billing.billingGroup=0
+      then billing.studentID
+      else null
+    end)
+  ) as singleStudents,
+  count(
+    distinct (case
+      when billing.billingGroup>0
+      then billing.studentID
+      else null
+    end)
+  ) as groupStudents,
+  sum(
+    billing.billingPrice
+  ) as totalPrice,
+  A.studySize
+from
+  lesson left join
+  quarter on
+    quarter.quarterID=lesson.quarterID left join
+  teacher on
+    teacher.teacherID=lesson.teacherID left join
+  billing on
+    billing.quarterID=lesson.quarterID and
+    billing.lessonMonth=lesson.lessonMonth left join
+  (select
+    quarterID,
+    lessonMonth,
+    count(*) as studySize
+  from
+    study
+  group by
+    quarterID,
+    lessonMonth
+  ) as A on
+    A.quarterID=lesson.quarterID and
+    A.lessonMonth=lesson.lessonMonth
+where
+  ?=lesson.quarterID and
+  date_format(?, '%Y-%m')=date_format(lesson.lessonMonth, '%Y-%m')`);
 const getLessonGeneral = (
 `select
   quarterID,
@@ -47,7 +97,10 @@ const getLessonStudents = (
 `select
   studentInfo.studentID,
   studentInfo.studentBirthday,
-  studentInfo.studentName
+  studentInfo.studentName,
+  billing.billingPrice,
+  billing.billingScholarshipCode,
+  billing.billingTaxCode
 from
   studentInfo,
   billing
@@ -57,7 +110,7 @@ where
   date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')
 `);
 const getLessonStudies = (
-`select 
+`select
   studyWeek,
   studyProgressed
 from
@@ -91,7 +144,7 @@ where
 */
 
 async function fetchLessonDetails(quarterID, lessonMonth) {
-  const general = await pool.query(getLessonGeneral,
+  const general = await pool.query(getLessonGeneralJoin,
     [ quarterID,
       lessonMonth
     ]
@@ -127,17 +180,24 @@ module.exports = function(
     if(err) {
       BadRequest(res, err);
       return;
-    } 
+    }
     ok === null && NotFound(res);
     ok !== null && OK(res, ok)
   })(quarterID, lessonMonth);
 };
-module.id === require.main.id && (() => {
-  setTimeout(() => (
-
-  execAsync(fetchLessonDetails, (err, ok) => {
-    err && console.error(err);
-    ok && console.log(ok);
-    end();
-  })(6, '2020-10-01')), 3000);
+module.id === require.main.id && (async () => {
+  const quarterID = process.env.QID ?? 6;
+  const lessonMonth = process.env.LM ?? '2020-10-01';
+  let result = null;
+  if(process.env.V1 === '1') {
+    result = await fetchLessonDetails(quarterID, lessonMonth).catch(console.error);
+  }
+  else {
+    result = await pool.query(getLessonGeneralJoin, [
+      quarterID,
+      lessonMonth
+    ]).catch(console.error);
+  }
+  console.log(result);
+  pool.end();
 })();

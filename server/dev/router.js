@@ -4,6 +4,7 @@ const isAuthorized = require('../v1/isAuthorized');
 const isMaster = require('../v1/isMaster');
 const calculateProceeds = require('./calculateProceeds');
 const fetchProceeds = require('./fetchProceeds');
+const fetchProceedsFromTo = require('./fetchProceedsFromTo');
 const fetchDeductions = require('./fetchDeductions');
 const addProceeds = require('./addProceeds');
 const addDeductions = require('./addDeductions');
@@ -16,11 +17,14 @@ router.use('/admin',
   isAuthorized,
   isMaster
 );
-router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',
+/*router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',
   calculateProceeds
-);
+);*/
 router.get('/admin/settlement/proceeds/:lessonMonth',
   fetchProceeds
+);
+router.get('/admin/settlement/proceeds/:lessonMonth/:lastMonth',
+  fetchProceedsFromTo
 );
 router.post('/admin/settlement/proceeds/:lessonMonth',
   addProceeds

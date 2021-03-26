@@ -10,8 +10,15 @@ function makeDate(lessonMonth, lessonCreatedAt) {
     getLessonCreatedAt: lca ? `${lca.getFullYear()}년 ${lca.getMonth()+1}월 ${lca.getDate()}일 ${lca.getHours()}시 ${lca.getMinutes()}분 ${lca.getSeconds()}초` : '정보 없음.'
   };
 }
+function numberWithCommas(x) {
+  return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
+}
 
-export default ({ quarterName, lessonMonth, lessonCreatedAt }) => {
+export default ({
+  quarterName, lessonMonth,
+  lessonCreatedAt, totalPrice,
+  singleStudents, groupStudents
+}) => {
   const { getLessonMonth, getLessonCreatedAt } = makeDate(lessonMonth, lessonCreatedAt);
   return (
     <>
@@ -32,6 +39,38 @@ export default ({ quarterName, lessonMonth, lessonCreatedAt }) => {
             <Box>
               <Typography variant="caption">
                 {getLessonCreatedAt}
+              </Typography>
+            </Box>
+          </Box>
+          <Box
+            display="flex"
+          >
+            <Box
+              mr={2}
+            >
+              <Typography variant="subtitle2">
+                총 수업료
+              </Typography>
+              <Typography variant="h6" color="primary">
+                {numberWithCommas(totalPrice)}원
+              </Typography>
+            </Box>
+            <Box
+              mr={2}
+            >
+              <Typography variant="subtitle2">
+                개인 학생
+              </Typography>
+              <Typography variant="h6" color="primary">
+                {singleStudents}명
+              </Typography>
+            </Box>
+            <Box>
+              <Typography variant="subtitle2">
+                단체 학생
+              </Typography>
+              <Typography variant="h6" color="primary">
+                {groupStudents}명
               </Typography>
             </Box>
           </Box>

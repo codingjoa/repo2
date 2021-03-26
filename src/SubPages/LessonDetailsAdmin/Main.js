@@ -12,7 +12,7 @@ let status = 0;
 let data = null;
 
 export default () => {
-  const [ count, setCount ] = React.useState(0);
+  const setCount = React.useState(0)[1];
   const { quarterID, lessonMonth } = useParams();
   const handleState = (err, result) => {
     if(err) {
