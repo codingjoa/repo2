@@ -10,7 +10,7 @@ module.exports = {
     watch: false,
     restart_delay: 10000,
     env: {
-      'MARIADB_PORT': 3307,
+      'MARIADB_PORT': 3306,
       'MARIADB_NAME': 'v1'
     },
     env_dev: {
