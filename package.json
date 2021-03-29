@@ -32,6 +32,7 @@
     "startsecure": "HTTPS=true SSL_CRT_FILE=txshi.crt SSL_KEY_FILE=txshi.key react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "testapi": "mocha",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
