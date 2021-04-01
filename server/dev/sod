@@ -16,7 +16,7 @@ function all(
   */
   const 계산공제인원 = (공제인원 + (자식인원*2));
 
-  const 지급합계급여구간 = 지급합계;//급여구간(지급합계);
+  const 지급합계급여구간 = 급여구간(지급합계);
   const 연합계소득 = 지급합계급여구간 * 12; // 2 = 1 * 12
   // 근로소득
   const 근로소득공제 = three(연합계소득); // 3
@@ -24,15 +24,16 @@ function all(
   // 인적공제
   const 인적공제 = 1500000 * 계산공제인원; // 5
   // 연금보험료공제
-  const 연금보험료 = p10(지급합계급여구간 * 0.045); // 6 (0.045 = 4.5% = 연금보험세율)
+  const 상하한적용가 = (지급합계급여구간 > 4490000 ? 4490000 : (지급합계급여구간 < 290000 ? 290000 : 지급합계급여구간));
+  const 연금보험료 = 상하한적용가 * 0.045; // 6 (0.045 = 4.5% = 연금보험세율)
   const 연금보험료연공제 = p10(연금보험료 * 12); // 7
   // 특별소득공제
   const 특별소득공제 = gongje(연합계소득, 계산공제인원);//eight(연합계소득, 계산공제인원); // 8
   // 과세표준 = 4 - 5 - 7 - 8 = 근로소득 - 인적공제 - 연금보험료공제 - 특별소득공제
-  const 과세표준 = p10(근로소득금액 - 인적공제 - 연금보험료연공제 - 특별소득공제);
+  const 과세표준 = 근로소득금액 - 인적공제 - 연금보험료연공제 - 특별소득공제;
   const 산출세액 = nine(과세표준); // 9
   const 근로소득세액공제 = geunlo(산출세액, 연합계소득);//ten(산출세액); // 10
-  const 결정세액 = p10(산출세액 - 근로소득세액공제) // 11
+  const 결정세액 = 산출세액 - 근로소득세액공제 // 11
   const 간이소득세액 = p10(결정세액/12); // 12, 13
   false && console.log({
     1: 지급합계급여구간,
@@ -56,9 +57,10 @@ function all(
 function 급여구간(
   합계소득
 ) {
-  return 3010000;
-  //200-210 중간값
-  //300-320 중간값
+  //const x = (Math.floor(합계소득 * 0.0001)*10000)+5000;
+  const level = ((합계소득 >= 3000000) ? 4 : ((합계소득 >= 1500000) ? 2 : 1));
+  const b = 합계소득 % (5000 * level)
+  return 합계소득 + ((2500 * level) - b);
 }
 
 // 근로소득공제액계산
@@ -68,7 +70,7 @@ function three(
   if(연합계소득<5000000) return 연합계소득 * 0.7;
   if(연합계소득<15000000) return 3500000 + (연합계소득-5000000)*0.4;
   if(연합계소득<45000000) return 7500000 + (연합계소득-15000000)*0.15;
-  if(연합계소득<100000000) return 12500000 + (연합계소득-45000000)*0.05;
+  if(연합계소득<100000000) return 12000000 + (연합계소득-45000000)*0.05;
   return 14750000 + (연합계소득-100000000)*0.02;
 }
 
@@ -77,10 +79,6 @@ function eight(
   연합계소득,
   공제인원
 ) {
-  switch(공제인원) {
-    case 1:
-
-  }
   if(공제인원===1) return 3100000 + (연합계소득 * 0.04);
   else if(공제인원===2) return 3600000 + (연합계소득 * 0.04);
   else if(공제인원>=3) return 5000000 + (연합계소득 * 0.04);
@@ -113,15 +111,8 @@ function gongje(
 ) {
   let sicone, sictwo, sicthree,
     sicfour, sicfive, sicsix,
-    sicseven, siceight, allperson;
-  allperson = 공제인원
-  /* @codingjoa
-     1명기준
-     30000000이하
-     3100000 + (급여 * 0.04)
-     45000000이하
-     3100000 + (급여 * 0.04) - ()
-  */
+    sicseven, siceight,
+    allperson = 공제인원;
   if(allperson === 1) {
     if(total_salary <= 30000000) {
       sicone = total_salary * 0.04;
@@ -174,28 +165,28 @@ function gongje(
       sictwo = 5000000 + sicone;
       return sictwo;
     } else if(total_salary <= 45000000) {
-      sicone = p10(total_salary * 0.07);
+      sicone = total_salary * 0.07;
       sictwo = 5000000 + sicone;
       sicthree = total_salary - 30000000;
-      sicfour = p10(sicthree * 0.05);
+      sicfour = sicthree * 0.05;
       sicfive = sictwo - sicfour;
       sicsix = total_salary - 40000000;
       sicseven = minusToZero(sicsix) * 0.05;
       siceight = sicfive - sicseven;
       return siceight;
     } else if(total_salary <= 70000000) {
-      sicone = p10(total_salary * 0.05);
+      sicone = total_salary * 0.05;
       sictwo = 5000000 + sicone;
       sicthree = total_salary - 40000000;
-      sicfour = p10(sicthree * 0.04);
+      sicfour = sicthree * 0.04;
       sicfive = sictwo + sicfour;
       return sicfive;
     } else if(total_salary <= 120000000) {
       // 5,000,000 + (84,120,000 × 0.03) + [(84,120,000 - 40,000,000 )× 4%] = 7,730,800
-      sicone = p10(total_salary * 0.03);
+      sicone = total_salary * 0.03;
       sictwo = 5000000 + sicone;
       sicthree = total_salary - 40000000;
-      sicfour = p10(sicthree * 0.04);
+      sicfour = sicthree * 0.04;
       sicfive = sictwo + sicfour;
       return sicfive;
     } else {
@@ -216,10 +207,10 @@ function geunlo(
 ) {
   let first = null;
   if(산출세액 <= 500000) {
-    first = p10(산출세액 * 0.55);
+    first = 산출세액 * 0.55;
   }
   else {
-   first = p10(275000 + p10((산출세액 - 500000) * 0.3));
+   first = 275000 + (산출세액 - 500000) * 0.3;
  }
  first = minusToZero(first);
   if(first >= 660000) { // 66만원 이상일 때
@@ -250,5 +241,5 @@ module.id == require.main.id && (() => {
   console.log(all(4010000, 1, 0));
 })();
 module.exports = {
-  all
+  all, 급여구간
 };

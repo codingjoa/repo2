@@ -15,7 +15,9 @@ module.exports = {
     },
     env_dev: {
       'MARIADB_PORT': 3306,
-      'MARIADB_NAME': 'ky'
+      'MARIADB_NAME': 'ky',
+      'DEBUG': '1',
+      'ERROR': '1'
     }
   }],
 

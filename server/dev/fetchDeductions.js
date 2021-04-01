@@ -4,7 +4,6 @@
 const { OK, NotFound, BadRequest } = require('../format');
 const { pool } = require('../poolManager');
 
-
 /* @codingjoa
    SQL 쿼리
 */
@@ -21,14 +20,26 @@ const fetchQuery = (
   deductionsMonth.EIC,
   deductionsMonth.LIT,
   deductionsMonth.SAT,
-  P.deductions,
-  P.proceeds,
   P.income,
-  P.income - P.proceeds - case
+  P.toVAT,
+  P.toTeacher,
+  P.deductionsFromTeacher,
+  P.deductionsFromCompany,
+  allNPC,
+  allHIC,
+  allLCIC,
+  allEIC,
+  allNP,
+  allHI,
+  allLCI,
+  allEI,
+  allLIT,
+  allSAT,
+  P.income - P.toVAT - P.toTeacher - P.deductionsFromTeacher - P.deductionsFromCompany - case
     when deductionsMonth.toPresident is null
     then 0
     else deductionsMonth.toPresident
-  end as D,
+  end as toCompany,
   case
     when deductionsMonth.lessonMonth is null
     then 0
@@ -42,9 +53,21 @@ from
     Q.lessonMonth=deductionsMonth.lessonMonth left join
   (select
     lessonMonth,
-    sum(deductions) as deductions,
-    sum(proceeds) as proceeds,
-    sum(income) as income
+    sum(deductions) as deductionsFromTeacher,
+    sum(income) as income,
+    sum(income * 0.1) as toVAT,
+    sum(proceeds) - sum(deductions) as toTeacher,
+    sum(NPC + HIC + LCIC + EIC) as deductionsFromCompany,
+    sum(NPC) as allNPC,
+    sum(HIC) as allHIC,
+    sum(LCIC) as allLCIC,
+    sum(EIC) as allEIC,
+    sum(NP) as allNP,
+    sum(HI) as allHI,
+    sum(LCI) as allLCI,
+    sum(EI) as allEI,
+    sum(LIT) as allLIT,
+    sum(SAT) as allSAT
   from
     deductionsPrice
   group by
@@ -81,17 +104,22 @@ async function fetchProceeds(
     LIT 지방소득세
     SAT 농특세
 */
-module.exports = (
+module.exports = async (
   req,
   res
 ) => {
-  const lessonMonth = req.param.lessonMonth;
+  const lessonMonth = req.params?.lessonMonth;
   try {
+    const result = await pool.query(fetchQuery, [
+      lessonMonth,
+      lessonMonth,
+      lessonMonth
+    ])
     if(!result.length) {
       NotFound(res);
     }
     else {
-      OK(res, result);
+      OK(res, result[0]);
     }
   } catch(err) {
     BadRequest(res, err);

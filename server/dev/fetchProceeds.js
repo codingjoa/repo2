@@ -33,19 +33,24 @@ const fetchQuery = (
     else 0
   end)) as totalStudent,
   sum((case
-    when lessonEnded=1
+    when lessonEnded=1 and billingScholarshipCode=0
     then billingPrice
     else 0
   end)) as totalPrice,
+  sum((case
+    when lessonEnded=1 and billingScholarshipCode=0
+    then billingPrice * 0.1
+    else 0
+  end)) as totalVAT,
   case
     when sum((case
-      when lessonEnded=1
+      when lessonEnded=1 and billingScholarshipCode=0
       then billingPrice*(refundPercent*0.01)
       else 0
     end)) is null
     then 0
     else sum((case
-      when lessonEnded=1
+      when lessonEnded=1 and billingScholarshipCode=0
       then billingPrice*(refundPercent*0.01)
       else 0
     end))

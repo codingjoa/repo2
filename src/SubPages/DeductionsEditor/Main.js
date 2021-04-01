@@ -16,20 +16,7 @@ import TableRow from '@material-ui/core/TableRow';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 let dom = null;
-const After = ({
-  param
-}) => (<>
-  <Typography
-    variant="subtitle1"
-  >
-    세율 등록
-  </Typography>
-  <Typography
-    variant="subtitle1"
-  >
-    선생별 수당 등록
-  </Typography>
-</>);
+let deductions = null;
 const header = {
   clear(
     deductions = {},
@@ -86,6 +73,13 @@ const header = {
     teacher[field] = value;
   }
 };
+function fetchDeductions(
+  lessonMonth,
+  callback
+) {
+  axios.get(`/api/dev/admin/settlement/deductions/${lessonMonth}`)
+  .then(result => callback(null, result.data.fetchedData), callback);
+}
 function fetchProceeds(
   lessonMonth,
   callback
@@ -394,7 +388,6 @@ export default ({
         dom = null;
         setCount(c => c+1);
         dom = (<>
-          <After />
           <Page>
             <Box
               display="flex"
@@ -713,37 +706,6 @@ export default ({
       dom = null;
       setCount(c => c+1);
       dom = (<>
-        <After />
-        <Page>
-          <Box
-            display="flex"
-          >
-            <Box
-              mr={1}
-            >
-              <Button
-                color="primary"
-                size="small"
-                variant="text"
-              >
-                예상 세금 정산
-              </Button>
-            </Box>
-            <Box>
-              <Button
-                color="primary"
-                disabled
-                size="small"
-                variant="text"
-              >
-                이전 정산결과 조회
-              </Button>
-            </Box>
-          </Box>
-          <Deductions
-            fields={null}
-          />
-        </Page>
         <TableContainer
           component={Page}
         >
@@ -1016,12 +978,27 @@ export default ({
       </>);
       setCount(c => c+1);
     });
+    fetchDeductions(`${year}-${month}-01`, (err, result) => {
+      if(err) {
+        deductions = (<>{err.toString()}</>);
+        return;
+      }
+      deductions = (
+        <Page>
+          <Deductions
+            {...result}
+          />
+        </Page>
+      );
+      setCount(c => c+1);
+    });
   };
   return (<>
     <Page>
       <SelectingMonth fetchTo={fetchTo}/>
       <SelectingMonths fetchFromTo={fetchFromTo}/>
     </Page>
+    {deductions}
     {dom}
   </>);
 };
