@@ -1,14 +1,22 @@
 const { OK, BadRequest } = require('../format');
-const { pool, end } = require('../poolManager');
-const execAsync = require('../execAsync');
+const { pool } = require('../poolManager');
 const createLesson = (
 `insert into
-  lesson(quarterID, teacherID, lessonMonth)
+  lesson(
+    quarterID,
+    teacherID,
+    lessonMonth
+  )
 select
   ? as quarterID,
-  ? as teacherID,
-  concat(date_format(current_date, '%Y-%m'), '-01') as lessonMonth`
-);
+  (select
+    teacherID
+  from
+    quarter
+  where
+    ?=quarterID
+  limit 1) as teacherID,
+  concat(date_format(current_date, '%Y-%m'), '-01') as lessonMonth`);
 const createStudy = (
 `insert into study(studyWeek, quarterID, lessonMonth)
 select
@@ -40,7 +48,10 @@ where
   billingRetractable=1`
 );
 
-async function addLesson(quarterID, teacherID, studySize) {
+async function addLesson(
+  quarterID,
+  studySize
+) {
   let success = false;
 
   const conn = await pool.getConnection();
@@ -49,21 +60,23 @@ async function addLesson(quarterID, teacherID, studySize) {
     await conn.query(
       createLesson,
       [ quarterID,
-        teacherID
+        quarterID
       ]
     );
     for(let i=1; i<=studySize; i++) {
       await conn.query(createStudy, [ i, quarterID ]);
       await conn.query(createChecking, [ i, quarterID ]);
     }
-    conn.query(updateBillingRetractable, [ quarterID ]);
+    await conn.query(updateBillingRetractable, [ quarterID ]);
     await conn.commit();
+    await conn.release();
     success = true;
   } catch(err) {
     console.error(err);
     await conn.rollback();
+    await conn.release();
+    throw err;
   }
-  await conn.release();
   return success;
 }
 
@@ -73,29 +86,35 @@ async function addLesson(quarterID, teacherID, studySize) {
    레슨이 등록되어 수업 배치, 입금을 철회할 수 없음
 */
 
-module.exports = function(
+module.exports = async function(
   req, res
 ) {
-  const teacherID = req.params?.teacherID ?? null;
   const quarterID = req.params?.quarterID ?? null;
-  const studySize = req.params?.studySize ?? 4;
-  execAsync(addLesson, (err, ok) => {
-    if(err) {
-      BadRequest(res, err);
-      return;
-    }
-    // 실패했고 롤백함
-    ok === false && BadRequest(res);
-    // 성공함
-    ok === true && OK(res, ok);
-  })(quarterID, teacherID, studySize);
+  const studySize = req.body?.studySize ?? 4;
+  // teacherID 삭제
+  try {
+    const ok = await addLesson(
+      quarterID,
+      studySize
+    );
+    ok === false && BadRequest(res); // 실패했고 롤백함
+    ok === true && OK(res, ok); // 성공함
+  } catch(err) {
+    BadRequest(res, err);
+  }
 };
-module.id === require.main.id && (() => {
-  setTimeout(() => (
-
-  execAsync(addLesson, (err, ok) => {
-    err && console.error(err);
-    ok && console.log(ok);
-    end();
-  })(27, 1212, 16)), 3000);
+module.id === require.main.id && (async () => {
+  const quarterID = process.env?.QID ?? 5;
+  const studySize = process.env?.SSIZE ?? 4;
+  try {
+    const ok = await addLesson(
+      quarterID,
+      studySize
+    );
+    //ok === false && BadRequest(res); // 실패했고 롤백함
+    //ok === true && OK(res, ok); // 성공함
+  } catch(err) {
+    //BadRequest(res, err);
+  }
+  pool.end();
 })();

@@ -12,7 +12,8 @@ export default (validateFunction) => {
   const values = {
     teacherOp: 0,
     isForeigner: 0,
-    teacherJoined: toDateString()
+    teacherJoined: toDateString(),
+    teacherID: ''
   };
   const helperLabels = {};
   const handleHelper = (key, value) => {

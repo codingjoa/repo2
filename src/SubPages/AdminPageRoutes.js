@@ -1,24 +1,28 @@
 import React from 'react';
 import { Route } from 'react-router-dom';
+import BillingAdd from './BillingAdd/Main';
+import BillingEditor from './BillingEditor/Main';
 import BillingList from './BillingList/Main';
 import Calculator from './Calculator/Main';
 import DeductionsEditor from './DeductionsEditor/Main';
-import LessonChargeList from './LessonChargeList/Main';
 import LessonChargeRegister from './LessonChargeRegister/Main';
 import LessonDetailsAdmin from './LessonDetailsAdmin/Main';
-import LessonEndedList from './LessonEndedList/Main';
-import LessonEndRefund from './LessonEndRefund/Main';
-import LessonEndReview from './LessonEndReview/Main';
-import LessonListAdmin from './LessonListAdmin/Main';
+import LessonRegister from './LessonRegister/Main';
+import ManageLessons from './ManageLessons/Main';
 import QuarterList from './QuarterList/Main';
 import StudentAdd from './StudentAdd/Main';
 import StudentDetails from './StudentDetails/Main';
 import StudentList from './StudentList/Main';
 import TeacherAdd from './TeacherAdd/Main';
 import TeacherList from './TeacherList/Main';
-import TestPage from './TestPage/Main';
 export default () => (
   <>
+    <Route exact path="/test/billing/:studentID/:lessonMonth">
+      <BillingEditor />
+    </Route>
+    <Route exact path="/test/billing/:studentID">
+      <BillingAdd />
+    </Route>
     <Route exact path="/admin/billing">
       <BillingList />
     </Route>
@@ -28,26 +32,17 @@ export default () => (
     <Route exact path="/admin/settle">
       <DeductionsEditor />
     </Route>
-    <Route exact path="/admin/lessonCharge">
-      <LessonChargeList />
-    </Route>
-    <Route exact path="/admin/lessonCharge/add/:quarterID">
+    <Route exact path="/admin/lessonCharge/:quarterID">
       <LessonChargeRegister />
     </Route>
     <Route exact path="/admin/lesson/detail/:quarterID/:lessonMonth">
       <LessonDetailsAdmin />
     </Route>
-    <Route exact path="/admin/lessonEnded">
-      <LessonEndedList />
-    </Route>
-    <Route exact path="/admin/lessonEnd/refundReason">
-      <LessonEndRefund />
-    </Route>
-    <Route exact path="/admin/lessonEnd/review">
-      <LessonEndReview />
-    </Route>
     <Route exact path="/admin/lesson">
-      <LessonListAdmin />
+      <ManageLessons />
+    </Route>
+    <Route exact path="/admin/lesson/add/:quarterID">
+      <LessonRegister />
     </Route>
     <Route exact path="/admin/quarter">
       <QuarterList />
@@ -66,9 +61,6 @@ export default () => (
     </Route>
     <Route exact path="/admin/teacher">
       <TeacherList />
-    </Route>
-    <Route exact path="/test/0316">
-      <TestPage />
     </Route>
   </>
 );

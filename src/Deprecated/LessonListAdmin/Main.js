@@ -6,7 +6,8 @@ import List from './List';
 import Search from './Search';
 import { Context } from './Context';
 function fetchLessonsAdmin(callback) {
-  axios.get(`/api/admin/lesson`)
+  const lessonMonth= '2021-04-01';
+  axios.get(`/api/dev/admin/lesson/wait/${lessonMonth}`)
   .then(r => callback(null, r))
   .catch(callback);
 }
@@ -54,7 +55,7 @@ export default function() {
       {status === 0 &&
         <CircularProgress />
       }
-      {status === 404 && 
+      {status === 404 &&
         <>이번 달 등록된 수강 내역이 없습니다.</>
       }
       {status === 400 &&
@@ -62,8 +63,9 @@ export default function() {
       }
       {status === 200 && fd &&
         <>
-          <List list={fd.canbeClosedLesson.filter(filtering)} isCanBeClosed={true} />
-          <List list={fd.lesson.filter(filtering)} isCanBeClosed={false} />
+          {/*<List list={fd.canbeClosedLesson.filter(filtering)} isCanBeClosed={true} />
+          <List list={fd.lesson.filter(filtering)} isCanBeClosed={false} />*/}
+          <List list={fd.filter(filtering)} isCanBeClosed={true} />
         </>
       }
     </Context.Provider>
@@ -88,5 +90,3 @@ export default function() {
     </>
   );
 */
-
-

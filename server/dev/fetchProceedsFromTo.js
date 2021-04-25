@@ -10,46 +10,23 @@ const { pool } = require('../poolManager');
 const fetchQuery = (
 `select
   teacher.teacherID,
-  lesson.lessonMonth,
-  (select
-    teacherName
-  from
-    teacher as T
-  where
-    teacher.teacherID=T.teacherID
-  ) as teacherName,
-  (select
-    teacherAccount
-  from
-    teacher as T
-  where
-    teacher.teacherID=T.teacherID
-  ) as teacherAccount,
+  teacher.teacherName,
+  teacher.teacherAccount,
   teacherLeaving.teacherJoined,
   teacherLeaving.teacherLeaved,
-  sum((case
-    when lessonEnded=1
-    then 1
-    else 0
-  end)) as totalStudent,
-  sum((case
-    when lessonEnded=1
-    then billingPrice
-    else 0
-  end)) as totalPrice,
-  case
-    when sum((case
-      when lessonEnded=1
-      then billingPrice*(refundPercent*0.01)
-      else 0
-    end)) is null
-    then 0
-    else sum((case
-      when lessonEnded=1
-      then billingPrice*(refundPercent*0.01)
-      else 0
-    end))
-  end as totalRefundPrice,
+  max(case
+    when lesson.lessonEnded=1
+    then lesson.lessonMonth
+    else null
+  end) as lastLessonMonth,
+  min(case
+    when lesson.lessonEnded=1
+    then lesson.lessonMonth
+    else null
+  end) as firstLessonMonth,
+  sum(lesson.totalStudent) as totalStudent,
+  sum(lesson.totalPrice) as totalPrice,
+  sum(lesson.totalRefundPrice) as totalRefundPrice,
   sum(NP) as NP,
   sum(NPC) as NPC,
   sum(HI) as HI,
@@ -77,17 +54,50 @@ from
   teacherLeaving left join
   teacher on
     teacherLeaving.teacherID=teacher.teacherID left join
-  lesson on
-    teacher.teacherID=lesson.teacherID left join
   deductionsPrice on
     teacher.teacherID=deductionsPrice.teacherID left join
-  billing on
-    lesson.quarterID=billing.quarterID and
-    lesson.lessonMonth=billing.lessonMonth left join
-  refund on
-    billing.studentID=refund.studentID and
-    billing.quarterID=refund.quarterID and
-    billing.lessonMonth=refund.lessonMonth
+  (select
+    lesson.teacherID,
+    lesson.lessonMonth,
+    lesson.lessonEnded,
+    sum((case
+      when lesson.lessonEnded=1 and billing.billingRetractable=0 and billing.billingScholarshipCode=0
+      then 1
+      else 0
+    end)) as totalStudent,
+    sum((case
+      when lesson.lessonEnded=1 and billing.billingRetractable=0 and billing.billingScholarshipCode=0
+      then billingPrice
+      else 0
+    end)) as totalPrice,
+    case
+      when sum((case
+        when lesson.lessonEnded=1 and billing.billingRetractable=0 and billing.billingScholarshipCode=0
+        then billingPrice*(refundPercent*0.01)
+        else 0
+      end)) is null
+      then 0
+      else sum((case
+        when lesson.lessonEnded=1 and billing.billingRetractable=0 and billing.billingScholarshipCode=0
+        then billingPrice*(refundPercent*0.01)
+        else 0
+      end))
+    end as totalRefundPrice
+  from
+    lesson left join
+    billing on
+      lesson.quarterID=billing.quarterID and
+      lesson.lessonMonth=billing.lessonMonth left join
+    refund on
+      billing.studentID=refund.studentID and
+      billing.quarterID=refund.quarterID and
+      billing.lessonMonth=refund.lessonMonth
+  group by
+    lesson.teacherID,
+    lesson.lessonMonth
+  ) as lesson on
+    deductionsPrice.teacherID=lesson.teacherID and
+    deductionsPrice.lessonMonth=lesson.lessonMonth
 where
   ( concat(date_format(?, '%Y-%m'), '-01') between
       concat(date_format(teacherLeaving.teacherJoined, '%Y-%m'), '-01') and
@@ -165,7 +175,7 @@ module.exports = async (
   }
 };
 module.id === require.main.id && (async () => {
-  const lessonMonth = process.env.LM ?? '2020-10-01';
+  const lessonMonth = process.env.LM ?? '2020-01-01';
   const lastMonth = process.env.LLM ?? '2020-12-01';
   try {
     await pool.query(fetchQuery,[

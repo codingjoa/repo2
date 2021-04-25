@@ -3,15 +3,25 @@ module.exports = {
     name: 'react',
     script: 'npm',
     args: 'start',
-    watch: false
+    watch: false,
+    restart_delay: 30000,
+    env: {
+      'HTTPS': true,
+      'SSL_CRT_FILE': './ssl/cert.crt',
+      'SSL_KEY_FILE': './ssl/cert.key'
+    },
+    env_dev: {
+      'HTTPS': false
+    }
   }, {
     name: 'restAPI',
     script: './server/server.js',
     watch: false,
-    restart_delay: 10000,
+    restart_delay: 30000,
     env: {
       'MARIADB_PORT': 3306,
-      'MARIADB_NAME': 'v1'
+      'MARIADB_NAME': 'v1',
+      'NODE_ENV': 'production'
     },
     env_dev: {
       'MARIADB_PORT': 3306,

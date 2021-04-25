@@ -14,7 +14,7 @@ function toDateFormat(origin) {
 }
 
 export default ({ list }) => (<>
-  {list && list.map(({ quarterName, quarterID, lessonMonth}) => <Page>
+  {list && list.map(({ quarterName, quarterID, lessonMonth}) => <Page key={`${quarterID}-${lessonMonth}`}>
     <Box display="flex">
       <Box
         flexGrow={1}

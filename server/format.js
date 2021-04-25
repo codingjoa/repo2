@@ -48,6 +48,8 @@ function NotFound(res) {
   return true;
 }
 
+class CommonError extends Error {}
+
 module.exports = {
   OK,
   Created,
@@ -55,5 +57,6 @@ module.exports = {
   BadRequest,
   Unauthorized,
   Forbidden,
-  NotFound
+  NotFound,
+  CommonError
 };

@@ -20,8 +20,31 @@ function Group(code) {
 function toYear(origin) {
   return (new Date(origin)).getFullYear();
 }
+function getMoneyStatus(
+  billingPrice,
+  billingScholarshipCode,
+  billingTaxCode
+) {
+  if(billingScholarshipCode === 1) {
+    return '장학';
+  }
+  return (<>{numberWithCommas(billingPrice)} 원{(billingTaxCode === 1) ? '(특수)': null}</>);
+}
 
-export default ({ studentID, studentBirthday, studentName, quarterName, billingPrice, billingPayment, billingGroup, billingRetractable, studentUnused, quarterUnused }) => (
+export default ({
+  studentID,
+  studentBirthday,
+  studentName,
+  quarterName,
+  billingPrice,
+  billingPayment,
+  billingGroup,
+  billingRetractable,
+  studentUnused,
+  quarterUnused,
+  billingScholarshipCode,
+  billingTaxCode
+}) => (
   <Page>
     <Box display="flex">
       <Box
@@ -35,7 +58,7 @@ export default ({ studentID, studentBirthday, studentName, quarterName, billingP
           {Payment(billingPayment)}/{Group(billingGroup)}
         </Typography>
         <Typography variant="h6">
-          {numberWithCommas(billingPrice)} 원
+          {getMoneyStatus(billingPrice, billingScholarshipCode, billingTaxCode)}
         </Typography>
       </Box>
       <Box>

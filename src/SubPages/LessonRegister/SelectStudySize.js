@@ -1,9 +1,7 @@
-import React, { useContext, useState, useLayoutEffect } from 'react';
-import axios from 'axios';
+import React from 'react';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Context } from './Context';
 function makeIter() {
   let j = 4;
   let i = 0;
@@ -14,8 +12,10 @@ function makeIter() {
   return iter;
 }
 
-export default () => {
-  const { pickedSize, setPickedSize } = useContext(Context);
+export default ({
+  pickedSize,
+  setPickedSize
+}) => {
   const handleChange = e => {
     setPickedSize(e.target.value);
   };
@@ -32,7 +32,7 @@ export default () => {
         value={pickedSize}
         onChange={handleChange}
       >
-        {makeIter().map(size => 
+        {makeIter().map(size =>
           <MenuItem
             value={size}
           >

@@ -1,72 +1,104 @@
 const { OK, BadRequest, NotFound } = require('../format');
 const { pool } = require('../poolManager');
-
-/* @codingjoa
-   생성된 수강 등록 조회
-   조건1. 요청한 달만
-*/
+const fetchBillingQuery = (
+`select
+  quarter.quarterID,
+  quarter.quarterName,
+  request.lessonMonth,
+  request.studentID,
+  request.studentName,
+  billing.billingPayment,
+  billing.billingGroup,
+  billing.billingPrice,
+  billing.billingRetractable,
+  billing.billingScholarshipCode,
+  billing.billingTaxCode,
+  case
+    when lesson.lessonEnded=1
+    then billing.billingRefundReason
+    else null
+  end as billingRefundReason,
+  case
+    when lesson.lessonEnded=1
+    then billing.billingRefundPrice
+    else null
+  end as billingRefundPrice,
+  case
+    when lesson.lessonEnded is not null
+    then lesson.lessonEnded=1
+    else 0
+  end as billingRefundEditable,
+  case
+    when billing.studentID is null
+    then 0
+    else 1
+  end as billingRegCode
+from
+  (select
+    studentID.studentID,
+    studentInfo.studentName,
+    studentInfo.quarterID,
+    concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+  from
+    studentID left join
+    studentInfo on
+      studentID.studentID=studentInfo.studentID
+  where
+    studentID.studentID=?
+  ) as request left join
+  billing on
+    request.studentID=billing.studentID and
+    request.lessonMonth=billing.lessonMonth left join
+  quarter on
+    case when billing.quarterID is null then request.quarterID else billing.quarterID end=quarter.quarterID left join
+  lesson on
+    billing.quarterID=lesson.quarterID and
+    billing.lessonMonth=lesson.lessonMonth
+  `);
+async function fetchBilling(
+  lessonMonth,
+  studentID,
+) {
+  const conn = await pool.getConnection();
+  await conn.beginTransaction();
+  try {
+    const rows = await conn.query(fetchBillingQuery, [
+      lessonMonth,
+      studentID
+    ]);
+    await conn.commit();
+    await conn.release();
+    return rows;
+  } catch(err) {
+    await conn.rollback();
+    await conn.release();
+    throw err;
+  }
+}
 
 module.exports = async function(
   req, res
 ) {
-  const lessonMonth = req.params?.lessonMonth ?? null;
-  pool.query(`
-select
-  case
-    when available.studentID is null
-    then 0
-    else 1
-  end as Registered,
-  billingGroup,
-  billingPayment,
-  billingPrice,
-  billingRetractable,
-  studentInfo.studentID,
-  studentInfo.studentName,
-  studentInfo.studentBirthday,
-  studentInfo.unused as studentUnused,
-  (select quarterName
-  from quarter
-  where quarter.quarterID=available.quarterID
-  ) as quarterName,
-  (select unused
-  from quarter
-  where quarter.quarterID=available.quarterID
-  ) as quarterUnused
-from
-(select
-  studentID,
-  quarterID,
-  billingGroup,
-  billingPayment,
-  billingPrice,
-  billingRetractable
-from billing
-where
-  date_format(?, '%Y-%m')=date_format(lessonMonth, '%Y-%m')
-) as available
-right join
-(select
-  studentInfo.*,
-  studentID.unused
-from
-  studentInfo,
-  studentID
-where
-  studentID.studentID=studentInfo.studentID
-) as studentInfo
-on available.studentID=studentInfo.studentID
-where
-  available.billingRetractable=0 or
-  unused=0
-order by
-  studentInfo.studentID
-  asc`,
-    [ lessonMonth ]
-  )
-  .then(r => {
-    !r.length && NotFound(res);
-    r.length && OK(res, r);
-  })
-  .catch(e => BadRequest(res, e));
+  const studentID = req.params?.studentID;
+  const lessonMonth = req.params?.lessonMonth;
+  try {
+    const rows = await fetchBilling(
+      lessonMonth,
+      studentID
+    );
+    !rows.length && NotFound(res);
+    rows.length && OK(res, rows[0]);
+    OK(res);
+  } catch(err) {
+    BadRequest(res, err);
+  }
 };
+module.id === require.main.id && (async () => {
+  const studentID = process.env?.SID ?? 10;
+  const lessonMonth = process.env?.LM ?? '2020-10-01';
+  await fetchBilling(
+    lessonMonth,
+    studentID
+  ).then(console.log, console.error);
+  pool.end();
+})();

@@ -1,47 +1,39 @@
 import React from 'react';
-import { useParams } from 'react-router-dom';
+import * as ReactRouter from 'react-router-dom';
+import { getHandlar } from '../../Templates/Format';
 import axios from 'axios';
+import CircularProgress from '@material-ui/core/CircularProgress';
 import General from './General';
 import Checking from './Checking';
+const defaultPage = (
+  <CircularProgress />
+);
 function fetchDetails(callback, { quarterID, lessonMonth }) {
   axios.get(`/api/admin/lesson/details/${quarterID}/${lessonMonth}`)
-  .then(r => callback(null, r))
-  .catch(callback);
+  .then(r => callback(null, r), callback)
 }
-let status = 0;
-let data = null;
 
 export default () => {
-  const setCount = React.useState(0)[1];
-  const { quarterID, lessonMonth } = useParams();
-  const handleState = (err, result) => {
-    if(err) {
-      status = err?.response?.status ?? 400;
-      setCount(count => count+1);
-      return;
-    }
-    data = result.data.fetchedData;
-    status = 200;
-    setCount(count => count+1);
-  }
+  const history = ReactRouter.useHistory();
+  const location = ReactRouter.useLocation();
+  const { quarterID, lessonMonth } = ReactRouter.useParams();
+  const callback = getHandlar(history.replace);
   React.useLayoutEffect(() => {
-    status = 0;
-    data = null;
-    setCount(0);
-    fetchDetails(handleState, { quarterID, lessonMonth });
+    fetchDetails(callback, { quarterID, lessonMonth });
   }, []);
   return (
     <>
-      {status === 404 && <>조회된 정보 없음.</>}
-      {status === 400 && <>알 수 없는 오류.</>}
-      {status === 200 &&
+      {!location?.state?.status && defaultPage}
+      {location.state?.status === 404 && <>조회된 정보 없음.</>}
+      {location.state?.status === 400 && <>알 수 없는 오류.</>}
+      {location.state?.status === 200 &&
       <>
         <General
-          {...data}
+          {...location.state?.data}
         />
         <Checking
-          studySize={data.studySize}
-          students={data.students}
+          studySize={location.state?.data.studySize}
+          students={location.state?.data.students}
         />
       </>
       }

@@ -4,10 +4,10 @@ const router = require('express').Router();
 /* @codingjoa
    기능 별 함수
 */
-const addBilling = require('./addBilling');
-const addLesson = require('./addLesson');
+const addBilling = require('./addBilling'); // 1.5 Patch
+const addBillingMiddle = require('./addBillingMiddle'); // 1.5 or later
+const addLesson = require('./addLesson'); // 1.5 Patch
 const addQuarter = require('./addQuarter');
-const addRefund = require('./addRefund');
 const addStudent = require('./addStudent');
 const addTeacher = require('./addTeacher');
 const authorization = require('./authorization');
@@ -15,17 +15,20 @@ const calculateProceeds = require('./calculateProceeds');
 const closeLesson = require('./closeLesson');
 const closeQuarter = require('./closeQuarter');
 const closeStudent = require('./closeStudent');
-const closeTeacher = require('./closeTeacher');
+const closeTeacher = require('./closeTeacher'); // Dev
 const deleteBilling = require('./deleteBilling');
+const editBilling = require('./editBilling'); // 1.5 or later
 const editQuarter = require('./editQuarter');
+const editQuarterCoach = require('./editQuarterCoach'); // 1.5 or later
 const editStudent = require('./editStudent');
 const editStudentUniqueness = require('./editStudentUniqueness');
 const editStudyForLesson = require('./editStudyForLesson');
 const editTeacher = require('./editTeacher');
+const fetchAvailableBillingRange = require('./fetchAvailableBillingRange'); // 1.5 or later
 const fetchAvailableLesson = require('./fetchAvailableLesson');
 const fetchAvailableQuarter = require('./fetchAvailableQuarter');
-const fetchBilling = require('./fetchBilling');
-const fetchEndedLessons = require('./fetchEndedLessons');
+const fetchBilling = require('./fetchBilling'); // 1.5 Patch
+const fetchIndependentStudents = require('./fetchIndependentStudents'); // 1.5 or later
 const fetchLessonDetails = require('./fetchLessonDetails');
 const fetchLessonDetailsAdmin = require('./fetchLessonDetailsAdmin');
 const fetchLessons = require('./fetchLessons');
@@ -37,10 +40,9 @@ const fetchStudentForLesson = require('./fetchStudentForLesson');
 const fetchStudents = require('./fetchStudents');
 const fetchStudentDetails = require('./fetchStudentDetails');
 const fetchTeachers = require('./fetchTeachers');
+const fetchWaitLessons = require('./fetchWaitLessons'); // 1.5 or later
 const getAuthorizationInfo = require('./getAuthorizationInfo');
 const isAuthorized = require('./isAuthorized');
-const isAvailableLesson = require('./isAvailableLesson');
-const isAvailableBilling = require('./isAvailableBilling');
 const isCanBeClosedQuarter = require('./isCanBeClosedQuarter');
 const isCanBeClosedTeacher = require('./isCanBeClosedTeacher');
 const isCanBeClosedStudent = require('./isCanBeClosedStudent');
@@ -92,6 +94,9 @@ router.patch('/teacher/lesson/:quarterID/:lessonMonth/student/:studentID',
   isEditableLesson,
   editStudentUniqueness
 );
+router.get('/teacher/students',
+  fetchIndependentStudents
+);
 
 router.patch('/account/edit',
   passwordCertification,
@@ -137,7 +142,6 @@ router.delete('/admin/student/:studentID',
 router.get('/admin/student/:studentID',
   fetchStudentDetails
 );
-
 router.get('/admin/quarter',
   fetchQuarters
 );
@@ -146,6 +150,9 @@ router.post('/admin/quarter',
 );
 router.put('/admin/quarter/:quarterID',
   editQuarter
+);
+router.patch('/admin/quarter/:quarterID',
+  editQuarterCoach
 );
 router.delete('/admin/quarter/:quarterID',
   isCanBeClosedQuarter,
@@ -174,19 +181,14 @@ router.patch('/admin/teacher/:teacherID',
 router.get('/admin/lesson/available',
   fetchAvailableLesson
 );
-router.post('/admin/lesson/:quarterID/:teacherID/:studySize',
-  isAvailableLesson,
+router.post('/admin/lesson/:quarterID',
   addLesson
-);
-router.post('/admin/lesson/refund/:quarterID/:lessonMonth',
-//  isCanBeClosedLesson,
-  addRefund
 );
 router.get('/admin/lesson/details/:quarterID/:lessonMonth',
   fetchLessonDetailsAdmin
 );
-router.get('/admin/lesson/ended/:lessonMonth',
-  fetchEndedLessons
+router.get('/admin/lesson/wait/:lessonMonth',
+  fetchWaitLessons
 );
 router.put('/admin/lesson/:quarterID/:lessonMonth',
 //  isCanBeClosedLesson,
@@ -199,22 +201,31 @@ router.get('/admin/lesson',
 
 
 
-router.get('/admin/billing/all/:lessonMonth',
-  fetchBilling
-);
+
 router.get('/admin/billing/registered/:lessonMonth',
   fetchRegisteredBilling
 );
 router.get('/admin/billing/available/quarter/:lessonMonth',
   fetchAvailableQuarter
 );
-router.post('/admin/billing/:lessonMonth',
-  isAvailableBilling,
+router.post('/admin/billing/:studentID',
   addBilling
+);
+router.get('/admin/billing/:studentID/available',
+  fetchAvailableBillingRange
+);
+router.get('/admin/billing/:studentID/:lessonMonth',
+  fetchBilling
+);
+router.put('/admin/billing/:studentID/:lessonMonth',
+  editBilling
 );
 router.delete('/admin/billing/:studentID/:lessonMonth',
   isRetractableBilling,
   deleteBilling
+);
+router.post('/admin/billing/:studentID/:lessonMonth/middle',
+  addBillingMiddle
 );
 
 router.get('/admin/calculator/proceed/:lessonMonth/:lastMonth',

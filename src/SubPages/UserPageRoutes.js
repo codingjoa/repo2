@@ -4,6 +4,7 @@ import ChangeMyPassword from './ChangeMyPassword/Main';
 import LessonDetails from './LessonDetails/Main';
 import LessonList from './LessonList/Main';
 import LessonStudentDetails from './LessonStudentDetails/Main';
+import QuarterStudentAdd from './QuarterStudentAdd/Main';
 import Study from './Study';
 export default () => (
   <>
@@ -18,6 +19,9 @@ export default () => (
     </Route>
     <Route exact path="/lesson/detail/:quarterID/:lessonMonth/student/:studentID">
       <LessonStudentDetails />
+    </Route>
+    <Route exact path="/test/0417/:quarterID">
+      <QuarterStudentAdd />
     </Route>
     <Route exact path="/lesson/detail/:quarterID/:lessonMonth/study/:weekNum">
       <Study />

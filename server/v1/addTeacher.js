@@ -6,36 +6,42 @@ const { pool } = require('../poolManager');
 */
 const insertTeacherJoined = (
 `insert into teacherLeaving(
-  teacherID,
-  teacherJoined
+  teacherJoined,
+  teacherID
 ) values (
-  LAST_INSERT_ID(),
+  ?,
   ?
 )
-`
-);
-const insertTeacher = (
+`);
+const insertTeacherAutoIncrement = (
 `insert into teacher(
   teacherName, teacherAccount, teacherPassword,
   teacherOp, isForeigner
 ) values(
   ?, ?, 0, ?, ?
 )`);
+const insertTeacher = (
+`insert into teacher(
+  teacherName, teacherAccount, teacherPassword,
+  teacherOp, isForeigner, teacherID
+) values (
+  ?, ?, 0, ?, ?, ?
+)`);
 
 async function addTeacher(
   teacherName, teacherAccount,
-  teacherOp, isForeigner, teacherJoined
+  teacherOp, isForeigner, teacherJoined, teacherID = null
 ) {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
-    const result = await conn.query(insertTeacher, [
+    const result = await conn.query(((teacherID !== null) ? insertTeacher : insertTeacherAutoIncrement), [
       teacherName, teacherAccount,
-      teacherOp, isForeigner
+      teacherOp, isForeigner, teacherID
     ]);
     if(!(result.insertId>0)) throw new Error('정보가 생성되지 않았습니다.');
     await conn.query(insertTeacherJoined, [
-      teacherJoined
+      teacherJoined, result.insertId
     ]);
     await conn.commit();
     await conn.release();
@@ -56,11 +62,12 @@ module.exports = async function(
    임시 비밀번호는 regeneratePassword로 넘김
    400 BadRequest
 */
-  const teacherName = req.body?.teacherName;
-  const teacherAccount = req.body?.id;
-  const teacherOp = req.body?.teacherOp ?? 0;
+  const teacherName = req.body?.teacherName; // 1.0
+  const teacherAccount = req.body?.id; // 1.0
+  const teacherOp = req.body?.teacherOp ?? 0; // 1.0
   const isForeigner = req.body?.isForeigner ?? 0; // 1.4
   const teacherJoined = req.body?.teacherJoined ?? null; // 1.4
+  const teacherID = req.body?.teacherID ?? null; // 1.5
   if(teacherAccount==='admin') {
     BadRequest(res, new Error('admin 계정은 생성할 수 없습니다.'));
     return;
@@ -68,7 +75,7 @@ module.exports = async function(
   try {
     const result = await addTeacher(
       teacherName, teacherAccount,
-      teacherOp, isForeigner, teacherJoined
+      teacherOp, isForeigner, teacherJoined, teacherID
     );
     req.next.teacherID = result;
     next();

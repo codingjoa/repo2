@@ -13,8 +13,6 @@ import TableCell from '@material-ui/core/TableCell';
 import TableContainer from '@material-ui/core/TableContainer';
 import TableHead from '@material-ui/core/TableHead';
 import TableRow from '@material-ui/core/TableRow';
-import TextField from '@material-ui/core/TextField';
-import Typography from '@material-ui/core/Typography';
 let dom = null;
 let deductions = null;
 const header = {
@@ -331,12 +329,8 @@ function ProceedField({
   );
 }
 
-export default ({
-
-}) => {
+export default () => {
   const setCount = React.useState(0)[1];
-  const history = ReactRouter.useHistory();
-  const location = ReactRouter.useLocation();
   const patchCallback = (err, result, refresh) => {
     if(err) {
       alert(err);
@@ -350,18 +344,6 @@ export default ({
       간이세금계산을 희망하는 달을 선택 후 조회를 눌러주세요.<br />
     </>;
     setCount(c => c+1);
-    //const today = new Date();
-    //const year = location.state?.year ?? today.getFullYear();
-    //const month = location.state?.month ?? today.getMonth();
-    /*
-    history.replace({
-      search: location.search,
-      state: {
-        mode: 'edit',
-        year, month
-      }
-    });
-    */
   }, []);
   const fetchFromTo = (
     year, month, eyear, emonth

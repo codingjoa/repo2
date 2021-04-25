@@ -27,7 +27,8 @@ const getLessonGeneralJoin = (
   sum(
     billing.billingPrice
   ) as totalPrice,
-  A.studySize
+  A.studySize,
+  A.studyOkSize
 from
   lesson left join
   quarter on
@@ -38,14 +39,22 @@ from
     billing.quarterID=lesson.quarterID and
     billing.lessonMonth=lesson.lessonMonth left join
   (select
-    quarterID,
-    lessonMonth,
-    count(*) as studySize
+    study.quarterID,
+    study.lessonMonth,
+    count(distinct study.studyWeek) as studySize,
+    count(distinct case
+      when checking.checkModified is not null
+      then checking.studyWeek
+      else null
+    end) as studyOkSize
   from
-    study
+    study left join
+    checking on
+      study.quarterID=checking.quarterID and
+      study.lessonMonth=checking.lessonMonth
   group by
-    quarterID,
-    lessonMonth
+    study.quarterID,
+    study.lessonMonth
   ) as A on
     A.quarterID=lesson.quarterID and
     A.lessonMonth=lesson.lessonMonth
@@ -109,6 +118,22 @@ where
   billing.quarterID=? and
   date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')
 `);
+/*
+const getLessonStudiesJoin = (
+`select
+  studyWeek,
+  studyProgressed
+from
+  study left join
+  checking on
+    study.quarterID=checking.quarterID and
+    study.lessonMonth=checking.lessonMonth and
+    study.studyWeek=checking.studyWeek
+order by
+group by
+  `
+);
+*/
 const getLessonStudies = (
 `select
   studyWeek,
@@ -131,8 +156,6 @@ from
     study.quarterID
   order by
     study.studyWeek asc
-  limit
-    100
   ) as b
 where
   date_format(?, '%Y-%m')=date_format(b.lessonMonth, '%Y-%m') and

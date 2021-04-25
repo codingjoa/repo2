@@ -41,11 +41,11 @@ export default function() {
         reload: () => setFd(null)
       }}
     >
-      <Typography variant="subtitle1">선생님 관리</Typography>
+      <Typography variant="subtitle1">강사 관리</Typography>
       <Search setSearchKeyword={setSearchKeyword} />
       <Tools />
-      {fd === 404 && 
-        <>선생님이 없습니다.</>
+      {fd === 404 &&
+        <>등록된 강사가 없습니다.</>
       }
       {typeof fd === 'object' &&
         <List list={fd.filter(filtering)} />

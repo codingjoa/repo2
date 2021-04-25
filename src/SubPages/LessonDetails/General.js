@@ -15,9 +15,9 @@ function numberWithCommas(x) {
 }
 
 export default ({
-  quarterName, lessonMonth,
-  lessonCreatedAt, totalPrice,
-  singleStudents, groupStudents
+  quarterName, lessonMonth, lessonCreatedAt,
+  totalPrice, singleStudents, groupStudents,
+  studies, studySize, studyOkSize
 }) => {
   const { getLessonMonth, getLessonCreatedAt } = makeDate(lessonMonth, lessonCreatedAt);
   return (
@@ -30,7 +30,7 @@ export default ({
           <Box display="flex">
             <Box flexGrow={1}>
               <Typography variant="subtitle2">
-                {getLessonMonth}
+                {getLessonMonth}, {studyOkSize}/{studySize}회 수업
               </Typography>
               <Typography variant="h6" color="primary">
                 {quarterName}

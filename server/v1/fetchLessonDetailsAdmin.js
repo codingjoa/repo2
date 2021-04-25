@@ -63,8 +63,8 @@ const getLessonChecking = (
   a.billingGroup,
   a.billingScholarshipCode,
   a.billingTaxCode,
-  a.refundReason,
-  a.refundPercent,
+  a.billingRefundReason,
+  a.billingRefundPrice,
   b.json
 from
   (select
@@ -84,22 +84,8 @@ from
     billingGroup,
     billingScholarshipCode,
     billingTaxCode,
-    (select
-      refundReason
-    from refund
-    where
-      refund.quarterID=billing.quarterID and
-      refund.lessonMonth=billing.lessonMonth and
-      refund.studentID=billing.studentID
-    ) as refundReason,
-    (select
-      refundPercent
-    from refund
-    where
-      refund.quarterID=billing.quarterID and
-      refund.lessonMonth=billing.lessonMonth and
-      refund.studentID=billing.studentID
-    ) as refundPercent
+    billingRefundReason,
+    billingRefundPrice
   from billing
   ) as a,
   (select

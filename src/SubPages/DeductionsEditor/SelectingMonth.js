@@ -15,8 +15,6 @@ function makeIter() {
   }
   return iter;
 }
-let render = 0;
-let dom = null;
 export default ({
   studentID,
   lessonMonth,
@@ -25,10 +23,6 @@ export default ({
 }) => {
   const [ year, setYear ] = React.useState(todayYear);
   const [ month, setMonth ] = React.useState(todayMonth);
-  const history = ReactRouter.useHistory();
-  const location = ReactRouter.useLocation();
-  //const year = location.state?.sm?.year// ?? today.getFullYear();
-  //const month = location.state?.sm?.month// ?? today.getMonth();
   const handleChangeYear = e => handleChange(e.target.value, month);
   const handleChangeMonth = e => handleChange(year, e.target.value);
   const handleChange = (year, month) => {

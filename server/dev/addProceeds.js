@@ -159,13 +159,18 @@ from
   from
     (select
       teacher.*,
-      concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+      teacherLeaving.lessonMonth
     from
-      teacherLeaving left join
+      (select
+        *,
+        concat(date_format(?, '%Y-%m'), '-01') as lessonMonth
+      from
+        teacherLeaving
+      ) as teacherLeaving left join
       teacher on
         teacherLeaving.teacherID=teacher.teacherID
       where
-        concat(date_format(?, '%Y-%m'), '-01') between
+        teacherLeaving.lessonMonth between
           concat(date_format(teacherLeaving.teacherJoined, '%Y-%m'), '-01') and
           case
             when teacherLeaving.teacherLeaved is null
@@ -363,6 +368,7 @@ function calculate({
   const [ RegCode, isForeigner ] = teacherStatus[teacherID] ?? [];
   // 내국인, 10명 미만, 근로소득 2,200,000원 미만일 경우 국민연금 80% 지원
   const target = (isForeigner === 0 && teacherLen < 10 && basic0 < 2200000);
+  process.env.DEBUG === '1' && console.log(isForeigner === 0, teacherLen < 10, basic0 < 2200000);
   const 국민연금 = p10(basic0 * 사대보험세율 * (target ? 0.2 : 1));
   const 국민연금회사부담 = 국민연금;
   const 건강보험 = p10(basic0 * 건강보험세율);
@@ -513,7 +519,7 @@ module.id === require.main.id && (async () => {
     teacherID: 1212,
     basic: 1800000,
     taxable: 1200000
-  }, {
+  }/*, {
     teacherID: 1236,
     basic: 2000000,
     taxable: 0
@@ -529,7 +535,7 @@ module.id === require.main.id && (async () => {
     teacherID: 1246,
     basic: 1800000,
     taxable: 1200000
-  }];
+  }*/];
   await addProceeds(lessonMonth, teachers, deductions);
   pool.end();
 })();

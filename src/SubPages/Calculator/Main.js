@@ -15,15 +15,13 @@ function calculateProceeds({ lessonMonth, lastMonth, salary }, callback) {
 const DO = new Date();
 let data = null;
 let dom = null;
-let tax = null;
 
 export default () => {
   const location = ReactRouter.useLocation();
-  const history = ReactRouter.useHistory();
   const year = location?.state?.year ?? DO.getFullYear();
   const month = location?.state?.month ?? DO.getMonth();
   const emonth = location?.state?.emonth ?? month;
-  const [ count, setCount ] = React.useState(0);
+  const setCount = React.useState(0)[1];
   const summit = salary => {
     calculateProceeds({
       lessonMonth: `${year}-${month}-01`,

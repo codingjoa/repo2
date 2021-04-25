@@ -13,10 +13,11 @@ function dateOnly(origin) {
   const localeString = new Date(Date.parse(origin)).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
   return /^(\d+). (\d+). (\d+)/.test(localeString) ?
     `${RegExp.$1}-${RegExp.$2.length<2 ? `0${RegExp.$2}` : RegExp.$2}-${RegExp.$3.length<2 ? `0${RegExp.$3}` : RegExp.$3}`
-  : ''; 
+  : '';
 }
 
 export default ({
+  /*
   studentID,
   studentName,
   studentBirthday,
@@ -24,16 +25,24 @@ export default ({
   studentPhone,
   studentEmail,
   studentAddress
+  */
+  studentID,
+  studentName,
+  studentPhone
 }) => {
   const [ disabled, setDisabled ] = React.useState(true);
   const validate = changed => {
     const empty = (
       changed.studentName === '' ||
+      changed.studentPhone === ''
+      /*
+      changed.studentName === '' ||
       changed.studentBirthday === '' ||
       changed.studentGender === '' ||
       changed.studentPhone === '' ||
       changed.studentEmail === '' ||
-      changed.studentAddress === '' 
+      changed.studentAddress === ''
+      */
     );
     if(empty) {
       setDisabled(true);
@@ -41,11 +50,15 @@ export default ({
     }
     setDisabled(
       studentName === changed.studentName &&
+      studentPhone === changed.studentPhone
+      /*
+      studentName === changed.studentName &&
       dateOnly(studentBirthday) === changed.studentBirthday &&
       studentGender === changed.studentGender-0 &&
       studentPhone === changed.studentPhone &&
       studentEmail === changed.studentEmail &&
       studentAddress === changed.studentAddress
+      */
     );
   };
   const {
@@ -53,11 +66,15 @@ export default ({
     useHandlar
   } = Handlar({
     studentName,
+    studentPhone
+    /*
+    studentName,
     studentBirthday: dateOnly(studentBirthday),
     studentGender,
     studentPhone,
     studentEmail,
     studentAddress
+    */
   }, validate);
   const callback = err => {
     if(err) {
@@ -82,6 +99,7 @@ export default ({
         {...useHandlar('studentName')}
       />
       </Box>
+      {/*
       <Box m={2}>
       <TextField
         fullWidth
@@ -114,6 +132,7 @@ export default ({
         <MenuItem value={1}>남</MenuItem>
       </TextField>
       </Box>
+      */}
       <Box m={2}>
       <TextField
         fullWidth
@@ -127,6 +146,7 @@ export default ({
         {...useHandlar('studentPhone')}
       />
       </Box>
+      {/*
       <Box m={2}>
       <TextField
         fullWidth
@@ -153,6 +173,7 @@ export default ({
         {...useHandlar('studentAddress')}
       />
       </Box>
+      */}
       <Box m={2}>
       <Button
         disabled={disabled}

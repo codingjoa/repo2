@@ -11,7 +11,14 @@ export default function Search({ setSearchKeyword }) {
     <Page>
       <Box display="flex">
         <Box flexGrow={1}>
-          <TextField fullwidth margin="none" label="이름으로 검색" type="text" inputRef={keyword} name="search" />
+          <TextField
+            fullWidth
+            margin="none"
+            label="이름으로 검색"
+            type="text"
+            inputRef={keyword}
+            name="search"
+          />
         </Box>
         <Box alignSelf="center">
           <Button

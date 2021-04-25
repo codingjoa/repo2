@@ -1,6 +1,7 @@
 import React from 'react';
 import * as ReactRouter from 'react-router-dom';
 import axios from 'axios';
+import { getHandlar } from '../../Templates/Format';
 import General from './General';
 import StudyList from './StudyList';
 import StudentList from './StudentList';
@@ -14,7 +15,7 @@ export default () => {
   const history = ReactRouter.useHistory();
   const location = ReactRouter.useLocation();
   const { quarterID, lessonMonth } = ReactRouter.useParams();
-  const handleState = (err, result) => {
+  const handleState = getHandlar(history.replace);/*(err, result) => {
     if(err) {
       history.replace({
         state: {
@@ -30,7 +31,7 @@ export default () => {
         data: result.data.fetchedData
       }
     });
-  }
+  }*/
   React.useLayoutEffect(() => {
     fetchDetails(handleState, { quarterID, lessonMonth });
   }, []);
