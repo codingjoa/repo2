@@ -2,10 +2,10 @@
    POST /api/admin/lesson/prepare/:lessonMonth
 
    200 OK
-   400 BadRequest
    404 NotFound
+   500 InternalError
 */
-const { OK, BadRequest, NotFound } = require('../format');
+const { OK, NotFound, InternalError } = require('../format');
 const { pool } = require('../poolManager');
 /*
 선생께서 이번달에 담당하고 있는 반이나, 아직 아니지만 곧 담당할 반을 표시
@@ -28,7 +28,8 @@ const fetchWaitLessonsQuery = (
   K.studentName,
   K.billingRegCode,
   concat('[',group_concat(
-    concat('[', K.studentID, ',[\"', K.studentName,'\",', case when K.billingRegCode then K.billingGroup>0 else 0 end, ',', case when K.billingRegCode then K.billingPrice else 0 end, ',', K.billingRegCode,']]')
+    concat('[', K.studentID, ',[\"', K.studentNameDup,'\",', case when K.billingRegCode then K.billingGroup>0 else 0 end, ',', case when K.billingRegCode then K.billingPrice else 0 end, ',', K.billingRegCode,']]')
+    order by K.studentNameDup asc
   ),']') as json,
   case
     when Q.lessonRegCode=0 and Q.teacherID is not null and count(K.studentID)>0 and count(K.studentID)=count(case when K.billingRegCode then 1 else null end) and Q.requestMonth=concat(date_format(current_date, '%Y-%m'), '-01')
@@ -67,7 +68,8 @@ const fetchWaitLessonsQuery = (
     when K.billingRefundPrice is not null
     then K.billingRefundPrice
     else 0
-  end) as totalRefundPrice
+  end) as totalRefundPrice,
+  L.lastStudySize
 from
   (select
     quarter.quarterID,
@@ -104,6 +106,11 @@ from
   (select
     studentInfo.studentID,
     studentInfo.studentName,
+    case
+      when Duplicated.isDuplicatedName=1
+      then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
+      else studentInfo.studentName
+    end as studentNameDup,
     studentID.unused,
     (case
       when billing.lessonMonth is null
@@ -125,9 +132,20 @@ from
     ) as studentID left join
     studentInfo on
       studentID.studentID=studentInfo.studentID left join
+    (select
+      studentInfo.studentName,
+      count(studentInfo.studentName) > 1 as isDuplicatedName
+    from
+      studentInfo
+    group by
+      studentInfo.studentName
+    ) as Duplicated on
+      studentInfo.studentName=Duplicated.studentName left join
     billing on
       studentInfo.studentID=billing.studentID and
       studentID.requestMonth=billing.lessonMonth
+    order by
+      studentInfo.studentName asc
   ) as K on
       1=(case
         when Q.lessonRegCode=0
@@ -156,110 +174,50 @@ from
     study.lessonMonth
   ) as A on
     A.quarterID=Q.quarterID and
-    A.lessonMonth=Q.lessonMonth
+    A.lessonMonth=Q.lessonMonth left join
+  (select
+    lesson.quarterID,
+    lesson.lessonMonth,
+    count(study.quarterID) as lastStudySize
+  from
+    lesson left join
+    study on
+      lesson.quarterID=study.quarterID and
+      lesson.lessonMonth=study.lessonMonth
+  group by
+    lesson.quarterID,
+    lesson.lessonMonth
+  order by
+    lesson.lessonMonth desc
+  limit
+    1
+  ) as L on
+    Q.quarterID=L.quarterID and
+    Q.lessonMonth=L.lessonMonth
 where
   1=(case
     when Q.requestMonth<concat(date_format(current_date, '%Y-%m'), '-01')=1
     then Q.lessonMonth is not null
     else 1
-  end)
+  end) and
+  (Q.quarterName like concat('%', ?, '%') or teacher.teacherName like concat('%', ?, '%'))
 group by
-  quarterID`
-);
-const fetchWaitLessonsQuery0 = (
-`select
-  lesson.quarterID,
-  lesson.quarterName,
-  lesson.requestMonth as lessonMonth,
-  lesson.teacherID,
-  lesson.teacherName,
-  lesson.lessonMonth is not null as RegCode,
-  lesson.lessonEnded,
-  case
-    when lesson.lessonMonth is null and lesson.teacherID is not null and count(billing.studentID)>0 and lesson.requestMonth=concat(date_format(current_date, '%Y-%m'), '-01')
-    then 1
-    else 0
-  end as isCanBePosted,
-  case
-    when lesson.lessonEnded=0 and lesson.lessonMonth is not null and (lesson.lessonMonth=concat(date_format(current_date, '%Y-%m'), '-01'))=0
-    then 1
-    else 0
-  end as isCanBeClosed,
-  concat('[',group_concat(
-    concat('[',case when lesson.lessonMonth is not null then billing.studentID else studentInfo.studentID end, ',[\"',studentInfo.studentName,'\",',case when billing.billingGroup is not null then billing.billingGroup>0 else 0 end, ',', case when billing.billingPrice is not null then billing.billingPrice else 0 end, ',', billing.quarterID is not null,']]')
-  ),']') as json,
-  count(case
-    when billing.billingGroup=0
-    then 1
-    else null
-  end) as singleStudent,
-  count(case
-    when billing.billingGroup>0
-    then 1
-    else null
-  end) as groupStudent
-from
-  billing right join
-  studentInfo on
-    billing.studentID=studentInfo.studentID right join
-  (select
-    quarter.quarterID,
-    quarter.quarterName,
-    quarter.lessonMonth as requestMonth,
-    lesson.lessonMonth,
-    lesson.lessonEnded,
-    case
-      when teacher.teacherID is not null
-      then teacher.teacherID
-      else quarter.teacherID
-    end as teacherID,
-    case
-      when teacher.teacherID is not null
-      then teacher.teacherName
-      else (
-        select
-          teacherName
-        from
-          teacher as T
-        where
-          quarter.teacherID=T.teacherID
-      )
-    end as teacherName,
-    quarter.unused as quarterUnused
-  from
-    (select
-      ? as lessonMonth,
-      quarter.*
-    from
-      quarter
-    ) as quarter left join
-    lesson on
-      quarter.quarterID=lesson.quarterID and
-      quarter.lessonMonth=lesson.lessonMonth left join
-    teacher on
-      lesson.teacherID=teacher.teacherID
-  ) as lesson on
-    1=(case
-      when lesson.lessonMonth is not null
-      then (billing.quarterID=lesson.quarterID and billing.lessonMonth=lesson.requestMonth)
-      else (studentInfo.quarterID=lesson.quarterID) or (billing.quarterID=lesson.quarterID and billing.lessonMonth=lesson.requestMonth)
-    end)
-where
-  1=(case
-    when lesson.requestMonth<concat(date_format(current_date, '%Y-%m'), '-01')=1
-    then lesson.requestMonth=lesson.lessonMonth
-    else lesson.quarterUnused=0
-  end)
-group by
-  lesson.quarterID`);
+  Q.quarterID
+order by
+  Q.lessonRegCode asc,
+  Q.quarterID asc
+limit ?, ?`);
 async function fetchWaitLessons(
-  lessonMonth
+  lessonMonth,
+  keyword,
+  offset,
+  size
 ) {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
     const rows = await conn.query(fetchWaitLessonsQuery, [
-      lessonMonth, lessonMonth
+      lessonMonth, lessonMonth, keyword, keyword, offset, size
     ]);
     await conn.release();
     return rows.map(({ json, ...rest }) => ({ students: JSON.parse(json), ...rest }));
@@ -274,9 +232,12 @@ module.exports = async function(
   req, res
 ) {
   const lessonMonth = req.params?.lessonMonth ?? null;
+  const offset = req.query.offset - 0; // 1.5 or later
+  const size = req.query.size - 0; // 1.5 or later
+  const keyword = req.query.keyword ?? '';
   try {
     const rows = await fetchWaitLessons(
-      lessonMonth
+      lessonMonth, keyword, offset, size
     );
     if(rows.length === 0) {
       NotFound(res);
@@ -284,14 +245,14 @@ module.exports = async function(
       OK(res, rows);
     }
   } catch(err) {
-    BadRequest(res, err);
+    InternalError(res, err);
   }
 };
 module.id === require.main.id && (async () => {
   const lessonMonth = process.env?.LM ?? '2020-10-01';
   try {
     const rows = await fetchWaitLessons(
-      lessonMonth
+      lessonMonth, '', 0, 20
     );
     console.log(rows);
   } catch(err) {
