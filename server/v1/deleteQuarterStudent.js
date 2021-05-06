@@ -22,6 +22,8 @@ const deleteQuarterStudentQuery = (
     sum(billing.billingRetractable=1)=0 as when1
   from
     billing
+  where
+    concat(date_format(billing.lessonMonth, '%Y-%m'), '-01')>=concat(date_format(current_date, '%Y-%m'), '-01')
   group by
     billing.studentID
   ) as billing on

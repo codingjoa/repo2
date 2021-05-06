@@ -2,7 +2,6 @@ import React from 'react';
 import * as ReactRouter from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
-import Grid from '@material-ui/core/Grid';
 import Page from '../../Templates/Page';
 import SelectStudySize from './SelectStudySize';
 import Submit from './Submit';
@@ -10,8 +9,8 @@ import GoBack from './GoBack';
 const DO = new Date();
 
 export default function() {
-  const [ pickedSize, setPickedSize ] = React.useState(4);
   const location = ReactRouter.useLocation();
+  const [ pickedSize, setPickedSize ] = React.useState(location?.state?.data?.lastStudySize ?? 4);
   return (
     <>
       <Typography variant="subtitle1">

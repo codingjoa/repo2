@@ -3,13 +3,61 @@ import * as ReactRouter from 'react-router-dom';
 import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import Chip from '@material-ui/core/Chip';
+import Grid from '@material-ui/core/Grid';
 import Typography from '@material-ui/core/Typography';
 import Page from '../../Templates/Page';
 import ChangeTeacher from './ChangeTeacher';
 import Close from './Close';
+import Delete from './Delete';
 import Detail from './Detail';
 import QuarterStudentAdd from './QuarterStudentAdd';
 import Register from './Register';
+import { orange, purple, indigo, grey } from '@material-ui/core/colors';
+import { createMuiTheme, createStyles, makeStyles, ThemeProvider } from '@material-ui/core/styles';
+const unpaidTheme = createMuiTheme({
+  palette: {
+    secondary: {
+      main: orange[500]
+    }
+  }
+});
+const refundTheme = createMuiTheme({
+  palette: {
+    secondary: {
+      main: purple[500]
+    }
+  }
+});
+/*
+const useStyles = makeStyles({
+  refund: {
+    color: purple[500],
+    borderColor: purple[500]
+  },
+  unpaid: {
+    color: orange[500],
+    borderColor: orange[500]
+  },
+  normal: {
+    color: indigo[500],
+    borderColor: indigo[500]
+  },
+  default: {
+    color: grey[500],
+    borderColor: grey[500]
+  }
+});
+*/
+/*
+const useStyles = makeStyles(theme => createStyles({
+  refund: {
+    colorSecondary: theme.color.purple
+  },
+  unpaid: {
+    colorSecondary: theme.color.orange
+  }
+}));
+*/
 function numberWithCommas(x) {
   if(typeof x !== 'number') {
     return '';
@@ -21,7 +69,7 @@ function deleteBilling(studentID, lessonMonth, callback) {
   .then(result => callback(null, result), callback);
 }
 function deleteQuarterStudents(studentID, callback) {
-  axios.delete(`/api/dev/teacher/student/${studentID}`)
+  axios.delete(`/api/admin/student/${studentID}/quarter`)
   .then(result => callback(null, result), callback);
 }
 function MainLayer({
@@ -101,43 +149,56 @@ function ButtonLayer({
   quarterID, quarterName, lessonMonth,
   lessonRegCode, isCanBeClosed, teacherID,
   teacherName, studentsLen, students,
-  isCanBePosted
+  isCanBePosted, lastStudySize, reload, lessonEnded
 }) {
   return (
     <Box
       display="flex"
     >
-      <Box m={1}>
-        <Detail
-          quarterID={quarterID}
-          lessonMonth={toDateFormat(lessonMonth)}
-          disabled={lessonRegCode===0}
-        />
-      </Box>
-      <Box m={1}>
-        <ChangeTeacher
-          quarterID={quarterID}
-          quarterName={quarterName}
-          teacherID={teacherID}
-          disabled={lessonRegCode===1}
-        />
-      </Box>
-      <Box m={1}>
-        <Register
-          quarterID={quarterID}
-          quarterName={quarterName}
-          teacherName={teacherName}
-          disabled={!isCanBePosted/*teacherID===null || lessonRegCode===1 || (studentsLen===0 && DO.getFullYear== *//*그리고 이번달 이어야함*/}
-        />
-      </Box>
-      <Box m={1}>
-        <Close
-          quarterID={quarterID}
-          lessonMonth={toDateFormat(lessonMonth)}
-          disabled={isCanBeClosed===0}
-          quarterName={quarterName}
-        />
-      </Box>
+      <Grid container>
+        <Box m={1}>
+          <Detail
+            quarterID={quarterID}
+            lessonMonth={toDateFormat(lessonMonth)}
+            disabled={lessonRegCode===0}
+          />
+        </Box>
+        <Box m={1}>
+          <ChangeTeacher
+            quarterID={quarterID}
+            quarterName={quarterName}
+            teacherID={teacherID}
+            disabled={lessonRegCode===1}
+          />
+        </Box>
+        <Box m={1}>
+          <Register
+            lastStudySize={lastStudySize}
+            quarterID={quarterID}
+            quarterName={quarterName}
+            teacherName={teacherName}
+            disabled={!isCanBePosted}
+          />
+        </Box>
+        <Box m={1}>
+          <Close
+            quarterID={quarterID}
+            lessonMonth={toDateFormat(lessonMonth)}
+            disabled={isCanBeClosed===0}
+            quarterName={quarterName}
+            reload={reload}
+          />
+        </Box>
+        <Box m={1}>
+          <Delete
+            quarterID={quarterID}
+            lessonMonth={toDateFormat(lessonMonth)}
+            disabled={lessonRegCode===0 || lessonEnded===1}
+            quarterName={quarterName}
+            reload={reload}
+          />
+        </Box>
+      </Grid>
     </Box>
   );
 }
@@ -145,10 +206,13 @@ function StudentList({
   groupStudent,
   lessonMonth,
   quarterID,
+  lessonEnded,
   lessonRegCode,
   reload,
   students,
-  singleStudent
+  singleStudent,
+  totalStudent,
+  totalBillingRegStudent
 }) {
   const history = ReactRouter.useHistory();
   return (
@@ -161,86 +225,129 @@ function StudentList({
       <Box
         display="flex"
       >
-        {students && students.map((student) => {
-          /* student[studentID, [studentName(String), billingGroup(0|1), billingPrice(Number), lessonRegCode(0|1)]]*/
-          const handleDelete = () => {
-            if(student[1][3] === 1) {
-              const userAnswer = window.confirm(`${student[1][0]} 학생의 입금을 철회합니다.`);
-              if(!userAnswer) {
-                return;
-              }
-              deleteBilling(student[0], lessonMonth, (err, result) => {
-                if(err) {
-                  alert(err);
+        <Grid container>
+          {students && students.map((student) => {
+            /* student[studentID, [studentName(String), billingGroup(0|1), billingPrice(Number), lessonRegCode(0|1)]]*/
+            const handleDelete = () => {
+              if(student[1][3] === 1) {
+                const userAnswer = window.confirm(`${student[1][0]} 학생의 입금을 철회합니다.`);
+                if(!userAnswer) {
                   return;
                 }
-                reload();
-              });
-            } else {
-              const userAnswer = window.confirm(`${student[1][0]} 학생을 팀에서 해제시킵니다.`);
-              if(!userAnswer) {
-                return;
-              }
-              deleteQuarterStudents(student[0], (err, result) => {
-                if(err) {
-                  alert(err?.response.data?.cause ?? err);
+                deleteBilling(student[0], lessonMonth, (err, result) => {
+                  if(err) {
+                    alert(err);
+                    return;
+                  }
+                  reload();
+                });
+              } else {
+                const userAnswer = window.confirm(`${student[1][0]} 학생을 팀에서 해제시킵니다.`);
+                if(!userAnswer) {
                   return;
                 }
-                reload();
-              });
+                deleteQuarterStudents(student[0], (err, result) => {
+                  if(err) {
+                    alert(err?.response.data?.cause ?? err);
+                    return;
+                  }
+                  reload();
+                });
+              }
+            };
+            const handleClick = () => {
+              student[1][3]===0 && lessonRegCode===0 && history.push(`/admin/billing/${student[0]}`);
+              student[1][3]===0 && lessonRegCode===1 && history.push(`/admin/billing/${student[0]}/${lessonMonth}/${quarterID}/middle`);
+              student[1][3]===1 && history.push(`/admin/billing/${student[0]}/${lessonMonth}`);
             }
-          };
-          const handleClick = () => {
-            student[1][3]===0 && history.push(`/test/billing/${student[0]}`);
-            student[1][3]===1 && history.push(`/test/billing/${student[0]}/${lessonMonth}`);
-          }
-          return (
-            <Box
-              key={student[0]}
-              m={1}
-            >
-
-              {lessonRegCode === 1 ?
-                <Chip
-                  clickable
-                  color={student[1][1]===1 ? 'secondary' : (student[1][3]===1 ? 'primary' : 'default')}
-                  label={student[1][0]}
-                  onClick={handleClick}
-                  size="small"
-                  variant="outlined"
-                /> :
-                <Chip
-                  clickable
-                  color={student[1][1]===1 ? 'secondary' : (student[1][3]===1 ? 'primary' : 'default')}
-                  label={student[1][0]}
-                  onClick={handleClick}
-                  onDelete={handleDelete}
-                  size="small"
-                  variant="outlined"
-                />
-              }
-            </Box>
-          );
-        })}
-        <Box
-          m={1}
-        >
-          <QuarterStudentAdd
-            disabled={lessonRegCode === 1}
-            quarterID={quarterID}
-          />
-          {/**notice: 여기 학생 중도 추가하는 기능 넣어야 합니다.,
-          *notice: 학생 목록이 오버플로되어 보이는 현상 막아야 합니다.*/}
-        </Box>
+            return (
+              <Box
+                key={student[0]}
+                m={1}
+              >
+                <StudentChipColor
+                  colorCode={student[1][1]}
+                >
+                  <StudentChip
+                    billingRegCode={student[1][3]}
+                    lessonRegCode={lessonRegCode}
+                    colorCode={student[1][1]}
+                    handleClick={handleClick}
+                    handleDelete={handleDelete}
+                    studentName={student[1][0]}
+                  />
+                </StudentChipColor>
+              </Box>
+            );
+          })}
+          <Box
+            m={1}
+          >
+            <QuarterStudentAdd
+              lessonEnded={lessonEnded}
+              quarterID={quarterID}
+            />
+          </Box>
+        </Grid>
       </Box>
       <Box>
         <Typography
           variant="caption"
         >
-          개인 {singleStudent}명 / 그룹 {groupStudent}명
+          개인 {singleStudent}명 / 그룹 {groupStudent}명 / 미등록 {totalStudent - totalBillingRegStudent} 명
         </Typography>
       </Box>
     </>
+  );
+}
+function StudentChipColor({
+  colorCode,
+  children
+}) {
+  return (
+    <ThemeProvider
+      theme={refundTheme}
+    >
+      {colorCode!==1 && children}
+      <ThemeProvider
+        theme={unpaidTheme}
+      >
+        {colorCode===1 && children}
+      </ThemeProvider>
+    </ThemeProvider>
+  );
+}
+
+function StudentChip({
+  billingRegCode,
+  lessonRegCode,
+  colorCode,
+  handleClick,
+  handleDelete,
+  studentName
+}) {
+  if(lessonRegCode === 1 && billingRegCode === 1) {
+    return (
+      <Chip
+        clickable
+        color={(billingRegCode === 1 ? (colorCode>0 ? 'secondary' : 'primary') : 'default')}
+        label={studentName}
+        onClick={handleClick}
+        size="small"
+        variant="outlined"
+      />
+    );
+  }
+  return (
+    <Chip
+      clickable
+      color={(billingRegCode === 1 ? (colorCode>0 ? 'secondary' : 'primary') : 'default')}
+      label={studentName}
+      onClick={handleClick}
+      onDelete={handleDelete}
+      size="small"
+      variant="outlined"
+    />
   );
 }
 function Price({
@@ -276,11 +383,12 @@ export default ({
   reload
 }) => (<>
   {list && list.map(({
-    quarterID, quarterName, lessonMonth,
+    quarterID, quarterName, lastStudySize, lessonMonth,
     teacherID, teacherName, lessonRegCode,
     lessonEnded, isCanBeClosed, students,
-    isCanBePosted, singleStudent, groupStudent,
-    totalPrice, totalRefundPrice, studySize, studyOkSize
+    isCanBePosted, totalSingleStudent, totalGroupStudent,
+    totalPrice, totalRefundPrice, studySize, studyOkSize,
+    totalStudent, totalBillingRegStudent
   }) => <Page key={quarterID}>
     <MainLayer
       lessonRegCode={lessonRegCode}
@@ -297,6 +405,7 @@ export default ({
     />
     <ButtonLayer
       isCanBeClosed={isCanBeClosed}
+      lastStudySize={lastStudySize}
       lessonMonth={lessonMonth}
       quarterID={quarterID}
       quarterName={quarterName}
@@ -306,15 +415,20 @@ export default ({
       teacherID={teacherID}
       teacherName={teacherName}
       isCanBePosted={isCanBePosted}
+      reload={reload}
+      lessonEnded={lessonEnded}
     />
     <StudentList
-      groupStudent={groupStudent}
+      groupStudent={totalGroupStudent}
       lessonMonth={lessonMonth}
       quarterID={quarterID}
+      lessonEnded={lessonEnded}
       lessonRegCode={lessonRegCode}
       reload={reload}
       students={students}
-      singleStudent={singleStudent}
+      singleStudent={totalSingleStudent}
+      totalStudent={totalStudent}
+      totalBillingRegStudent={totalBillingRegStudent}
     />
     <Price
       totalPrice={totalPrice}

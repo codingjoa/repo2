@@ -97,6 +97,9 @@ CREATE TABLE if not exists v1.billing (
   billingRefundReason varchar(255) default null,
   billingRefundPrice int unsigned default null,
   billingMiddleRegCode int unsigned default 0,
+  billingUnpaidCode int unsigned default 0,
+  billingRefundAt date default null,
+  billingRefundMiddleCode int unsigned default null,
   FOREIGN KEY (studentID) REFERENCES studentID (studentID) ON UPDATE CASCADE,
   FOREIGN KEY (quarterID) REFERENCES quarter (quarterID) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;

@@ -1,4 +1,5 @@
 import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import Box from '@material-ui/core/Box';
 import Checkbox from '@material-ui/core/Checkbox';
 import OutlinedInput from '@material-ui/core/OutlinedInput';
@@ -11,6 +12,12 @@ export default function({
   useHandlarCheckbox,
   values
 }) {
+  const { lessonMonth } = ReactRouter.useParams();
+  const refundAtRef = React.useRef();
+  React.useLayoutEffect(() => {
+    refundAtRef.current.min = lessonMonth;
+    //refundAtRef.current.value = lessonMonth;
+  }, []);
   const onlyNumberMax = value => {
     const validateValue = value;
     let newValue = 0;
@@ -45,7 +52,7 @@ export default function({
           flexGrow={1}
         >
           <TextField
-            disabled={!(values.billingRefundRegCode === 1) || (billingScholarshipCodeTag.checked === 1)}
+            disabled={!(values.billingRefundRegCode === true) || (billingScholarshipCodeTag.checked === true)}
             fullWidth
             label="환불된 수업료"
             size="small"
@@ -56,15 +63,30 @@ export default function({
         </Box>
       </Box>
       <Box
-        flexShrink={1}
         m={1}
       >
         <OutlinedInput
-          disabled={!(values.billingRefundRegCode === 1) || (billingScholarshipCodeTag.checked === 1)}
+          disabled={!(values.billingRefundRegCode === true) || (billingScholarshipCodeTag.checked === true)}
           fullWidth
           margin="dense"
           placeholder="환불/이월 사유"
           {...useHandlar('billingRefundReason')}
+        />
+      </Box>
+      <Box
+        m={1}
+      >
+        <TextField
+          autoComplete="no"
+          disabled={!(values.billingRefundRegCode === true) || (billingScholarshipCodeTag.checked === true)}
+          fullWidth
+          label="환불 일시"
+          inputRef={refundAtRef}
+          required
+          size="small"
+          type="date"
+          variant="outlined"
+          {...useHandlar('billingRefundAt')}
         />
       </Box>
     </>

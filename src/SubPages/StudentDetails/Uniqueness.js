@@ -1,4 +1,5 @@
 import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import TextField from '@material-ui/core/TextField';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -9,8 +10,10 @@ import Button from '@material-ui/core/Button';
 
 export default ({
   studentID,
-  studentUniqueness
+  studentUniqueness,
+  op
 }) => {
+  const history = ReactRouter.useHistory();
   const [ disabled, setDisabled ] = React.useState(true);
   const validate = changed => {
     setDisabled(
@@ -29,6 +32,14 @@ export default ({
       return;
     }
     alert('변경되었습니다.');
+    history.goBack();
+  };
+  const handleClick = e => {
+    if(op) {
+      putCloser(`/api/admin/student/${studentID}`, callback, true)();
+    } else {
+      putCloser(`/api/teacher/student/${studentID}`, callback, true)();
+    }
   };
   return (
     <Grid item xs={12}>
@@ -52,7 +63,7 @@ export default ({
         disabled={disabled}
         variant="contained"
         color="primary"
-        onClick={e => putCloser(`/api/admin/student/${studentID}`, callback, true)()}
+        onClick={handleClick}
       >
         변경
       </Button>

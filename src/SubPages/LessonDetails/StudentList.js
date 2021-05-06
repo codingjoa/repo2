@@ -26,7 +26,7 @@ export default ({
         spacing={2}
       >
         {students && students.map(({
-          studentID, studentName, studentBirthday,
+          studentID, studentNameDup, studentBirthday,
           billingPrice, billingScholarshipCode, billingTaxCode
         }) => (
           <Grid
@@ -38,7 +38,7 @@ export default ({
               textAlign="center"
             >
               <Typography variant="h6">
-                {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}
+                {studentNameDup}
               </Typography>
               <Typography variant="subtitle2">
                 {(billingPrice === null || billingPrice === undefined) ? null : `${numberWithCommas(`${billingPrice}`)} 원`}

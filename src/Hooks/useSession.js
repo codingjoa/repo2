@@ -53,6 +53,6 @@ export default () => {
   }, err => {
     if(err.response.status===401) alert('로그인 되지 않았습니다.')
   }), []);
-  React.useLayoutEffect(refreshSession, [ location ]);
+  React.useLayoutEffect(refreshSession, [ location.pathname ]);
   return { session, refreshSession, signIn, signOut };
 }

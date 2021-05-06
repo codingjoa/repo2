@@ -1,9 +1,5 @@
-const { BadRequest } = require('../format');
+const { CommonError } = require('../format');
 const { pool } = require('../poolManager');
-
-/* @codingjoa
-   반 정보를 삭제
-*/
 const insertTeacherJoined = (
 `insert into teacherLeaving(
   teacherJoined,
@@ -11,8 +7,7 @@ const insertTeacherJoined = (
 ) values (
   ?,
   ?
-)
-`);
+)`);
 const insertTeacherAutoIncrement = (
 `insert into teacher(
   teacherName, teacherAccount, teacherPassword,
@@ -28,6 +23,23 @@ const insertTeacher = (
   ?, ?, 0, ?, ?, ?
 )`);
 
+// 리팩토링의 일환
+async function createTeacher(
+  conn,
+  teacherID
+) {
+  const result = await conn.query(((teacherID !== null) ? insertTeacher : insertTeacherAutoIncrement), [
+    teacherName, teacherAccount,
+    teacherOp, isForeigner, teacherID
+  ]);
+  if(!(result.insertId>0)) {
+    throw new Error('정보가 생성되지 않았습니다.');
+  }
+  return result.insretId;
+}
+function accountRegex(teacherAccount) {
+  //const regex = /^(?=[a-zA-Z0-9._]{2,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
+}
 async function addTeacher(
   teacherName, teacherAccount,
   teacherOp, isForeigner, teacherJoined, teacherID = null
@@ -35,52 +47,41 @@ async function addTeacher(
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
-    const result = await conn.query(((teacherID !== null) ? insertTeacher : insertTeacherAutoIncrement), [
-      teacherName, teacherAccount,
-      teacherOp, isForeigner, teacherID
-    ]);
-    if(!(result.insertId>0)) throw new Error('정보가 생성되지 않았습니다.');
+    // todo:  영어 아이디만 넣을 수 있게 바꿀것
+    const createdTeacherID = await createTeacher(conn, teacherID);
     await conn.query(insertTeacherJoined, [
-      teacherJoined, result.insertId
+      teacherJoined, createdTeacherID
     ]);
     await conn.commit();
     await conn.release();
-    return result.insertId;
+    return createdTeacherID;
   } catch(err) {
     await conn.rollback();
     await conn.release();
     throw err;
   }
 }
-
 module.exports = async function(
   req, res, next
 ) {
-/* @codingjoa
-   POST
-   선생님 정보를 새로 생성
-   임시 비밀번호는 regeneratePassword로 넘김
-   400 BadRequest
-*/
-  const teacherName = req.body?.teacherName; // 1.0
-  const teacherAccount = req.body?.id; // 1.0
-  const teacherOp = req.body?.teacherOp ?? 0; // 1.0
-  const isForeigner = req.body?.isForeigner ?? 0; // 1.4
-  const teacherJoined = req.body?.teacherJoined ?? null; // 1.4
-  const teacherID = req.body?.teacherID ?? null; // 1.5
-  if(teacherAccount==='admin') {
-    BadRequest(res, new Error('admin 계정은 생성할 수 없습니다.'));
-    return;
-  }
   try {
-    const result = await addTeacher(
+    const teacherName = req.body?.teacherName; // 1.0
+    const teacherAccount = req.body?.id; // 1.0
+    const teacherOp = req.body?.teacherOp ?? 0; // 1.0
+    const isForeigner = req.body?.isForeigner ?? 0; // 1.4
+    const teacherJoined = req.body?.teacherJoined ?? null; // 1.4
+    const teacherID = req.body?.teacherID ?? null; // 1.5
+    if(teacherAccount==='admin') {
+      throw new CommonError('admin 계정은 생성할 수 없습니다.');
+    }
+    const createdTeacherID = await addTeacher(
       teacherName, teacherAccount,
       teacherOp, isForeigner, teacherJoined, teacherID
     );
-    req.next.teacherID = result;
-    next();
+    req.next.teacherID = createdTeacherID;
+    next(); // regeneratePassword
   } catch(err) {
-    BadRequest(res, err);
+    next(err);
     console.error(err);
   }
 };

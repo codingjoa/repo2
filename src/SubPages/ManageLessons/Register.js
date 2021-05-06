@@ -4,19 +4,21 @@ import Button from '@material-ui/core/Button';
 
 export default ({
   quarterID, quarterName, teacherName,
-  students, disabled
+  students, disabled, lastStudySize
 }) => (
   <Button
     color="secondary"
     component={Link}
     disabled={disabled}
+    size="small"
     to={{
       pathname: `/admin/lesson/add/${quarterID}`,
       state: {
         data: {
           quarterName,
           teacherName,
-          students
+          students,
+          lastStudySize
         }
       }
     }}

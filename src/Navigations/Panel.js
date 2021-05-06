@@ -57,7 +57,7 @@ export default ({
   const location = useLocation();
   React.useLayoutEffect(() => {
     setNavOpen(false);
-  }, [ location ]);
+  }, [ location, setNavOpen ]);
   return (
     <Drawer
       variant="temporary"

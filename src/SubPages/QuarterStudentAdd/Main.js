@@ -8,26 +8,37 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Checkbox from '@material-ui/core/Checkbox';
 import Grid from '@material-ui/core/Grid';
+import StudentAdd from './StudentAdd';
 import Typography from '@material-ui/core/Typography';
-function fetchIndependentStudents(callback) {
-  axios.get('/api/teacher/students')
+function fetchIndependentStudents(page, onePageSize, callback) {
+  const offset = page * onePageSize;
+  axios.get(`/api/teacher/students?offset=${offset}&size=${onePageSize}`)
   .then(result => callback(null, result), callback);
 }
-function addQuarterStudents(quarterID, values, callback) {
-  axios.post(`/api/dev/teacher/students/${quarterID}`, {
-    students: Object.entries(values).filter(row => row[1] === true).map(row => row[0])
-  })
-  .then(result => callback(null, result), callback);
+function addQuarterStudents(op, quarterID, values, callback) {
+  if(op) {
+    axios.post(`/api/admin/students/${quarterID}`, {
+      students: Object.entries(values).filter(row => row[1] === true).map(row => row[0])
+    })
+    .then(result => callback(null, result), callback);
+  } else {
+    axios.post(`/api/teacher/students/${quarterID}`, {
+      students: Object.entries(values).filter(row => row[1] === true).map(row => row[0])
+    })
+    .then(result => callback(null, result), callback);
+  }
 }
-function List() {
+function List({
+  handlar,
+  op
+}) {
   // checkbox handlar
   const { quarterID } = ReactRouter.useParams();
   const location = ReactRouter.useLocation();
   const history = ReactRouter.useHistory();
-  const handlar = FormHandlar();
   const handleSubmit = () => {
     handlar.getValues(values => {
-      addQuarterStudents(quarterID, values, err => {
+      addQuarterStudents(op, quarterID, values, err => {
         if(err) {
           alert(err?.response.data?.cause ?? err);
           return;
@@ -50,7 +61,7 @@ function List() {
             alignSelf="center"
             flexGrow={1}
           >
-            {row.studentID}: {row.studentName}
+            {row.studentID}: {row.studentNameDup}
           </Box>
           <Box>
             <Checkbox
@@ -67,30 +78,174 @@ function List() {
         <Typography
           variant="subtitle1"
         >
-          팀에 학생 추가하기
+          기존 학생 추가하기
         </Typography>
       </Box>
-      {location.state?.data.map(WithCheckbox)}
-      <Button
-        onClick={handleSubmit}
+      <Grid
+        container
+        spacing={2}
       >
-        보내기
-      </Button>
+        {location.state?.status === 200 && location.state?.data.rows.map(WithCheckbox)}
+      </Grid>
+      <Box
+        mt={2}
+      >
+        <Button
+          color="primary"
+          onClick={handleSubmit}
+          variant="contained"
+        >
+          추가
+        </Button>
+      </Box>
     </>
   );
 }
-export default function() {
+let handlar = null;
+export default function({
+  op
+}) {
   // react-router-dom 기반 fetch to state
   const location = ReactRouter.useLocation();
   const history = ReactRouter.useHistory();
   const callback = getHandlar(history.replace);
-  React.useLayoutEffect(() => {
-    fetchIndependentStudents(callback);
+  const [ page, setPage ] = React.useState(location.state?.previous?.page ?? 0);
+  const handleClick = (page = 0) => {
+    history.replace({
+      state: null
+    });
+    setPage(page);
+    fetchIndependentStudents(page, 15, callback);
+  };
+  const handlar = React.useMemo(() => {
+    return FormHandlar();
   }, []);
+  React.useLayoutEffect(() => {
+    //handlar = FormHandlar();
+    fetchIndependentStudents(0, 15, callback);
+  }, []);
+  if(location?.state?.status !== 200) {
+    return null;
+  }
   return (
-    <>{
-      location.state?.status===200 &&
-      <List />
-    }</>
+    <>
+      <List
+        handlar={handlar}
+        op={op}
+      />
+      <DependencyPaginationButtons
+        page={page}
+        pageSize={location?.state?.data?.totalPage}
+        handleClick={handleClick}
+      />
+      <StudentAdd op={op} />
+    </>
   );
 };
+
+
+function DependencyPaginationButtons({
+  page,
+  pageSize,
+  handleClick
+}) {
+  const BarSize = 5;
+  // 불변의 렌더링된 모든 버튼들
+  const inActivated = React.useMemo(() => {
+    const buttons = [];
+    for(let i=0; i<pageSize; i++) {
+      buttons[i] = (
+        <Box
+          key={`inActivated:${i}`}
+          m={0.25}
+        >
+          <Button
+            onClick={e => handleClick(i)}
+            size="small"
+            style={{ minWidth: '3rem', maxWidth: '3rem' }}
+            variant="outlined"
+          >
+            {i+1}
+          </Button>
+        </Box>
+      );
+    }
+    return buttons;
+  }, [
+    pageSize
+  ]);
+  const Activated = React.useMemo(() => {
+    const buttons = [];
+    for(let i=0; i<pageSize; i++) {
+      buttons[i] = (
+        <Box
+          key={`Activated:${i}`}
+          m={0.25}
+        >
+          <Button
+            color="primary"
+            size="small"
+            style={{ minWidth: '3rem', maxWidth: '3rem' }}
+            variant="contained"
+          >
+            {i+1}
+          </Button>
+        </Box>
+      );
+    }
+    return buttons;
+  }, [
+    pageSize
+  ]);
+  // pageSize가 없다면 버튼을 그리지 않습니다.
+  if(pageSize === null) {
+    return null;
+  }
+  // 버튼 목록 그리기
+  const pageLevel = Math.floor(page * (1 / BarSize));
+  const pagination = [];
+  let i = pageLevel * BarSize;
+  while(i < (pageLevel * BarSize) + BarSize && i < pageSize) {
+    pagination[i] = (page === i) ? Activated[i] : inActivated[i];
+    i++;
+  }
+  return (
+    <Page>
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignContent="center"
+      >
+        {i-BarSize>0 &&
+          <Box
+            m={0.25}
+          >
+            <Button
+              onClick={e => handleClick(i - BarSize - 1)}
+              size="small"
+              style={{ minWidth: '3rem', maxWidth: '3rem' }}
+              variant="outlined"
+            >
+              &lt;
+            </Button>
+          </Box>
+        }
+        {pagination}
+        {i<pageSize &&
+          <Box
+            m={0.25}
+          >
+            <Button
+              onClick={e => handleClick(i)}
+              size="small"
+              style={{ minWidth: '3rem', maxWidth: '3rem' }}
+              variant="outlined"
+            >
+              &gt;
+            </Button>
+          </Box>
+        }
+      </Box>
+    </Page>
+  );
+}

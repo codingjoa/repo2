@@ -107,14 +107,30 @@ const getLessonStudents = (
   studentInfo.studentID,
   studentInfo.studentBirthday,
   studentInfo.studentName,
+  case
+    when Duplicated.isDuplicatedName=1
+    then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
+    else studentInfo.studentName
+  end as studentNameDup,
   billing.billingPrice,
   billing.billingScholarshipCode,
   billing.billingTaxCode
 from
-  studentInfo,
-  billing
+  studentInfo left join
+  (select
+    studentInfo.studentName,
+    1 as isDuplicatedName
+  from
+    studentInfo
+  group by
+    studentInfo.studentName
+  having
+    count(studentInfo.studentName) > 1
+  ) as Duplicated on
+    studentInfo.studentName=Duplicated.studentName left join
+  billing on
+    billing.studentID=studentInfo.studentID
 where
-  billing.studentID=studentInfo.studentID and
   billing.quarterID=? and
   date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')
 `);

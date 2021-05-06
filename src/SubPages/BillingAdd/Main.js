@@ -12,6 +12,7 @@ import Month from './Month';
 import Register from './Register';
 function getRange() {
   const DO = new Date();
+  DO.setDate(1);
   let i=0;
   let a = [];
   while(i<12) {
@@ -38,7 +39,7 @@ function fetchBilling(
     if(filteredAvailableRange.length === 0) {
       callback(new Error('1년 분량의 입금이 모두 유효하여 등록할 수 없습니다.'));
     }
-    axios.get(`/api/admin/billing/${studentID}/1970-01-01`)
+    axios.get(`/api/admin/billing/${studentID}/recent`)
     .then(
       result => callback(null, {
         data: {
@@ -81,14 +82,15 @@ function addBilling(
     billingPayment,
     billingTaxCode,
     billingScholarshipCode,
-    lessonMonth
+    billingUnpaidCode,
   } = billing;
   const body = {
     billingPrice,
     billingGroup,
     billingPayment,
-    billingTaxCode: (billingTaxCode===1 ? 1 : 0),
-    billingScholarshipCode: (billingScholarshipCode===1 ? 1 : 0),
+    billingTaxCode: (billingTaxCode===true ? 1 : 0),
+    billingScholarshipCode: (billingScholarshipCode===true ? 1 : 0),
+    billingUnpaidCode: billingUnpaidCode,
     lessonMonth: filteredLessonMonths
   };
   axios.post(`/api/admin/billing/${studentID}`, body)
@@ -142,9 +144,12 @@ function Optional() {
   const lessonMonth = FormHandlar();
   const billing = FormHandlar(
     () => 0, {
-      billingPrice: 0,
-      billingPayment: 0,
-      billingGroup: 0
+      billingScholarshipCode: location?.state?.data?.billing?.billingScholarshipCode===1 ?? false,
+      billingTaxCode: location?.state?.data?.billing?.billingTaxCode===1 ?? false,
+      billingPrice: location?.state?.data?.billing?.billingPrice ?? 0,
+      billingPayment: location?.state?.data?.billing?.billingPayment ?? 0,
+      billingGroup: location?.state?.data?.billing?.billingGroup ?? 0,
+      billingUnpaidCode: 0
     }
   );
   const billingScholarshipCodeTag = billing.useHandlarCheckbox('billingScholarshipCode');
@@ -198,13 +203,6 @@ export default function() {
           >
             {location.state?.data?.billing.studentName} 학생 입금 내역 등록
           </Typography>
-          <Typography
-            color="primary"
-            variant="caption"
-          >
-            {location.state?.data?.billing.quarterName} 팀
-          </Typography>
-          {/*location.state?.status === 200 && JSON.stringify(typeof location.state?.data?.availableRange)*/}
         </Box>
       </Box>
       {location.state?.status === 200 && <Optional />}

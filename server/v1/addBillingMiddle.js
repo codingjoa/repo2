@@ -29,6 +29,7 @@ const addBillingMiddleQuery = (
   billingPrice,
   billingScholarshipCode,
   billingTaxCode,
+  billingUnpaidCode,
   billingRetractable,
   billingMiddleRegCode
 ) select
@@ -40,6 +41,7 @@ const addBillingMiddleQuery = (
   ? as billingPrice,
   ? as billingScholarshipCode,
   ? as billingTaxCode,
+  ? as billingUnpaidCode,
   0 as billingRetractable,
   1 as billingMiddleRegCode
 from
@@ -73,6 +75,7 @@ async function addBillingMiddle(
   billingScholarshipCode,
   billingPrice,
   billingTaxCode,
+  billingUnpaidCode,
   studentID,
   startStudyWeek
 ) {
@@ -85,6 +88,7 @@ async function addBillingMiddle(
       (billingScholarshipCode===1 ? 0 : billingPrice),
       billingScholarshipCode,
       (billingScholarshipCode===1 ? 0 : billingTaxCode),
+      billingUnpaidCode,
       lessonMonth,
       studentID
     ]);
@@ -111,22 +115,24 @@ module.exports = async function(
   req, res
 ) {
   const studentID = req.params?.studentID;
-  const lessonMonth = req.body?.lessonMonth;
+  const lessonMonth = req.params?.lessonMonth;
   const billingPayment = req.body?.billingPayment;
   const billingGroup = req.body?.billingGroup;
   const billingScholarshipCode = req.body?.billingScholarshipCode;
   const billingPrice = req.body?.billingPrice;
   const billingTaxCode = req.body?.billingTaxCode;
   const startStudyWeek = req.body?.startStudyWeek;
+  const billingUnpaidCode = req.body?.billingUnpaidCode;
   if(
-    !studentID===undefined ||
-    !lessonMonth===undefined ||
-    !billingPayment===undefined ||
-    !billingGroup===undefined ||
-    !billingScholarshipCode===undefined ||
-    !billingPrice===undefined ||
-    !billingTaxCode===undefined ||
-    !startStudyWeek===undefined
+    studentID===undefined ||
+    lessonMonth===undefined ||
+    billingPayment===undefined ||
+    billingGroup===undefined ||
+    billingScholarshipCode===undefined ||
+    billingPrice===undefined ||
+    billingTaxCode===undefined ||
+    startStudyWeek===undefined ||
+    billingUnpaidCode===undefined
   ) {
     BadRequest(res, new Error('잘못된 요청을 보냈습니다.'));
     return;
@@ -139,6 +145,7 @@ module.exports = async function(
       billingScholarshipCode,
       billingPrice,
       billingTaxCode,
+      billingUnpaidCode,
       studentID,
       startStudyWeek
     );
@@ -156,6 +163,7 @@ module.id === require.main.id && (async () => {
   const billingPrice = process.env?.BPRICE ?? 0;
   const billingTaxCode = process.env?.BTAX ?? 0;
   const startStudyWeek = process.env?.SSW ?? 3;
+  const billingUnpaidCode = process.env?.BUNPAY ?? 0;
   try {
     await addBillingMiddle(
       lessonMonth,
@@ -164,6 +172,7 @@ module.id === require.main.id && (async () => {
       billingScholarshipCode,
       billingPrice,
       billingTaxCode,
+      billingUnpaidCode,
       studentID,
       startStudyWeek
     ).then(console.log);

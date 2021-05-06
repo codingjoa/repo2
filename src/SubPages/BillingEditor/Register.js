@@ -49,19 +49,32 @@ export default ({
         </Typography>
         <Checkbox {...useHandlarCheckbox('billingTaxCode')} />
       </Box>
-      <Box
-        flexGrow={1}
-      >
-        <TextField
-          disabled={values.billingScholarshipCode === 1}
-          fullWidth
-          label="납입한 수업료"
-          size="small"
-          type="number"
-          variant="outlined"
-          {...useHandlar('billingPrice', onlyNumber)}
-        />
-      </Box>
+    </Box>
+    <Box
+      m={1}
+    >
+      <TextField
+        disabled={billingScholarshipCodeTag.checked === true}
+        fullWidth
+        label="월 수업료"
+        size="small"
+        type="number"
+        variant="outlined"
+        {...useHandlar('billingPrice', onlyNumber)}
+      />
+    </Box>
+    <Box
+      m={1}
+    >
+      <TextField
+        disabled={billingScholarshipCodeTag.checked === true}
+        fullWidth
+        label="현재 미납금"
+        size="small"
+        type="number"
+        variant="outlined"
+        {...useHandlar('billingUnpaidCode', onlyNumber)}
+      />
     </Box>
     <Box
       m={1}

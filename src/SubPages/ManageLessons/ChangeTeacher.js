@@ -10,6 +10,7 @@ export default ({
     color="primary"
     component={Link}
     disabled={disabled}
+    size="small"
     to={{
       pathname: `/admin/lessonCharge/${quarterID}`,
       state: {

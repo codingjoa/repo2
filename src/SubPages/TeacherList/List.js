@@ -11,7 +11,7 @@ export default ({
   {list && list.map(({
     teacherName, teacherID, teacherAccount,
     teacherOp, isForeigner, isCanBeClosed
-  }) => <Page>
+  }) => <Page key={teacherID}>
     <Box display="flex">
       <Box>
         사번: {teacherID}

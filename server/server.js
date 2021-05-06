@@ -18,7 +18,7 @@ const sessionOption = {
   saveUninitialized: true,
   cookie: {
     secure: false,
-    maxAge: (process.env.DEBUG === '1') ? Infinity : (1000 * 60 * 30)
+    maxAge: ((process.env.DEBUG === '1') ? Infinity : (1000 * 60 * 30))
   }
 };
 app.set('trust proxy', 1);
@@ -36,6 +36,13 @@ api.use('/v1', version1);
 api.use(version1);
 const development = require('./dev/router');
 api.use('/dev', development);
+
+
+/* @codingjoa
+   에러 핸들링
+*/
+const errorManager = require('./errorManager.js');
+api.use(errorManager);
 
 
 /* @codingjoa

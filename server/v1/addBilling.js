@@ -14,6 +14,7 @@ const addBillingQuery = (
   billingPrice,
   billingScholarshipCode,
   billingTaxCode,
+  billingUnpaidCode,
   billingRetractable
 ) select
   studentInfo.studentID,
@@ -24,6 +25,7 @@ const addBillingQuery = (
   ? as billingPrice,
   ? as billingScholarshipCode,
   ? as billingTaxCode,
+  ? as billingUnpaidCode,
   1 as billingRetractable
 from
   (select
@@ -38,8 +40,8 @@ from
     studentID.studentID=billing.studentID and
     studentID.lessonMonth=billing.lessonMonth left join
   lesson on
-    billing.quarterID=lesson.quarterID and
-    billing.lessonMonth=lesson.lessonMonth
+    studentInfo.quarterID=lesson.quarterID and
+    studentID.lessonMonth=lesson.lessonMonth
 where
   studentInfo.studentID=? and
   studentID.unused=0 and
@@ -53,6 +55,7 @@ async function addBilling(
   billingGroup,
   billingScholarshipCode,
   billingPrice,
+  billingUnpaidCode,
   billingTaxCode,
   studentID
 ) {
@@ -66,6 +69,7 @@ async function addBilling(
         (billingScholarshipCode===1 ? 0 : billingPrice),
         billingScholarshipCode,
         (billingScholarshipCode===1 ? 0 : billingTaxCode),
+        (billingUnpaidCode>billingPrice ? billingPrice : billingUnpaidCode),
         lessonMonth,
         studentID
       ]));
@@ -84,6 +88,7 @@ async function addBilling(
         (billingScholarshipCode===1 ? 0 : billingPrice),
         billingScholarshipCode,
         (billingScholarshipCode===1 ? 0 : billingTaxCode),
+        (billingUnpaidCode>billingPrice ? billingPrice : billingUnpaidCode),
         lessonMonth,
         studentID
       ]);
@@ -109,14 +114,16 @@ module.exports = async function(
   const billingScholarshipCode = req.body?.billingScholarshipCode;
   const billingPrice = req.body?.billingPrice;
   const billingTaxCode = req.body?.billingTaxCode;
+  const billingUnpaidCode = req.body?.billingUnpaidCode;
   if(
-    !studentID===undefined ||
-    !lessonMonth===undefined ||
-    !billingPayment===undefined ||
-    !billingGroup===undefined ||
-    !billingScholarshipCode===undefined ||
-    !billingPrice===undefined ||
-    !billingTaxCode===undefined
+    studentID===undefined ||
+    lessonMonth===undefined ||
+    billingPayment===undefined ||
+    billingGroup===undefined ||
+    billingScholarshipCode===undefined ||
+    billingPrice===undefined ||
+    billingTaxCode===undefined ||
+    billingUnpaidCode===undefined
   ) {
     BadRequest(res, new Error('잘못된 요청을 보냈습니다.'));
     return;
@@ -128,6 +135,7 @@ module.exports = async function(
       billingGroup,
       billingScholarshipCode,
       billingPrice,
+      billingUnpaidCode,
       billingTaxCode,
       studentID
     );
@@ -144,6 +152,7 @@ module.id === require.main.id && (async () => {
   const billingScholarshipCode = process.env?.BSCH ?? 1;
   const billingPrice = process.env?.BPRICE ?? 0;
   const billingTaxCode = process.env?.BTAX ?? 0;
+  const billingUnpaidCode = process.env?.BUNPAY ?? 0;
   try {
     await addBilling(
       lessonMonth,
@@ -151,6 +160,7 @@ module.id === require.main.id && (async () => {
       billingGroup,
       billingScholarshipCode,
       billingPrice,
+      billingUnpaidCode,
       billingTaxCode,
       studentID
     ).then(console.log);

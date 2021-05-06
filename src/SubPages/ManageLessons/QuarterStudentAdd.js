@@ -4,18 +4,21 @@ import Chip from '@material-ui/core/Chip';
 import AddCircleIcon from '@material-ui/icons/AddCircle';
 
 export default ({
-  disabled,
+  lessonEnded,
   quarterID
 }) => {
   const history = ReactRouter.useHistory();
-  if(disabled) {
+  const handleClick = () => {
+    history.push(`/admin/quarter/${quarterID}/student`);
+  };
+  if(lessonEnded === 1) {
     return null;
   }
   return (
     <Chip
       clickable
       icon={<AddCircleIcon />}
-      onClick={() => history.push(`/test/0417/${quarterID}`)}
+      onClick={handleClick}
       size="small"
     />
   );

@@ -29,8 +29,10 @@ export default ({ list }) => (<>
       </Box>
       <Box>
         <Button
+          color="primary"
           component={Link}
           to={`/lesson/detail/${quarterID}/${toDateFormat(lessonMonth)}`}
+          variant="contained"
         >
           상세보기
         </Button>

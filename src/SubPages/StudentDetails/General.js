@@ -1,4 +1,5 @@
 import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -28,8 +29,10 @@ export default ({
   */
   studentID,
   studentName,
-  studentPhone
+  studentPhone,
+  op
 }) => {
+  const history = ReactRouter.useHistory();
   const [ disabled, setDisabled ] = React.useState(true);
   const validate = changed => {
     const empty = (
@@ -82,6 +85,14 @@ export default ({
       return;
     }
     alert('변경되었습니다.');
+    history.goBack();
+  };
+  const handleClick = e => {
+    if(op) {
+      putCloser(`/api/admin/student/${studentID}`, callback)();
+    } else {
+      putCloser(`/api/teacher/student/${studentID}`, callback)();
+    }
   };
   return (
   <><Typography variant="subtitle1">학생 정보 조회/수정</Typography>
@@ -179,7 +190,7 @@ export default ({
         disabled={disabled}
         variant="contained"
         color="primary"
-        onClick={e => putCloser(`/api/admin/student/${studentID}`, callback)()}
+        onClick={handleClick}
       >
         변경
       </Button>

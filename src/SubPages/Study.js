@@ -103,7 +103,7 @@ function SortedList({ students }) {
             <TableRow>
               <StudentInfo
                 id={row.studentID}
-                name={row.studentName}
+                name={row.studentNameDup}
                 birthday={row.studentBirthday}
                 modifiedAt={row.checkModified}
               />

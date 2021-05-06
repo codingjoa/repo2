@@ -1,6 +1,9 @@
 alter table v1.billing add billingRefundReason varchar(255) default null;
 alter table v1.billing add billingRefundPrice int unsigned default null;
 alter table v1.billing add billingMiddleRegCode int unsigned default 0;
+alter table v1.billing add billingUnpaidCode int unsigned default 0;
+alter table v1.billing add billingRefundAt date default null;
+alter table v1.billing add billingRefundMiddleCode int unsigned default null;
 update
   v1.billing,
   v1.refund

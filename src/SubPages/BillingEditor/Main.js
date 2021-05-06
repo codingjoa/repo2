@@ -18,20 +18,18 @@ function lessonMonthToString(
   const lm = new Date(lessonMonth);
   return `${lm.getFullYear()}년 ${lm.getMonth()+1}월`;
 }
-function parseLessonMonth(
+function lessonMonthToFormat(
   lessonMonth
 ) {
   if(typeof lessonMonth !== 'string') {
-    return {
-      year: null,
-      month: null
-    };
+    return '';
   }
-  const arr = /^(\d{4})-(\d{2})-\d{2}/.exec(lessonMonth);
-  return {
-    year: arr[1] - 0,
-    month: arr[2] - 0
-  };
+  const lm = new Date(lessonMonth);
+  const month = lm.getMonth()+1;
+  const day = lm.getDate();
+  const len = (`${month}`.length === 1);
+  const len1 = (`${day}`.length === 1);
+  return `${lm.getFullYear()}-${len ? '0' : ''}${month}-${len1 ? '0' : ''}${day}`;
 }
 function fetchBilling(
   studentID,
@@ -51,6 +49,13 @@ function editBilling(
   callback
 ) {
   axios.put(`/api/admin/billing/${studentID}/${lessonMonth}`, body)
+  .then(
+    result => callback(null, result),
+    callback
+  );
+}
+function editBillingMiddle(studentID, lessonMonth, callback) {
+  axios.patch(`/api/admin/billing/${studentID}/${lessonMonth}`)
   .then(
     result => callback(null, result),
     callback
@@ -77,18 +82,22 @@ function PutButton({
         billingPayment,
         billingTaxCode,
         billingScholarshipCode,
+        billingUnpaidCode,
         billingRefundRegCode,
         billingRefundPrice,
-        billingRefundReason
+        billingRefundReason,
+        billingRefundAt
       } = values;
       const lastBody = {
         billingPrice,
         billingGroup,
         billingPayment,
-        billingTaxCode: (billingTaxCode===1 ? 1 : 0),
-        billingScholarshipCode: (billingScholarshipCode===1 ? 1 : 0),
-        billingRefundPrice: (billingRefundEditable===1 && billingRefundRegCode===1 ? (billingRefundPrice===null ? 0 : billingRefundPrice) : null),
-        billingRefundReason: (billingRefundEditable===1 && billingRefundRegCode===1 ? (billingRefundReason===null ? '' : billingRefundReason) : null)
+        billingTaxCode: (billingTaxCode===true ? 1 : 0),
+        billingScholarshipCode: (billingScholarshipCode===true ? 1 : 0),
+        billingUnpaidCode,
+        billingRefundPrice: (billingRefundEditable===1 && billingRefundRegCode===true ? (billingRefundPrice===null ? 0 : billingRefundPrice) : null),
+        billingRefundReason: (billingRefundEditable===1 && billingRefundRegCode===true ? (billingRefundReason===null ? '' : billingRefundReason) : null),
+        billingRefundAt: (billingRefundEditable===1 && billingRefundRegCode===true ? (billingRefundAt===null ? lessonMonth : billingRefundAt) : null)
       };
       editBilling(studentID, lessonMonth, lastBody, err => {
         if(err) {
@@ -96,9 +105,7 @@ function PutButton({
           return;
         }
         alert('변경되었습니다.');
-        history.push('/admin/lesson', {
-          previous: parseLessonMonth(lessonMonth)
-        });
+        history.goBack();
       });
     });
   }
@@ -109,7 +116,6 @@ function PutButton({
     >
       <Button
         color="primary"
-        fullWidth
         onClick={handleSubmit}
         variant="contained"
       >
@@ -118,7 +124,45 @@ function PutButton({
     </Box>
   );
 }
-function Optional() {
+function BillingMiddle({
+  reload
+}) {
+  const {
+    studentID,
+    lessonMonth
+  } = ReactRouter.useParams();
+  const location = ReactRouter.useLocation();
+  const handleClick = () => {
+    const userAnswer = window.confirm(`${location?.state?.data?.studentName} 학생을 중도 탈퇴합니다. *이후 취소할 수 없습니다.`);
+    if(!userAnswer) {
+      return;
+    }
+    editBillingMiddle(studentID, lessonMonth, (err, result) => {
+      if(err) {
+        alert(err);
+        return;
+      }
+      reload();
+    });
+  };
+  return (
+    <Box
+      m={1}
+    >
+      <Button
+        color="secondary"
+        onClick={handleClick}
+        variant="contained"
+      >
+        중도 탈퇴
+      </Button>
+    </Box>
+  );
+}
+function Optional({
+  reload
+}) {
+  const { lessonMonth } = ReactRouter.useParams();
   const location = ReactRouter.useLocation();
   const {
     billingPrice,
@@ -126,9 +170,12 @@ function Optional() {
     billingPayment,
     billingTaxCode,
     billingScholarshipCode,
+    billingUnpaidCode,
     billingRefundEditable,
     billingRefundPrice,
-    billingRefundReason
+    billingRefundReason,
+    billingRefundAt,
+    lessonRegCode
   } = location.state?.data ?? {};
   const {
     values,
@@ -140,11 +187,13 @@ function Optional() {
       billingPrice,
       billingGroup,
       billingPayment,
-      billingTaxCode,
-      billingScholarshipCode,
+      billingTaxCode: (billingTaxCode===1),
+      billingScholarshipCode: (billingScholarshipCode===1),
+      billingUnpaidCode,
       billingRefundPrice,
       billingRefundReason,
-      billingRefundRegCode: (billingRefundPrice===null) ? 0 : 1
+      billingRefundAt: (billingRefundAt!==null) ? lessonMonthToFormat(billingRefundAt) : lessonMonth,
+      billingRefundRegCode: (billingRefundPrice===null) ? false : true
     }
   );
   const billingScholarshipCodeTag = useHandlarCheckbox('billingScholarshipCode');
@@ -169,11 +218,18 @@ function Optional() {
           마감되지 않은 수업은 환불 등록을 할 수 없습니다.
         </Typography>
       }
-      <PutButton
-        billingRefundEditable={billingRefundEditable}
-        studentName={location.state?.data?.studentName}
-        getValues={getValues}
-      />
+      <Box
+        display="flex"
+      >
+        <PutButton
+          billingRefundEditable={billingRefundEditable}
+          studentName={location.state?.data?.studentName}
+          getValues={getValues}
+        />
+        {billingRefundEditable===0 && lessonRegCode===1 && <BillingMiddle
+          reload={reload}
+        />}
+      </Box>
     </>
   );
 }
@@ -214,7 +270,14 @@ export default function() {
           </Typography>
         </Box>
       </Box>
-      {location.state?.status === 200 && <Optional />}
+      {location.state?.status === 200 && <Optional
+        reload={() => {
+          history.replace({
+            state: null
+          });
+          fetchBilling(studentID, lessonMonth, callback);
+        }}
+      />}
     </Page>
   );
 }

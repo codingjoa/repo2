@@ -9,7 +9,9 @@ function fetchStudentDetails(callback, { studentID }) {
   .catch(callback);
 }
 
-export default () => {
+export default ({
+  op
+}) => {
   const [ status, setStatus ] = React.useState(null);
   const [ fd, setFd ] = React.useState(null);
   const { studentID } = useParams();
@@ -27,9 +29,13 @@ export default () => {
   return (
     <>
       {status === 200 && <>
-      <General {...fd}
+      <General
+        op={op}
+        {...fd}
       />
-      <Uniqueness {...fd}
+      <Uniqueness
+        op={op}
+        {...fd}
       />
       </>}
     </>

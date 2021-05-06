@@ -1,4 +1,4 @@
-const { OK, BadRequest, NotFound } = require('../format');
+const { OK, NotFound, InternalError } = require('../format');
 const { pool } = require('../poolManager');
 const fetchBillingQuery = (
 `select
@@ -13,26 +13,33 @@ const fetchBillingQuery = (
   billing.billingRetractable,
   billing.billingScholarshipCode,
   billing.billingTaxCode,
+  billing.billingUnpaidCode,
   case
-    when lesson.lessonEnded=1
+    when lesson.lessonEnded=1 or billing.billingRefundMiddleCode=1
+    then billing.billingRefundAt
+    else null
+  end as billingRefundAt,
+  case
+    when lesson.lessonEnded=1 or billing.billingRefundMiddleCode=1
     then billing.billingRefundReason
     else null
   end as billingRefundReason,
   case
-    when lesson.lessonEnded=1
+    when lesson.lessonEnded=1 or billing.billingRefundMiddleCode=1
     then billing.billingRefundPrice
     else null
   end as billingRefundPrice,
   case
     when lesson.lessonEnded is not null
-    then lesson.lessonEnded=1
+    then lesson.lessonEnded=1 or ifnull(billing.billingRefundMiddleCode=1, 0)
     else 0
   end as billingRefundEditable,
   case
     when billing.studentID is null
     then 0
     else 1
-  end as billingRegCode
+  end as billingRegCode,
+  lesson.quarterID is not null as lessonRegCode
 from
   (select
     studentID.studentID,
@@ -53,8 +60,7 @@ from
     case when billing.quarterID is null then request.quarterID else billing.quarterID end=quarter.quarterID left join
   lesson on
     billing.quarterID=lesson.quarterID and
-    billing.lessonMonth=lesson.lessonMonth
-  `);
+    billing.lessonMonth=lesson.lessonMonth`);
 async function fetchBilling(
   lessonMonth,
   studentID,
@@ -88,9 +94,8 @@ module.exports = async function(
     );
     !rows.length && NotFound(res);
     rows.length && OK(res, rows[0]);
-    OK(res);
   } catch(err) {
-    BadRequest(res, err);
+    InternalError(res, err);
   }
 };
 module.id === require.main.id && (async () => {

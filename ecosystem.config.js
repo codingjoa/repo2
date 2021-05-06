@@ -1,27 +1,27 @@
 module.exports = {
   apps : [{
-    name: 'react',
-    script: 'npm',
-    args: 'start',
+    name: 'react-spa',
+    script: './server.front.js',
     watch: false,
     restart_delay: 30000,
     env: {
+      'PORT': 3000,
       'HTTPS': true,
       'SSL_CRT_FILE': './ssl/cert.crt',
       'SSL_KEY_FILE': './ssl/cert.key'
     },
     env_dev: {
+      'PORT': 5000,
       'HTTPS': false
     }
   }, {
-    name: 'restAPI',
+    name: 'react-restAPI',
     script: './server/server.js',
     watch: false,
     restart_delay: 30000,
     env: {
       'MARIADB_PORT': 3306,
-      'MARIADB_NAME': 'v1',
-      'NODE_ENV': 'production'
+      'MARIADB_NAME': 'v1'
     },
     env_dev: {
       'MARIADB_PORT': 3306,

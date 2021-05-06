@@ -21,7 +21,7 @@
 */
 
 
-const { OK, BadRequest, CommonError } = require('../format');
+const { OK, BadRequest, InternalError, CommonError } = require('../format');
 const { pool } = require('../poolManager');
 const editBillingQuery = (
 `update
@@ -33,8 +33,10 @@ const editBillingQuery = (
     ? as billingPrice,
     ? as billingTaxCode,
     ? as billingScholarshipCode,
+    ? as billingUnpaidCode,
     ? as billingRefundPrice,
-    ? as billingRefundReason
+    ? as billingRefundReason,
+    ? as billingRefundAt
   ) as request left join
   billing on
     billing.studentID=request.studentID and
@@ -56,19 +58,37 @@ set
     else 0
   end),
   billing.billingScholarshipCode=request.billingScholarshipCode,
+  billing.billingUnpaidCode=(case
+    when request.billingScholarshipCode=1
+    then 0
+    when request.billingPrice<request.billingUnpaidCode
+    then request.billingPrice
+    else request.billingUnpaidCode
+  end),
   billing.billingRefundPrice=(case
-    when lesson.lessonEnded=1 or request.billingScholarshipCode=0
-    then (case
-      when request.billingPrice<request.billingRefundPrice
-      then request.billingPrice
-      else request.billingRefundPrice
-    end)
-    else null
+    when lesson.lessonEnded=0 and billing.billingRefundMiddleCode=1 and request.billingPrice<request.billingRefundPrice
+    then request.billingPrice
+    when lesson.lessonEnded=0 and billing.billingRefundMiddleCode=1
+    then request.billingRefundPrice
+    when lesson.lessonEnded=0 or request.billingScholarshipCode=1
+    then null
+    when request.billingPrice<request.billingRefundPrice
+    then request.billingPrice
+    else request.billingRefundPrice
   end),
   billing.billingRefundReason=(case
-    when lesson.lessonEnded=1 or request.billingScholarshipCode=0
+    when lesson.lessonEnded=0 and billing.billingRefundMiddleCode=1
     then request.billingRefundReason
-    else null
+    when lesson.lessonEnded=0 or request.billingScholarshipCode=1
+    then null
+    else request.billingRefundReason
+  end),
+  billing.billingRefundAt=(case
+    when lesson.lessonEnded=0 and billing.billingRefundMiddleCode=1
+    then request.billingRefundAt
+    when lesson.lessonEnded=0 or request.billingScholarshipCode=1
+    then null
+    else request.billingRefundAt
   end)
 limit 1`);
 async function editBilling(
@@ -79,13 +99,15 @@ async function editBilling(
   billingPrice,
   billingTaxCode,
   billingScholarshipCode,
+  billingUnpaidCode,
   billingRefundPrice,
-  billingRefundReason
+  billingRefundReason,
+  billingRefundAt
 ) {
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
-    await conn.query(editBillingQuery, [
+    const result = await conn.query(editBillingQuery, [
       studentID,
       lessonMonth,
       billingPayment,
@@ -93,11 +115,14 @@ async function editBilling(
       billingPrice,
       billingTaxCode,
       billingScholarshipCode,
+      billingUnpaidCode,
       billingRefundPrice,
-      billingRefundReason
+      billingRefundReason,
+      billingRefundAt
     ]);
     await conn.commit();
     await conn.release();
+    return (result.affectedRows===0) ? false : true;
   } catch(err) {
     process.env.ERROR === '1' && console.error(err);
     await conn.rollback();
@@ -115,8 +140,10 @@ module.exports = async function(
   const billingPrice = req.body?.billingPrice;
   const billingTaxCode = req.body?.billingTaxCode;
   const billingScholarshipCode = req.body?.billingScholarshipCode;
+  const billingUnpaidCode = req.body?.billingUnpaidCode;
   const billingRefundPrice = req.body?.billingRefundPrice;
   const billingRefundReason = req.body?.billingRefundReason;
+  const billingRefundAt = req.body?.billingRefundAt;
   if(
     studentID===undefined ||
     lessonMonth===undefined ||
@@ -126,13 +153,15 @@ module.exports = async function(
     billingTaxCode===undefined ||
     billingScholarshipCode===undefined ||
     billingRefundPrice===undefined ||
-    billingRefundReason===undefined
+    billingRefundReason===undefined ||
+    billingUnpaidCode===undefined ||
+    billingRefundAt===undefined
   ) {
     BadRequest(res, new CommonError('잘못된 요청을 보냈습니다.'));
     return;
   }
   try {
-    await editBilling(
+    const ok = await editBilling(
       studentID,
       lessonMonth,
       billingPayment,
@@ -140,11 +169,17 @@ module.exports = async function(
       billingPrice,
       billingTaxCode,
       billingScholarshipCode,
+      billingUnpaidCode,
       billingRefundPrice,
-      billingRefundReason
+      billingRefundReason,
+      billingRefundAt
     );
-    OK(res);
+    if(ok) {
+      OK(res);
+    } else {
+      BadRequest(res, new Error('변경되지 않았습니다.'));
+    }
   } catch(err) {
-    BadRequest(res, err);
+    InternalError(res, err);
   }
 };

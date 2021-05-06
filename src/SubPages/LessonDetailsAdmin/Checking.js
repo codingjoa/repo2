@@ -28,8 +28,7 @@ function iter(size) {
 }
 const Row = ({
   studentID,
-  studentName,
-  studentBirthday,
+  studentNameDup,
   billingPrice,
   billingScholarshipCode,
   billingTaxCode,
@@ -53,7 +52,7 @@ const Row = ({
       size="small"
       style={{ minWidth: '10rem'}}
     >
-      {studentName}
+      {studentNameDup}
     </TableCell>
     <TableCell
       padding="checkbox"
@@ -69,7 +68,7 @@ const Row = ({
         padding="checkbox"
         size="small"
       >
-        <Icon color={typeof checkOks[`${key+1}`] === 'number' && checkOks[key]===1 ? 'secondary' : 'disabled'}>
+        <Icon color={typeof checkOks[`${key+1}`] === 'number' && checkOks[`${key+1}`]===1 ? 'secondary' : 'disabled'}>
           {typeof checkOks[`${key+1}`] === 'number' ?
             <CheckIcon /> :
             <CloseIcon />
