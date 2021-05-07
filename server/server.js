@@ -11,13 +11,18 @@ const { pool } = require('./poolManager');
 const session = require('express-session');
 const cors = require('cors');
 const bodyParser = require('body-parser');
-app.use(session({
-  secret: 'ky',
+const sessionOption = {
+  secret: 'ky',
   resave: false,
   rolling: true,
   saveUninitialized: true,
-  cookie: { secure: false, maxAge: 1000 * 60 * 30 }
-}));
+  cookie: {
+    secure: false,
+    maxAge: ((process.env.DEBUG === '1') ? Infinity : (1000 * 60 * 30))
+  }
+};
+app.set('trust proxy', 1);
+app.use(session(sessionOption));
 app.use(cors());
 app.use(bodyParser.json());
 app.use('/api', api);
@@ -31,6 +36,13 @@ api.use('/v1', version1);
 api.use(version1);
 const development = require('./dev/router');
 api.use('/dev', development);
+
+
+/* @codingjoa
+   에러 핸들링
+*/
+const errorManager = require('./errorManager.js');
+api.use(errorManager);
 
 
 /* @codingjoa

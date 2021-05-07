@@ -16,9 +16,6 @@ import TableHead from '@material-ui/core/TableHead';
 import TableBody from '@material-ui/core/TableBody';
 import TableRow from '@material-ui/core/TableRow';
 import TableCell from '@material-ui/core/TableCell';
-import Input from '@material-ui/core/Input';
-import Select from '@material-ui/core/Select';
-import MenuItem from '@material-ui/core/MenuItem';
 import Checkbox from '@material-ui/core/Checkbox';
 
 import Button from '@material-ui/core/Button';
@@ -35,11 +32,6 @@ function TimeString(origin) {
    Quarters.js의 사본임
 */
   return new Date(Date.parse(origin)+32400000).toLocaleString('ko-KR', { timeZone: 'UTC' });
-}
-
-function today() {
-  const today = /^([0-9]{4}-[0-9]{2}-[0-9]{2})/.exec( DO.toJSON() );
-  return today;
 }
 function toYear(origin) {
   return (new Date(origin)).getFullYear();
@@ -107,11 +99,11 @@ function SortedList({ students }) {
           />
         </TableHead>
         <TableBody>
-          {students.map(row => 
+          {students.map(row =>
             <TableRow>
-              <StudentInfo 
+              <StudentInfo
                 id={row.studentID}
-                name={row.studentName}
+                name={row.studentNameDup}
                 birthday={row.studentBirthday}
                 modifiedAt={row.checkModified}
               />
@@ -125,13 +117,11 @@ function SortedList({ students }) {
 
 export default function Study() {
   const { quarterID, lessonMonth, weekNum } = useParams();
-  
-  const [ students, setStudents ] = useState(null);
-
-  const [ checked, setChecked ] = useState({});
-  const [ original, setOriginal ] = useState(checked);
-  const [ record, setRecord ] = useState({});
-  const statistics = useMemo(() => {
+  const [ students, setStudents ] = React.useState(null);
+  const [ checked, setChecked ] = React.useState({});
+  const [ original, setOriginal ] = React.useState(checked);
+  const [ record, setRecord ] = React.useState({});
+  const statistics = React.useMemo(() => {
 /* 배열이 크면 효율이 좀 떨어질 것임 */
     let 총원 = 0;
     let 출석 = 0;
@@ -150,7 +140,7 @@ export default function Study() {
     return { 총원, 출석, 재승인, 취소, 결석, 재기록대상, 데베재기록 };
   }, [ checked ]);
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     if(students !== null) return;
     axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`)
     .then(r => setStudents(r.data.fetchedData))
@@ -160,7 +150,7 @@ export default function Study() {
       setStudents(false);
     });
   }, [ students, weekNum ]);
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     //if(!students) return;
     setChecked({});
     setOriginal({});
@@ -179,7 +169,7 @@ export default function Study() {
     setRecord(newRecords);
   }, [ students ]);
 
-  const cb = useCallback(() => {
+  const cb = React.useCallback(() => {
     const r = window.confirm(`총원 ${statistics.총원}명 중, 출석${statistics.출석}명 결석${statistics.결석}명으로 처리하시겠습니까?`);
     axios.patch(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`, { targets: statistics.재기록대상 })
     .then(r => {

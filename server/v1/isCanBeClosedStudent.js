@@ -5,8 +5,7 @@ const { pool } = require('../poolManager');
    반을 폐쇄 가능한지
    조건1. 실존하는 학생
    조건2. 실존하는 학생 중 사용중인 학생
-   조건1. 이 student가 사용된 billing의 Retractable이 모두 0이거나 없어야 함
-   조건2. 이 student가 사용된 lesson이 lessonEnded이거나 없어야 함
+   조건3. 이 student가 사용된 lesson이 lessonEnded이거나 없어야 함
 */
 
 module.exports = async function(
@@ -17,20 +16,11 @@ module.exports = async function(
 select
   0 as when1,
   0 as when2,
-  0 as when3,
-  0 as when4
+  0 as when3
 union
 select
   1 as when1,
   case when unused=0 then 1 else 0 end as when2,
-  (select
-    case when count(*)>0 then 0 else 1 end
-  from
-    billing
-  where
-    billing.studentID=studentID.studentID and
-    billing.billingRetractable=1
-  ) as when3,
   (select
     case when count(*)>0 then 0 else 1 end
   from
@@ -40,7 +30,7 @@ select
     lesson.lessonMonth=billing.lessonMonth and
     billing.studentID=studentID.studentID and
     lesson.lessonEnded=0
-  ) as when4
+  ) as when3
 from
   studentID
 where
@@ -52,8 +42,8 @@ limit 1`,
     [ studentID, studentID ]
   )
   .then(r => {
-    const { when1, when2, when3, when4 } = r[0];
-    when1 && when2 && when3 && when4 ? next() : Forbidden(res);
+    const { when1, when2, when3 } = r[0];
+    when1 && when2 && when3 ? next() : Forbidden(res);
   })
   .catch(e => BadRequest(res, e));
 };

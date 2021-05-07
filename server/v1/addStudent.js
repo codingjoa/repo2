@@ -12,11 +12,12 @@ module.exports = async function(
   req, res
 ) {
   const studentName = req.body.studentName;
-  const studentBirthday = req.body.studentBirthday;
-  const studentGender = req.body.studentGender;
+  //const studentBirthday = req.body.studentBirthday ?? null;
+  //const studentGender = req.body.studentGender ?? null;
   const studentPhone = req.body.studentPhone;
-  const studentEmail = req.body.studentEmail;
-  const studentAddress = req.body.studentAddress;
+  //const studentEmail = req.body.studentEmail ?? null;
+  //const studentAddress = req.body.studentAddress ?? null;
+  const quarterID = req.params.quarterID ?? null; // 1.5
   const studentID = await pool.query(
     'insert into studentID values()'
   )
@@ -27,21 +28,19 @@ module.exports = async function(
     insert into studentInfo(
       studentID,
       studentName,
-      studentBirthday,
-      studentGender,
       studentPhone,
-      studentEmail,
-      studentAddress
+      quarterID
     ) values (
-      ?, ?, ?, ?, ?, ?, ?
+      ?, ?, ?, ?
     )`,[
       studentID ?? null,
       studentName ?? null,
-      studentBirthday ?? null,
-      studentGender ?? null,
+      //studentBirthday ?? null,
+      //studentGender ?? null,
       studentPhone ?? null,
-      studentEmail ?? null,
-      studentAddress ?? null
+      //studentEmail ?? null,
+      //studentAddress ?? null
+      quarterID
     ]
   )
   .then(r => r.affectedRows ? Created(res) : BadRequest(res, new Error('학생 정보가 생성되지 읺았습니다.')))

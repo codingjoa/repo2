@@ -4,6 +4,7 @@ function OK(res, fetchedData) {
   res.json({
     fetchedData
   });
+  res.end();
   return true;
 }
 
@@ -13,18 +14,20 @@ function Created(res, createdData, createdAt) {
     createdData,
     createdAt
   });
+  res.end();
   return true;
 }
 
 function NoContent(res) {
   res.status(204);
+  res.end();
   return true;
 }
 
 function BadRequest(res, err) {
   res.status(400);
   res.json({
-    cause: err.message
+    cause: err?.message ?? 'error'
   });
   res.end();
   return true;
@@ -48,6 +51,18 @@ function NotFound(res) {
   return true;
 }
 
+function InternalError(res, err) {
+  res.status(500);
+  res.json({
+    cause: err?.message ?? 'error'
+  });
+  res.end();
+  return true;
+}
+
+class CommonError extends Error {}
+class NotFoundError extends Error {}
+
 module.exports = {
   OK,
   Created,
@@ -55,5 +70,8 @@ module.exports = {
   BadRequest,
   Unauthorized,
   Forbidden,
-  NotFound
+  NotFound,
+  InternalError,
+  CommonError,
+  NotFoundError
 };

@@ -11,23 +11,35 @@ module.exports = async function(
 select
   checking.*,
   (select
-    studentName
+    case
+      when Duplicated.isDuplicatedName=1
+      then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
+      else studentInfo.studentName
+    end as studentNameDup
   from
-    studentInfo
+    studentInfo left join
+    (select
+      studentInfo.studentName,
+      1 as isDuplicatedName
+    from
+      studentInfo
+    group by
+      studentInfo.studentName
+    having
+      count(studentInfo.studentName) > 1
+    ) as Duplicated on
+      studentInfo.studentName=Duplicated.studentName
   where
     checking.studentID=studentInfo.studentID
-  ) as studentName,
-  (select
-    studentBirthday
-  from
-    studentInfo
-  where
-    checking.studentID=studentInfo.studentID
-  ) as studentBirthday
+  ) as studentNameDup
 from
-  checking
+  checking inner join
+  billing on
+    checking.studentID=billing.studentID and
+    checking.quarterID=billing.quarterID and
+    checking.lessonMonth=billing.lessonMonth
 where
-  date_format(lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and quarterID=? and studyWeek=?`,
+  date_format(checking.lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and checking.quarterID=? and checking.studyWeek=?`,
     [ lessonMonth, quarterID, weekNum-0 ]
   )
   .then(r => {

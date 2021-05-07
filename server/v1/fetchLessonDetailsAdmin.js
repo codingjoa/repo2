@@ -56,50 +56,49 @@ where
 const getLessonChecking = (
 `select
   a.studentID,
-  a.studentName,
-  a.studentBirthday,
+  a.studentNameDup,
   a.billingPrice,
   a.billingPayment,
   a.billingGroup,
   a.billingScholarshipCode,
   a.billingTaxCode,
-  a.refundReason,
-  a.refundPercent,
+  a.billingRefundReason,
+  a.billingRefundPrice,
   b.json
 from
   (select
     quarterID,
     lessonMonth,
     studentID,
-    (select studentName
-    from studentInfo
-    where studentInfo.studentID=billing.studentID
-    ) as studentName,
-    (select studentBirthday
-    from studentInfo
-    where studentInfo.studentID=billing.studentID
-    ) as studentBirthday,
+    (select
+      case
+        when Duplicated.isDuplicatedName=1
+        then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
+        else studentInfo.studentName
+      end as studentNameDup
+    from
+      studentInfo left join
+      (select
+        studentInfo.studentName,
+        1 as isDuplicatedName
+      from
+        studentInfo
+      group by
+        studentInfo.studentName
+      having
+        count(studentInfo.studentName) > 1
+      ) as Duplicated on
+        studentInfo.studentName=Duplicated.studentName
+    where
+      studentInfo.studentID=billing.studentID
+    ) as studentNameDup,
     billingPrice,
     billingPayment,
     billingGroup,
     billingScholarshipCode,
     billingTaxCode,
-    (select
-      refundReason
-    from refund
-    where
-      refund.quarterID=billing.quarterID and
-      refund.lessonMonth=billing.lessonMonth and
-      refund.studentID=billing.studentID
-    ) as refundReason,
-    (select
-      refundPercent
-    from refund
-    where
-      refund.quarterID=billing.quarterID and
-      refund.lessonMonth=billing.lessonMonth and
-      refund.studentID=billing.studentID
-    ) as refundPercent
+    billingRefundReason,
+    billingRefundPrice
   from billing
   ) as a,
   (select

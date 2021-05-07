@@ -10,16 +10,15 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Handlar from './Handlar';
 function tryCreate(callback, {
   id, teacherName, teacherOp,
-  isForeigner, teacherJoined
+  isForeigner, teacherJoined, teacherID
 }) {
   axios.post('/api/admin/teacher', {
     id, teacherName, teacherOp,
-    isForeigner, teacherJoined
+    isForeigner, teacherJoined, teacherID
   })
   .then(r => callback(null, {
     teacherName, tempPassword: r.data.createdData.password
-  }))
-  .catch(callback);
+  }), callback);
 }
 
 export default () => {
@@ -59,14 +58,16 @@ export default () => {
     useHandlarCheckbox
   } = Handlar(validate);
   const handleSubmit = ({
-    id, teacherName, teacherOp, isForeigner, teacherJoined
+    id, teacherName, teacherOp,
+    isForeigner, teacherJoined, teacherID
   }) => {
     tryCreate(callback, {
-      id, teacherName, teacherOp, isForeigner, teacherJoined
+      id, teacherName, teacherOp,
+      isForeigner, teacherJoined, teacherID: (teacherID !== '') ? Math.abs(Math.trunc(teacherID-0)) : null
     });
   };
   return (
-  <><Typography variant="subtitle1">새로운 선생님 추가</Typography>
+  <><Typography variant="subtitle1">새로운 강사 추가</Typography>
     <Grid item xs={12}>
       <Box m={2}>
       <TextField
@@ -91,6 +92,16 @@ export default () => {
         label="이름"
         type="text"
         {...useHandlar('teacherName')}
+      />
+      </Box>
+      <Box m={2}>
+      <TextField
+        fullWidth
+        variant="outlined"
+        size="small"
+        type="number"
+        label="사번(비워둘 시 자동 지정)"
+        {...useHandlar('teacherID')}
       />
       </Box>
       <Box m={2}>
@@ -135,6 +146,12 @@ export default () => {
         생성
       </Button>
       </Box>
+      <Typography
+        color="error"
+        variant="caption"
+      >
+        *주의: 아이디, 입사일은 이후 변경할 수 없습니다.
+      </Typography>
     </Grid>
   </>
   );

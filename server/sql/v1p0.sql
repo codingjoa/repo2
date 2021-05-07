@@ -8,7 +8,7 @@ create table if not exists v1.studentID (
   studentID int unsigned not null AUTO_INCREMENT,
   studentCreated timestamp not null default current_timestamp,
   unused boolean not null default 0,
-  primary key studentID
+  primary key (studentID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 create table if not exists v1.studentInfo (
@@ -22,7 +22,7 @@ create table if not exists v1.studentInfo (
   studentUniqueness mediumtext not null default '',
   studentModifiedInfo timestamp not null default current_timestamp on update current_timestamp,
   studentUniformNumber int unsigned default null,
-  foreign key studentID references studentID on delete cascade on update cascade
+  foreign key (studentID) references studentID(studentID) on delete cascade on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
 create table if not exists v1.teacher (
@@ -33,19 +33,19 @@ create table if not exists v1.teacher (
   teacherOp boolean not null default 0,
   teacherCreated timestamp not null default current_timestamp,
   teacherModified timestamp not null default current_timestamp on update current_timestamp,
-  teacherModifiedPassword timestamp defualt null,
+  teacherModifiedPassword timestamp,
   unused boolean not null default 0,
   isForeigner int unsigned not null default 0,
   permission int unsigned not null default 0,
   primary key (teacherID),
-  unique (teacherAccount)
+  UNIQUE (teacherAccount)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 create table if not exists v1.quarter (
   quarterID int unsigned not null AUTO_INCREMENT,
   quarterName varchar(255) not null default '반 이름을 지정하세요',
   unused boolean not null default 0,
-  primary key quarterID
+  primary key (quarterID)
 ) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8mb4;
 
 CREATE TABLE if not exists v1.lesson (
@@ -111,7 +111,7 @@ create table if not exists v1.teacherLeaving (
   foreign key (teacherID) references teacher(teacherID) on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-create table if not exists deductionsMonth (
+create table if not exists v1.deductionsMonth (
   lessonMonth date not null,
   createdAt timestamp not null default current_timestamp,
   modifiedAt timestamp null on update current_timestamp,
@@ -127,7 +127,7 @@ create table if not exists deductionsMonth (
   unique (lessonMonth)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-create table if not exists deductionsPrice (
+create table if not exists v1.deductionsPrice (
   teacherID int unsigned not null,
   lessonMonth date not null,
   NP int unsigned null,
@@ -153,7 +153,7 @@ create table if not exists deductionsPrice (
   foreign key (teacherID) references teacher(teacherID) on update cascade
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
-insert into teacher(
+insert into v1.teacher(
   teacherName,
   teacherAccount,
   teacherPassword,

@@ -12,7 +12,7 @@ export default ({ refundReason }) => (
       {refundReason ? (
         <Tooltip
           TransitionComponent={Zoom}
-          title={`"${refundReason}" 사유로 환불/이월됨`}
+          title={`"${refundReason}" 사유로 환불`}
         >
           <MonetizationOnIcon />
         </Tooltip>

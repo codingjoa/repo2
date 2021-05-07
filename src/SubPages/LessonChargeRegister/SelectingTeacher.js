@@ -1,17 +1,18 @@
-import React, { useContext, useState, useLayoutEffect } from 'react';
+import React from 'react';
 import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
-import { Context } from './Context';
 
-export default () => {
-  const { pickedTeacher, setPickedTeacher } = useContext(Context);
-  const [ fd, setFd ] = useState(null);
+export default ({
+  pickedTeacher,
+  setPickedTeacher
+}) => {
+  const [ fd, setFd ] = React.useState(null);
   const handleChange = e => {
     setPickedTeacher(e.target.value);
   };
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     axios.get(`/api/admin/teacher`)
     .then(r => setFd(r.data.fetchedData))
     .catch(e => {
@@ -29,12 +30,22 @@ export default () => {
         fullWidth
         variant="outlined"
         size="small"
-        label="담당할 선생님"
+        label="지도강사"
         value={pickedTeacher}
         onChange={handleChange}
       >
-        {typeof fd === 'object' && fd.map(({ teacherID, teacherName}) => 
-          <MenuItem value={teacherID}>{teacherName}</MenuItem>
+        <MenuItem
+          value={null}
+        >
+          미배치
+        </MenuItem>
+        {typeof fd === 'object' && fd.map(({ teacherID, teacherName }) =>
+          <MenuItem
+            key={teacherID}
+            value={teacherID}
+          >
+            {teacherName}
+          </MenuItem>
         )}
       </TextField>
     </Box>

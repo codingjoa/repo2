@@ -1,4 +1,4 @@
-import React, { useCallback, useRef } from 'react';
+import React from 'react';
 import Avatar from '@material-ui/core/Avatar';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
@@ -9,7 +9,6 @@ import LockOutlinedIcon from '@material-ui/icons/LockOutlined';
 import TextField from '@material-ui/core/TextField';
 import Typography from '@material-ui/core/Typography';
 import { makeStyles } from '@material-ui/core/styles';
-
 const Copyright = () => (
   <Typography variant="body2" color="textSecondary" align="center">
     Copyright &copy;
@@ -38,18 +37,18 @@ const useStyles = makeStyles((theme) => ({
     margin: theme.spacing(3, 0, 2),
   },
 }));
-
-export default function SignIn({ signIn }) {
+export default function SignIn({
+  signIn
+}) {
   const classes = useStyles();
-  const idi = useRef();
-  const pwi = useRef();
-  const trySignIn = useCallback((e) => {
+  const idRef = React.useRef();
+  const passwordRef = React.useRef();
+  const trySignIn = React.useCallback((e) => {
     e.preventDefault();
-    const id = idi.current.value;
-    const pw = pwi.current.value;
+    const id = idRef.current.value;
+    const pw = passwordRef.current.value;
     signIn(id, pw);
   }, []);
-
   return (
     <Container component="main" maxWidth="xs">
       <CssBaseline />
@@ -72,36 +71,36 @@ export default function SignIn({ signIn }) {
           noValidate
         >
           <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            inputRef={idi}
-            id="email"
-            label="아이디"
-            name="id"
             autoComplete="email"
             autoFocus
+            fullWidth
+            id="email"
+            inputRef={idRef}
+            label="아이디"
+            margin="normal"
+            name="id"
+            required
+            variant="outlined"
           />
           <TextField
-            variant="outlined"
-            margin="normal"
-            required
-            fullWidth
-            inputRef={pwi}
-            name="password"
-            label="비밀번호"
-            type="password"
-            id="password"
             autoComplete="current-password"
+            fullWidth
+            id="password"
+            inputRef={passwordRef}
+            label="비밀번호"
+            margin="normal"
+            name="password"
+            required
+            type="password"
+            variant="outlined"
           />
           <Button
-            type="submit"
             fullWidth
-            variant="contained"
-            color="primary"
             className={classes.submit}
+            color="primary"
             onClick={trySignIn}
+            type="submit"
+            variant="contained"
           >
             로그인
           </Button>

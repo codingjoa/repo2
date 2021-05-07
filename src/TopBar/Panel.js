@@ -31,7 +31,7 @@ const TopLine = ({
       flexDirection="row"
     >
       <Box
-        
+
       >
         <IconButton
           edge="start"
@@ -46,9 +46,7 @@ const TopLine = ({
         flexGrow={1}
       >
         <Typography
-          variant="h6"
           color="inherit"
-          noWrap
         >
           학원관리 프로그램
         </Typography>
@@ -68,8 +66,13 @@ export default function({
   const classes = useStyles();
   return (<>
     <CssBaseline />
-    <AppBar position="absolute" className={classes.appBar}>
-      <Toolbar>
+    <AppBar
+      position="absolute"
+      className={classes.appBar}
+    >
+      <Toolbar
+        variant="regular"
+      >
         <Grid
           item
           xs={12}

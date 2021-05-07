@@ -17,18 +17,10 @@ module.exports = async function(
   const studentAddress = req.body.studentAddress ?? null;
   pool.query(`update studentInfo set
     studentName=(?),
-    studentBirthday=(?),
-    studentGender=(?),
-    studentPhone=(?),
-    studentEmail=(?),
-    studentAddress=(?)
+    studentPhone=(?)
     where studentID=(?)`,
     [ studentName,
-      studentBirthday,
-      studentGender,
       studentPhone,
-      studentEmail,
-      studentAddress,
       studentID
     ]
   )

@@ -4,18 +4,44 @@ import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
 import Page from '../../Templates/Page';
 import Close from './Close';
-function toYear(origin) {
-  return (new Date(origin)).getFullYear();
-}
+export default ({
+  studentName, studentNameDup,
+  studentID, isCanBeClosed,
+  quarterName, billingRegSize,
+  quarterNameLesson,
+  handleClick
+}) => (<>
+  <tr key={studentID}>
+    <td>{studentID}</td>
+    <td>{studentNameDup}</td>
+    <td>{quarterName}</td>
+    <td>{!isCanBeClosed ? `Y(${quarterNameLesson})` : 'N'}</td>
+    <td>
+      <Button
+        component={Link}
+        size="small"
+        to={`/admin/student/detail/${studentID}`}
+        variant="contained"
+      >
+        인적사항
+      </Button>
+    </td>
+    <td><Close
+      id={studentID}
+      name={studentName}
+      disabled={!isCanBeClosed}
+      handleClick={handleClick}
+      billingRegSize={billingRegSize}
+    /></td>
+  </tr>
 
-export default ({ list }) => (<>
-  {list && list.map(({ studentName, studentID, studentBirthday, isCanBeClosed }) => <Page>
+  {/*<Page>
     <Box display="flex">
       <Box
         flexGrow={1}
         alignSelf="center"
       >
-        {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}{!isCanBeClosed ? '(수업 예정/진행중)' : null}
+        {studentID}: {studentNameDup}{!isCanBeClosed ? '(수업 예정/진행중)' : null}{quarterName}
       </Box>
       <Box
         alignSelf="center"
@@ -29,8 +55,9 @@ export default ({ list }) => (<>
         </Button>
       </Box>
       <Box>
-        <Close id={studentID} name={studentName} disabled={!isCanBeClosed} />
+        <Close id={studentID} name={studentName} disabled={!isCanBeClosed} handleClick={handleClick} />
       </Box>
     </Box>
-  </Page>)}
+  </Page>
+  */}
 </>);

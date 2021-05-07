@@ -12,10 +12,11 @@ export default () => {
   const btn = ({ studyWeek, studyProgressed }) => (
     <Grid item xs={3} sm={2}>
       <Button
-        fullWidth
-        variant="contained"
         color={studyProgressed ? 'secondary' : 'default'}
         component={ReactRouter.Link}
+        disabled={!(location.state.data.studyOkSize>=studyWeek-1)}
+        fullWidth
+        variant="contained"
         to={`/lesson/detail/${quarterID}/${lessonMonth}/study/${studyWeek}`}
       >
         {studyWeek}회차

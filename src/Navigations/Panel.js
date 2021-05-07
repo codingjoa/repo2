@@ -57,7 +57,7 @@ export default ({
   const location = useLocation();
   React.useLayoutEffect(() => {
     setNavOpen(false);
-  }, [ location ]);
+  }, [ location, setNavOpen ]);
   return (
     <Drawer
       variant="temporary"
@@ -69,7 +69,7 @@ export default ({
     >
       <div className={classes.toolbarIcon}>
         <Box flexGrow={1}>
-          {sessionStorage.teacherName} 선생님
+          {sessionStorage.teacherName} 강사님
         </Box>
         <Box>
           <Link color="primary" component={LinkComponent} to="/account/password">비밀번호 변경</Link>

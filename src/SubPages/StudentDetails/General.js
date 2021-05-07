@@ -1,4 +1,5 @@
 import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import TextField from '@material-ui/core/TextField';
 import MenuItem from '@material-ui/core/MenuItem';
@@ -13,10 +14,11 @@ function dateOnly(origin) {
   const localeString = new Date(Date.parse(origin)).toLocaleString('ko-KR', { timeZone: 'Asia/Seoul' });
   return /^(\d+). (\d+). (\d+)/.test(localeString) ?
     `${RegExp.$1}-${RegExp.$2.length<2 ? `0${RegExp.$2}` : RegExp.$2}-${RegExp.$3.length<2 ? `0${RegExp.$3}` : RegExp.$3}`
-  : ''; 
+  : '';
 }
 
 export default ({
+  /*
   studentID,
   studentName,
   studentBirthday,
@@ -24,16 +26,26 @@ export default ({
   studentPhone,
   studentEmail,
   studentAddress
+  */
+  studentID,
+  studentName,
+  studentPhone,
+  op
 }) => {
+  const history = ReactRouter.useHistory();
   const [ disabled, setDisabled ] = React.useState(true);
   const validate = changed => {
     const empty = (
+      changed.studentName === '' ||
+      changed.studentPhone === ''
+      /*
       changed.studentName === '' ||
       changed.studentBirthday === '' ||
       changed.studentGender === '' ||
       changed.studentPhone === '' ||
       changed.studentEmail === '' ||
-      changed.studentAddress === '' 
+      changed.studentAddress === ''
+      */
     );
     if(empty) {
       setDisabled(true);
@@ -41,11 +53,15 @@ export default ({
     }
     setDisabled(
       studentName === changed.studentName &&
+      studentPhone === changed.studentPhone
+      /*
+      studentName === changed.studentName &&
       dateOnly(studentBirthday) === changed.studentBirthday &&
       studentGender === changed.studentGender-0 &&
       studentPhone === changed.studentPhone &&
       studentEmail === changed.studentEmail &&
       studentAddress === changed.studentAddress
+      */
     );
   };
   const {
@@ -53,11 +69,15 @@ export default ({
     useHandlar
   } = Handlar({
     studentName,
+    studentPhone
+    /*
+    studentName,
     studentBirthday: dateOnly(studentBirthday),
     studentGender,
     studentPhone,
     studentEmail,
     studentAddress
+    */
   }, validate);
   const callback = err => {
     if(err) {
@@ -65,6 +85,14 @@ export default ({
       return;
     }
     alert('변경되었습니다.');
+    history.goBack();
+  };
+  const handleClick = e => {
+    if(op) {
+      putCloser(`/api/admin/student/${studentID}`, callback)();
+    } else {
+      putCloser(`/api/teacher/student/${studentID}`, callback)();
+    }
   };
   return (
   <><Typography variant="subtitle1">학생 정보 조회/수정</Typography>
@@ -82,6 +110,7 @@ export default ({
         {...useHandlar('studentName')}
       />
       </Box>
+      {/*
       <Box m={2}>
       <TextField
         fullWidth
@@ -114,6 +143,7 @@ export default ({
         <MenuItem value={1}>남</MenuItem>
       </TextField>
       </Box>
+      */}
       <Box m={2}>
       <TextField
         fullWidth
@@ -127,6 +157,7 @@ export default ({
         {...useHandlar('studentPhone')}
       />
       </Box>
+      {/*
       <Box m={2}>
       <TextField
         fullWidth
@@ -153,12 +184,13 @@ export default ({
         {...useHandlar('studentAddress')}
       />
       </Box>
+      */}
       <Box m={2}>
       <Button
         disabled={disabled}
         variant="contained"
         color="primary"
-        onClick={e => putCloser(`/api/admin/student/${studentID}`, callback)()}
+        onClick={handleClick}
       >
         변경
       </Button>

@@ -1,6 +1,6 @@
 {
   "name": "ky",
-  "version": "1.4.0",
+  "version": "1.5.0",
   "private": true,
   "dependencies": {
     "@material-ui/core": "^4.11.0",
@@ -9,7 +9,6 @@
     "@testing-library/jest-dom": "^4.2.4",
     "@testing-library/react": "^9.5.0",
     "@testing-library/user-event": "^7.2.1",
-    "@unicef/material-ui-currency-textfield": "^0.8.6",
     "axios": "^0.19.2",
     "bcrypt": "^5.0.0",
     "body-parser": "^1.19.0",
@@ -29,10 +28,10 @@
     "react-scripts": "^3.4.3"
   },
   "scripts": {
-    "start": "react-scripts start",
-    "startsecure": "HTTPS=true SSL_CRT_FILE=txshi.crt SSL_KEY_FILE=txshi.key react-scripts start",
+    "start": "export PORT=5050 && react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "testapi": "mocha",
     "eject": "react-scripts eject"
   },
   "eslintConfig": {
@@ -49,5 +48,9 @@
       "last 1 firefox version",
       "last 1 safari version"
     ]
+  },
+  "devDependencies": {
+    "mocha": "^8.3.2",
+    "supertest": "^6.1.3"
   }
 }

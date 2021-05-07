@@ -14,18 +14,11 @@ import TableCell from '@material-ui/core/TableCell';
 import Paper from '@material-ui/core/Paper';
 
 import CheckIcon from '@material-ui/icons/Check';
+import CloseIcon from '@material-ui/icons/Close';
 import Page from '../../Templates/Page';
-import RefundCheckbox from './RefundCheckbox';
 import RefundReason from './RefundReason';
-import Handlar from './Handlar';
-function alerter(iter) {
-  alert(JSON.stringify( iter ));
-}
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
-}
-function toYear(origin) {
-  return (new Date(origin)).getFullYear();
 }
 function iter(size) {
   const arr = [];
@@ -35,46 +28,56 @@ function iter(size) {
 }
 const Row = ({
   studentID,
-  studentName,
-  studentBirthday,
+  studentNameDup,
   billingPrice,
   billingScholarshipCode,
   billingTaxCode,
   checkOks,
-  refundReason,
-  refundPercent,
+  billingRefundReason,
+  billingRefundPrice,
+  studySizeIter,
   Checkbox
 }) => {
   return (
-  <TableRow>
+  <TableRow key={studentID}>
     <TableCell
-      padding="small"
+      padding="checkbox"
       size="small"
+      style={{ minWidth: '4rem'}}
     >
       {Checkbox}
     </TableCell>
     <TableCell
-      padding="small"
+      padding="checkbox"
       size="small"
       style={{ minWidth: '10rem'}}
     >
-      {studentName}{studentBirthday && `(${toYear(studentBirthday)}년)`}
+      {studentNameDup}
     </TableCell>
     <TableCell
-      padding="small"
+      padding="checkbox"
       size="small"
-      style={{ minWidth: '10rem'}}
+      style={{ minWidth: '10rem', maxWidth: '15rem'}}
     >
-      {(billingScholarshipCode===1 ? '장학' : (billingTaxCode===1 ? `${numberWithCommas(billingPrice)}원(특수)` : (refundPercent===null || refundPercent===undefined ? `${numberWithCommas(billingPrice)}원` : `${numberWithCommas(billingPrice)}원(${refundPercent}% 환불)`)))}
+      {(billingScholarshipCode===1 ? '장학' : (billingTaxCode===1 ? `${numberWithCommas(billingPrice)}원(특수)` : (billingRefundPrice===null || billingRefundPrice===undefined ? `${numberWithCommas(billingPrice)}원` : `${numberWithCommas(billingPrice)}원(-${billingRefundPrice}원)`)))}
     </TableCell>
-    {checkOks ? Object.entries(checkOks).map(([ key, val ]) =>
+    {checkOks ?
+      studySizeIter.map((val, key) =>
       <TableCell
-        padding="small"
+        key={key}
+        padding="checkbox"
         size="small"
       >
-        <Icon color={val ? 'secondary' : 'disabled'}><CheckIcon /></Icon>
+        <Icon color={typeof checkOks[`${key+1}`] === 'number' && checkOks[`${key+1}`]===1 ? 'secondary' : 'disabled'}>
+          {typeof checkOks[`${key+1}`] === 'number' ?
+            <CheckIcon /> :
+            <CloseIcon />
+          }
+        </Icon>
       </TableCell>
-    ) : null}
+    ) :
+      null
+    }
   </TableRow>
   );
 };
@@ -83,46 +86,18 @@ export default ({
   studySize,
   students
 }) => {
-  const { useHandlar, getTargets } = Handlar(students ?? []);
   const location = useLocation();
   const history = useHistory();
   const { quarterID, lessonMonth } = useParams();
-
-  const goNext = refundBilling => {
-    if(refundBilling.length !== 0)
-    history.push({
-      pathname: '/admin/lessonEnd/refundReason',
-      state: {
-        quarterID,
-        lessonMonth,
-        refundBilling
-      }
-    });
-    else
-      history.push({
-        pathname: '/admin/lessonEnd/review',
-        state: {
-          quarterID,
-          lessonMonth,
-          p: null
-        }
-      });
-  };
-  const CheckBox = obj => ({
-    ...obj,
-    Checkbox: (<RefundCheckbox {...useHandlar(obj.studentID)} />)
-  });
   const Reason = obj => ({
     ...obj,
-    Checkbox: (<RefundReason refundReason={obj.refundReason} />)
+    Checkbox: (<RefundReason key={obj.studentID} refundReason={obj.billingRefundReason} />)
   });
+  const studySizeIter = iter(studySize);
   return (
   <>
     <Typography variant="subtitle1">
-      {location?.state?.isCanBeClosed ?
-        <>환불/이월할 학생 선택</> :
-        <>출결표</>
-      }
+      출결표
     </Typography>
     <Page>
       <TableContainer
@@ -135,26 +110,27 @@ export default ({
           <TableHead>
             <TableRow>
               <TableCell
-                padding="small"
+                padding="checkbox"
                 size="small"
               >
                 환불
               </TableCell>
               <TableCell
-                padding="small"
+                padding="checkbox"
                 size="small"
               >
                 학생 이름
               </TableCell>
               <TableCell
-                padding="small"
+                padding="checkbox"
                 size="small"
               >
                 수업료
               </TableCell>
-              {iter(studySize).map((a, i) =>
+              {studySizeIter.map((a, i) =>
                 <TableCell
-                  padding="small"
+                  key={i}
+                  padding="checkbox"
                   size="small"
                 >
                   {i+1}
@@ -163,26 +139,11 @@ export default ({
             </TableRow>
           </TableHead>
           <TableBody>
-            {students && students.map(location.state?.isCanBeClosed ? CheckBox : Reason).map(Row)}
+            {students && students.map(obj => ({ ...obj, studySizeIter })).map(Reason).map(Row)}
           </TableBody>
         </Table>
       </TableContainer>
     </Page>
-    {location?.state?.isCanBeClosed &&
-    <Grid item xs={12}>
-      <Box display="flex" flexDirection="row">
-        <Box>
-          <Button
-            color="secondary"
-            variant="contained"
-            onClick={e => getTargets(goNext)}
-          >
-            출석/환불 마감하기
-          </Button>
-        </Box>
-      </Box>
-    </Grid>
-    }
   </>
   );
 }
