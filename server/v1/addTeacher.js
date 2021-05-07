@@ -26,7 +26,11 @@ const insertTeacher = (
 // 리팩토링의 일환
 async function createTeacher(
   conn,
-  teacherID
+  teacherID,
+  teacherName,
+  teacherAccount,
+  teacherOp,
+  isForeigner
 ) {
   const result = await conn.query(((teacherID !== null) ? insertTeacher : insertTeacherAutoIncrement), [
     teacherName, teacherAccount,
@@ -35,10 +39,14 @@ async function createTeacher(
   if(!(result.insertId>0)) {
     throw new Error('정보가 생성되지 않았습니다.');
   }
-  return result.insretId;
+  return result.insertId;
 }
 function accountRegex(teacherAccount) {
-  //const regex = /^(?=[a-zA-Z0-9._]{2,20}$)(?!.*[_.]{2})[^_.].*[^_.]$/;
+  // https://stackoverflow.com/questions/12018245/regular-expression-to-validate-username/12019115
+  const regex = /^(?=.{2,20}$)(?![_.])(?!.*[_.]{2})[a-z]+(?<![_.])$/;
+  if(!regex.test(teacherAccount)) {
+    throw new CommonError('ID는 영어 소문자(2~20자)만 허용됩니다.');
+  };
 }
 async function addTeacher(
   teacherName, teacherAccount,
@@ -47,8 +55,15 @@ async function addTeacher(
   const conn = await pool.getConnection();
   await conn.beginTransaction();
   try {
-    // todo:  영어 아이디만 넣을 수 있게 바꿀것
-    const createdTeacherID = await createTeacher(conn, teacherID);
+    accountRegex(teacherAccount);
+    const createdTeacherID = await createTeacher(
+      conn,
+      teacherID,
+      teacherName,
+      teacherAccount,
+      teacherOp,
+      isForeigner
+    );
     await conn.query(insertTeacherJoined, [
       teacherJoined, createdTeacherID
     ]);
@@ -82,6 +97,5 @@ module.exports = async function(
     next(); // regeneratePassword
   } catch(err) {
     next(err);
-    console.error(err);
   }
 };

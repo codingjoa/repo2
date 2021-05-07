@@ -66,7 +66,7 @@ function Page200({
         </thead>
         <tbody>
           {rows.map(
-            row => (<tr key={row.studentID} style={{ textAlign: 'center' }} >
+            row => (<tr key={`${row.studentID}-${row.lessonMonth}`} style={{ textAlign: 'center' }} >
               <td>{row.studentName}</td>
               <td>{row.studentPhone}</td>
               <td>{lessonMonthToString(row?.lessonMonth)}</td>
@@ -99,6 +99,9 @@ export default function() {
   const callback = getHandlar(history.replace);
   // 페이지 첫 로드시 무조건 fetch
   React.useLayoutEffect(() => {
+    if(location?.state?.status !== undefined) {
+      history.replace({ state: null });
+    }
     fetchStudentUnpaids(callback);
   }, []);
   return (

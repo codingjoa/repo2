@@ -70,6 +70,11 @@ from
       quarter.quarterID=lesson.quarterID and
       quarter.requestMonth=lesson.lessonMonth
   where
+    (case
+      when quarter.requestMonth<concat(date_format(current_date, '%Y-%m'), '-01')=1
+      then lesson.lessonMonth is not null
+      else 1
+    end) and
     ifnull(lesson.quarterID, quarter.unused=0)>0 and
     (quarter.quarterName like concat('%', ?, '%') or (select teacher.teacherName from teacher where teacher.teacherID=ifnull(lesson.teacherID, quarter.teacherID)) like concat('%', ?, '%'))
   limit ?, ?
@@ -149,12 +154,6 @@ from
   ) as A on
     A.quarterID=Q.quarterID and
     A.lessonMonth=Q.lessonMonth
-where
-  1=(case
-    when Q.requestMonth<concat(date_format(current_date, '%Y-%m'), '-01')=1
-    then Q.lessonMonth is not null
-    else 1
-  end)
 group by
   quarterID`);
 

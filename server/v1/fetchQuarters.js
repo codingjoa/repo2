@@ -31,6 +31,9 @@ from
 where
   quarter.unused=0 and
   (quarter.quarterName like concat('%', ?, '%') or teacher.teacherName like concat('%', ?, '%'))
+order by
+  teacher.teacherName asc,
+  quarter.quarterName asc
 limit
   ?, ?`);
 const fetchQuartersLenQuery = (
