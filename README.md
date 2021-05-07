@@ -16,14 +16,15 @@
 1. repo2 폴더에서 node modules 설치 `npm i` 또는 `npm install` 필요한 모듈들을 **알아서 설치해** 줍니다.
 2. pm2 설치 `npm i pm2@latest -g`
 3. 이미 설치된 경우라도 queryString 모듈이 1.4.0 버전부터 추가되었으니 실행해주세요.
+4. `npm run build` 실행 꼭 해주세요! 그래야 리액트 서버를 쓸 수 있습니다.
 
 ### 3. mariadb 세팅하기
-1. `./server/sql/v1p0.sql` SQL을 **root 계정에서** 실행할 것
+1. `./server/sql/v1p1.sql` SQL을 **root 계정에서** 실행할 것
 ```bash
-sudo mysql -u root -p {비밀번호} < ./server/sql/v1p0.sql
+sudo mysql -u root -p {비밀번호} < ./server/sql/v1p1.sql
 # heidisql 쿼리 입력창에 v1.sql 내용 복붙
 ```
-2. 만약 사용한 적이 있는 db라면 새로운 테이블을 만들기 위해 ` ./server/sql/v1q0.sql`을 실행 p0과 q0을 헷갈리지 마세욧!
+2. 만약 사용한 적이 있는 db라면 새로운 테이블을 만들기 위해 ` ./server/sql/v1q1.sql`을 실행 p1과 q1을 헷갈리지 마세욧!
 ```bash
 sudo mysql -u root -p {비밀번호} < ./server/sql/v1q0.sql
 # heidisql 쿼리 입력창에 v1.sql 내용 복붙
@@ -51,8 +52,9 @@ pm2 stop all
 ```
 
 ### 번외1. changelog
+1.5.0 (2021-05-08)
+
 1.4.0 (2021-03-26)
-0. 너무 많은 변경사항
 
 1.3.0 (2021-02-14)
 1. src: 일반유저는 비밀번호 변경 페이지에 접근할 수 없던 버그 수정
