@@ -21,15 +21,22 @@ from
   quarter on
     billing.quarterID=quarter.quarterID
 where
-  billing.billingUnpaidCode>0
+  billing.billingUnpaidCode>0 and
+  (studentInfo.studentName like concat('%', ?, '%') or quarter.quarterName like concat('%', ?, '%'))
 order by
   studentInfo.studentName asc,
   billing.lessonMonth asc`);
-async function fetchStudentUnpaids() {
+async function fetchStudentUnpaids(
+  keyword // 1.5.1
+) {
   const conn = await pool.getConnection();
-  await conn.beginTransaction();
   try {
-    const rows = await conn.query(fetchStudentUnpaidsQuery);
+    const rows = await conn.query(fetchStudentUnpaidsQuery, [
+      keyword, keyword
+    ]);
+    if(rows.length === 0) {
+      throw new NotFoundError();
+    }
     const editedRows = rows.map(
       ({ studentPhone, ...rest }) => ({
         // 전화번호 하이픈 추가 출처: http://blog.naver.com/PostView.nhn?blogId=mankeys&logNo=221054049295&categoryNo=0&parentCategoryNo=0&viewDate=&currentPage=1&postListTopCurrentPage=1&from=postList
@@ -37,23 +44,23 @@ async function fetchStudentUnpaids() {
         ...rest
       })
     );
-    await conn.commit();
     await conn.release();
     return editedRows;
   } catch(err) {
-    await conn.rollback();
     await conn.release();
     throw err;
   }
 }
 module.exports = async function(
-  req, res
+  req, res, next
 ) {
   try {
-    const rows = await fetchStudentUnpaids();
-    !rows.length && NotFound(res);
-    rows.length && OK(res, rows);
+    const keyword = req.query.keyword ?? '';
+    const rows = await fetchStudentUnpaids(
+      keyword
+    );
+    OK(res, rows);
   } catch(err) {
-    InternalError(res, err);
+    next(err);
   }
 };
