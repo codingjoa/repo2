@@ -1,4 +1,4 @@
-const { OK, NotFound, InternalError } = require('../format');
+const { OK, NotFoundError } = require('../format');
 const { pool } = require('../poolManager');
 const fetchStudentUnpaidsQuery = (
 `select

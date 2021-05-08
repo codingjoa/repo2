@@ -4,6 +4,7 @@ import { getHandlar } from '../../Templates/Format';
 import axios from 'axios';
 import Box from '@material-ui/core/Box';
 import Button from '@material-ui/core/Button';
+import TextField from '@material-ui/core/TextField';
 import Page from '../../Templates/Page';
 function numberWithCommas(x) {
   return x.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",");
@@ -26,10 +27,10 @@ function lessonMonthToFormat(
   const lm = new Date(lessonMonth);
   return `${lm.getFullYear()}-${lm.getMonth()+1}-${lm.getDate()}`;
 }
-function fetchStudentUnpaids(callback) {
-  axios.get(`/api/admin/student/unpaid`)
+function fetchStudentUnpaids(keyword, callback) {
+  axios.get(`/api/admin/student/unpaid?keyword=${keyword}`)
   .then(
-    result => callback(null, result),
+    result => callback(null, result, { keyword }),
     err => callback(err)
   );
 }
@@ -38,6 +39,14 @@ function Page404({
 }) {
   if(status === 404) {
     return (<>미납된 수업료 정보가 없습니다.</>);
+  }
+  return null;
+}
+function Page500({
+  status
+}) {
+  if(status === 500) {
+    return (<>알 수 없는 오류.</>);
   }
   return null;
 }
@@ -97,27 +106,63 @@ export default function() {
   const history = ReactRouter.useHistory();
   const location = ReactRouter.useLocation();
   const callback = getHandlar(history.replace);
+  // 검색어 키워드 state
+  const searchRef = React.useRef();
+  const handleClick = (page = 0) => {
+    history.replace({
+      state: null
+    });
+    fetchStudentUnpaids(
+      searchRef.current.value,
+      callback
+    );
+  };
   // 페이지 첫 로드시 무조건 fetch
   React.useLayoutEffect(() => {
+    if(location?.state?.previous?.keyword !== undefined) {
+      searchRef.current.value = location?.state?.previous?.keyword;
+    }
+    const keyword = location?.state?.previous?.keyword ?? '';
     if(location?.state?.status !== undefined) {
       history.replace({ state: null });
     }
-    fetchStudentUnpaids(callback);
+    fetchStudentUnpaids(keyword, callback);
   }, []);
   return (
     <>
       <Page>
-        <Box>
-          <Button
-            color="primary"
-            onClick={e => fetchStudentUnpaids(callback)}
-            variant="contained"
+        <Box
+          display="flex"
+        >
+          <Box
+            alignSelf="center"
+            flexGrow={1}
           >
-            새로고침
-          </Button>
+            <TextField
+              fullWidth
+              InputProps={{ onKeyDown: (e => e.keyCode == 13 && handleClick())}}
+              inputRef={searchRef}
+              label="팀 또는 학생 이름으로 검색"
+              size="small"
+              variant="outlined"
+            />
+          </Box>
+          <Box
+            ml={2}
+            mr={2}
+          >
+            <Button
+              color="primary"
+              onClick={() => handleClick()}
+              variant="contained"
+            >
+              검색
+            </Button>
+          </Box>
         </Box>
       </Page>
       <Page404 status={location?.state?.status} />
+      <Page500 status={location?.state?.status} />
       <Page200 status={location?.state?.status} rows={location?.state?.data} />
     </>
   );
