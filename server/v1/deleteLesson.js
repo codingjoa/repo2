@@ -4,13 +4,13 @@ const deleteCheckingQuery = (
 `delete from
   checking
 where
-  quarterID=3 and
+  quarterID=? and
   date_format(?, '%Y-%m')=date_format(lessonMonth, '%Y-%m')`);
 const deleteStudyQuery = (
 `delete from
   study
 where
-  quarterID=3 and
+  quarterID=? and
   date_format(?, '%Y-%m')=date_format(lessonMonth, '%Y-%m')`);
 const deleteLessonQuery = (
 `delete from

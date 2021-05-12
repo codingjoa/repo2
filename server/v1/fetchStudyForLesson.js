@@ -10,7 +10,15 @@ module.exports = async function(
   pool.query(`
 select
   checking.*,
+  student.studentNameDup
+from
+  checking inner join
+  billing on
+    checking.studentID=billing.studentID and
+    checking.quarterID=billing.quarterID and
+    checking.lessonMonth=billing.lessonMonth left join
   (select
+    studentInfo.studentID,
     case
       when Duplicated.isDuplicatedName=1
       then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
@@ -29,17 +37,14 @@ select
       count(studentInfo.studentName) > 1
     ) as Duplicated on
       studentInfo.studentName=Duplicated.studentName
-  where
-    checking.studentID=studentInfo.studentID
-  ) as studentNameDup
-from
-  checking inner join
-  billing on
-    checking.studentID=billing.studentID and
-    checking.quarterID=billing.quarterID and
-    checking.lessonMonth=billing.lessonMonth
+  ) as student on
+    checking.studentID=student.studentID
 where
-  date_format(checking.lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and checking.quarterID=? and checking.studyWeek=?`,
+  date_format(checking.lessonMonth, '%Y-%m')=date_format(?, '%Y-%m') and
+  checking.quarterID=? and
+  checking.studyWeek=?
+order by
+  student.studentNameDup asc`,
     [ lessonMonth, quarterID, weekNum-0 ]
   )
   .then(r => {

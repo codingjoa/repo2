@@ -67,10 +67,21 @@ const getLessonChecking = (
   b.json
 from
   (select
-    quarterID,
-    lessonMonth,
-    studentID,
+    billing.quarterID,
+    billing.lessonMonth,
+    billing.studentID,
+    student.studentNameDup,
+    billing.billingPrice,
+    billing.billingPayment,
+    billing.billingGroup,
+    billing.billingScholarshipCode,
+    billing.billingTaxCode,
+    billing.billingRefundReason,
+    billing.billingRefundPrice
+  from
+    billing left join
     (select
+      studentInfo.studentID,
       case
         when Duplicated.isDuplicatedName=1
         then concat(studentInfo.studentName, '(', right(trim(replace(studentInfo.studentPhone, '-', '')), 4), ')')
@@ -89,23 +100,18 @@ from
         count(studentInfo.studentName) > 1
       ) as Duplicated on
         studentInfo.studentName=Duplicated.studentName
-    where
-      studentInfo.studentID=billing.studentID
-    ) as studentNameDup,
-    billingPrice,
-    billingPayment,
-    billingGroup,
-    billingScholarshipCode,
-    billingTaxCode,
-    billingRefundReason,
-    billingRefundPrice
-  from billing
+    ) as student on
+      billing.studentID=student.studentID
   ) as a,
   (select
     quarterID,
     lessonMonth,
     studentID,
-    concat('{', group_concat(concat('"', studyWeek, '": ', checkOk)), '}') as json
+    concat('{',
+      group_concat(
+        concat('"', studyWeek, '": ', checkOk)
+      ), '}'
+    ) as json
   from
     checking
   group by
@@ -120,7 +126,7 @@ where
   ?=b.quarterID and
   date_format(?, '%Y-%m')=date_format(b.lessonMonth, '%Y-%m')
 order by
-  a.studentID asc`
+  a.studentNameDup asc`
 );
 
 async function fetchLessonDetailsAdmin(

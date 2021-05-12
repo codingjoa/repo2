@@ -133,7 +133,8 @@ from
 where
   billing.quarterID=? and
   date_format(?, '%Y-%m')=date_format(billing.lessonMonth, '%Y-%m')
-`);
+order by
+  studentInfo.studentName asc`);
 /*
 const getLessonStudiesJoin = (
 `select
