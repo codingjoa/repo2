@@ -1,12 +1,5 @@
-import React, {
-  createContext,
-  useContext,
-  useState,
-  useCallback,
-  useMemo,
-  useLayoutEffect
-} from 'react';
-import { useParams, useHistory } from 'react-router-dom';
+import React from 'react';
+import * as ReactRouter from 'react-router-dom';
 import axios from 'axios';
 
 import Box from '@material-ui/core/Box';
@@ -21,6 +14,49 @@ import Checkbox from '@material-ui/core/Checkbox';
 import Button from '@material-ui/core/Button';
 import Link from '@material-ui/core/Link';
 import Page from '../Templates/Page';
+
+function editStudy(
+  quarterID,
+  lessonMonth,
+  weekNum,
+  targets,
+  callback
+) {
+  axios.patch(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`, { targets })
+  .then(result => callback(null, result))
+  .catch(callback);
+}
+function editStudyAdmin(
+  quarterID,
+  lessonMonth,
+  weekNum,
+  targets,
+  callback
+) {
+  axios.patch(`/api/admin/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`, { targets })
+  .then(result => callback(null, result))
+  .catch(callback);
+}
+function fetchStudy(
+  quarterID,
+  lessonMonth,
+  weekNum,
+  callback
+) {
+  axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`)
+  .then(result => callback(null, result))
+  .catch(callback);
+}
+function fetchStudyAdmin(
+  quarterID,
+  lessonMonth,
+  weekNum,
+  callback
+) {
+  axios.get(`/api/admin/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`)
+  .then(result => callback(null, result))
+  .catch(callback);
+}
 
 const DO = new Date();
 
@@ -37,13 +73,18 @@ function toYear(origin) {
   return (new Date(origin)).getFullYear();
 }
 
-const HookCheckBox = createContext(null);
+const HookCheckBox = React.createContext(null);
 
-function StudentInfo({ id, name, birthday, modifiedAt }) {
+function StudentInfo({
+  id,
+  name,
+  birthday,
+  modifiedAt
+}) {
 /* @codingjoa
    학생 정보를 1줄 출력하는 컴포넌트
 */
-  const { checked, setChecked } = useContext(HookCheckBox);
+  const { checked, setChecked } = React.useContext(HookCheckBox);
   if(checked[id] === undefined) return (<></>);
   return (
     <>
@@ -67,7 +108,9 @@ function StudentInfo({ id, name, birthday, modifiedAt }) {
   );
 }
 
-function FieldNames({ fields }) {
+function FieldNames({
+  fields
+}) {
 /* @codingjoa
    필드 이름들을 1줄 출력하는 컴포넌트
 */
@@ -80,7 +123,9 @@ function FieldNames({ fields }) {
   );
 }
 
-function SortedList({ students }) {
+function SortedList({
+  students
+}) {
 /* @codingjoa
    학생 목록을 정렬해서 출력하는 컴포넌트
 */
@@ -115,8 +160,10 @@ function SortedList({ students }) {
   );
 }
 
-export default function Study() {
-  const { quarterID, lessonMonth, weekNum } = useParams();
+export default function Study({
+  op // 관리자의 출석 관리 페이지인지 여부
+}) {
+  const { quarterID, lessonMonth, weekNum } = ReactRouter.useParams();
   const [ students, setStudents ] = React.useState(null);
   const [ checked, setChecked ] = React.useState({});
   const [ original, setOriginal ] = React.useState(checked);
@@ -142,16 +189,22 @@ export default function Study() {
 
   React.useLayoutEffect(() => {
     if(students !== null) return;
-    axios.get(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`)
-    .then(r => setStudents(r.data.fetchedData))
-    .catch(e => {
-      if(e.response.status === 400 && !alert(`오류: ${e.response.data.cause}`)) return;
-      alert(e);
-      setStudents(false);
-    });
+    const callback = (err, result) => {
+      if(err) {
+        if(err.response.status === 400 && !alert(`오류: ${err.response.data.cause}`)) return;
+        alert(err);
+        setStudents(false);
+        return;
+      }
+      setStudents(result.data.fetchedData);
+    };
+    if(op) {
+      fetchStudyAdmin(quarterID, lessonMonth, weekNum, callback);
+    } else {
+      fetchStudy(quarterID, lessonMonth, weekNum, callback);
+    }
   }, [ students, weekNum ]);
   React.useLayoutEffect(() => {
-    //if(!students) return;
     setChecked({});
     setOriginal({});
     setRecord({});
@@ -171,47 +224,62 @@ export default function Study() {
 
   const cb = React.useCallback(() => {
     const r = window.confirm(`총원 ${statistics.총원}명 중, 출석${statistics.출석}명 결석${statistics.결석}명으로 처리하시겠습니까?`);
-    axios.patch(`/api/teacher/lesson/${quarterID}/${lessonMonth}/study/${weekNum}`, { targets: statistics.재기록대상 })
-    .then(r => {
+    const callback = (err, result) => {
+      if(err) {
+        if(err.response?.status===400 && !alert(`변경 실패: ${err.response.data.cause}`)) return;
+        alert(err);
+        return;
+      }
+      // students가 null로 변경되면 layoutEffect에 의하여 다시 fetch됨
       setStudents(null);
-    })
-    .catch(e => {
-      if(e.response?.status===400 && !alert(`변경 실패: ${e.response.data.cause}`)) return;
-      alert(e);
-    });
+    };
+    if(op) {
+      editStudyAdmin(quarterID, lessonMonth, weekNum, statistics?.재기록대상, callback);
+    } else {
+      editStudy(quarterID, lessonMonth, weekNum, statistics?.재기록대상, callback);
+    }
   }, [ statistics ]);
-  const history = useHistory();
+  const history = ReactRouter.useHistory();
 
   return (
-    <HookCheckBox.Provider value={{ checked, setChecked, original, setOriginal, record, setRecord }}>
-    <Link
-      color="primary"
-      onClick={e => history.goBack()}
-    >돌아가기</Link>
-    <Page>
-      <SortedList students={students} />
-      <br />
-      <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
-      <Box mt={2}>
-        <Grid container spacing={3} style={{ maxWidth: '600px' }}>
-          <Grid item>
-            총원: {statistics.총원}
+    <HookCheckBox.Provider value={{
+      checked,
+      setChecked,
+      original,
+      setOriginal,
+      record,
+      setRecord
+    }}>
+      <Link
+        color="primary"
+        onClick={e => history.goBack()}
+      >
+        돌아가기
+      </Link>
+      <Page>
+        <SortedList students={students} />
+        <br />
+        <Button variant="contained" onClick={cb} disabled={!statistics.데베재기록}>출석/결석 처리</Button>
+        <Box mt={2}>
+          <Grid container spacing={3} style={{ maxWidth: '600px' }}>
+            <Grid item>
+              총원: {statistics.총원}
+            </Grid>
+            <Grid item>
+              출석: {statistics.출석}
+            </Grid>
+            <Grid item>
+              재승인:{statistics.재승인}
+            </Grid>
+            <Grid item>
+              취소: {statistics.취소}
+            </Grid>
+            <Grid item>
+              변경됨: {statistics.데베재기록}
+            </Grid>
           </Grid>
-          <Grid item>
-            출석: {statistics.출석}
-          </Grid>
-          <Grid item>
-            재승인:{statistics.재승인}
-          </Grid>
-          <Grid item>
-            취소: {statistics.취소}
-          </Grid>
-          <Grid item>
-            변경됨: {statistics.데베재기록}
-          </Grid>
-        </Grid>
-      </Box>
-    </Page>
+        </Box>
+      </Page>
     </HookCheckBox.Provider>
   );
 }

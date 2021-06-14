@@ -15,6 +15,7 @@ import StudentDetails from './StudentDetails/Main';
 import StudentList from './StudentList/Main';
 import StudentRefunds from './StudentRefunds/Main';
 import StudentUnpaid from './StudentUnpaid/Main';
+import Study from './Study';
 import TeacherAdd from './TeacherAdd/Main';
 import TeacherList from './TeacherList/Main';
 export default () => (
@@ -60,6 +61,9 @@ export default () => (
     </Route>
     <Route exact path="/admin/students/unpaid">
       <StudentUnpaid />
+    </Route>
+    <Route exact path="/admin/lesson/detail/:quarterID/:lessonMonth/study/:weekNum">
+      <Study op />
     </Route>
     <Route exact path="/admin/teacher/add">
       <TeacherAdd />

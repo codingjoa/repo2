@@ -1,8 +1,8 @@
--- MySQL dump 10.17  Distrib 10.3.25-MariaDB, for debian-linux-gnueabihf (armv7l)
+-- MySQL dump 10.18  Distrib 10.3.27-MariaDB, for debian-linux-gnueabihf (armv8l)
 --
--- Host: localhost    Database: ky
+-- Host: localhost    Database: v1
 -- ------------------------------------------------------
--- Server version	10.3.25-MariaDB-0+deb10u1
+-- Server version	10.3.27-MariaDB-0+deb10u1
 
 /*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
 /*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
@@ -14,6 +14,8 @@
 /*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
 /*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
 /*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
+
+SET FOREIGN_KEY_CHECKS = 0;
 
 --
 -- Table structure for table `billing`
@@ -30,24 +32,18 @@ CREATE TABLE `billing` (
   `billingGroup` tinyint(1) unsigned DEFAULT NULL,
   `billingPrice` int(10) unsigned DEFAULT NULL,
   `billingRetractable` tinyint(1) NOT NULL DEFAULT 1,
+  `billingScholarshipCode` int(10) unsigned NOT NULL DEFAULT 0,
+  `billingTaxCode` int(10) unsigned NOT NULL DEFAULT 0,
+  `billingRefundReason` varchar(255) DEFAULT NULL,
+  `billingRefundPrice` int(10) unsigned DEFAULT NULL,
+  `billingMiddleRegCode` int(10) unsigned DEFAULT 0,
+  `billingUnpaidCode` int(10) unsigned DEFAULT 0,
+  `billingRefundAt` date DEFAULT NULL,
+  `billingRefundMiddleCode` int(10) unsigned DEFAULT NULL,
   KEY `studentID` (`studentID`),
   KEY `quarterID` (`quarterID`),
   CONSTRAINT `billing_ibfk_1` FOREIGN KEY (`studentID`) REFERENCES `studentID` (`studentID`) ON UPDATE CASCADE,
   CONSTRAINT `billing_ibfk_2` FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `billingTypes`
---
-
-DROP TABLE IF EXISTS `billingTypes`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `billingTypes` (
-  `billingPayment` tinyint(1) unsigned DEFAULT NULL,
-  `billingGroup` tinyint(1) unsigned DEFAULT NULL,
-  `billingPrice` int(10) unsigned DEFAULT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -71,7 +67,66 @@ CREATE TABLE `checking` (
   KEY `studentID` (`studentID`),
   CONSTRAINT `checking_ibfk_1` FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE,
   CONSTRAINT `checking_ibfk_2` FOREIGN KEY (`studentID`) REFERENCES `studentID` (`studentID`) ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=222 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=6338 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `deductionsMonth`
+--
+
+DROP TABLE IF EXISTS `deductionsMonth`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `deductionsMonth` (
+  `lessonMonth` date NOT NULL,
+  `createdAt` timestamp NOT NULL DEFAULT current_timestamp(),
+  `modifiedAt` timestamp NULL DEFAULT NULL ON UPDATE current_timestamp(),
+  `version` varchar(10) NOT NULL DEFAULT 'undefined',
+  `NP` int(10) unsigned DEFAULT NULL,
+  `HI` int(10) unsigned DEFAULT NULL,
+  `LCI` int(10) unsigned DEFAULT NULL,
+  `EI` int(10) unsigned DEFAULT NULL,
+  `EIC` int(10) unsigned DEFAULT NULL,
+  `LIT` int(10) unsigned DEFAULT NULL,
+  `SAT` int(10) unsigned DEFAULT NULL,
+  `toPresident` int(10) unsigned DEFAULT NULL,
+  UNIQUE KEY `lessonMonth` (`lessonMonth`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `deductionsPrice`
+--
+
+DROP TABLE IF EXISTS `deductionsPrice`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `deductionsPrice` (
+  `teacherID` int(10) unsigned NOT NULL,
+  `lessonMonth` date NOT NULL,
+  `NP` int(10) unsigned DEFAULT NULL,
+  `NPC` int(10) unsigned DEFAULT NULL,
+  `HI` int(10) unsigned DEFAULT NULL,
+  `HIC` int(10) unsigned DEFAULT NULL,
+  `LCI` int(10) unsigned DEFAULT NULL,
+  `LCIC` int(10) unsigned DEFAULT NULL,
+  `EI` int(10) unsigned DEFAULT NULL,
+  `EIC` int(10) unsigned DEFAULT NULL,
+  `IT` int(10) unsigned DEFAULT NULL,
+  `LIT` int(10) unsigned DEFAULT NULL,
+  `SAT` int(10) unsigned DEFAULT NULL,
+  `deductions` int(10) unsigned DEFAULT NULL,
+  `basic` int(10) unsigned DEFAULT NULL,
+  `taxable` int(10) unsigned DEFAULT NULL,
+  `taxFree` int(10) unsigned DEFAULT NULL,
+  `proceeds` int(10) unsigned DEFAULT NULL,
+  `students` int(10) unsigned DEFAULT NULL,
+  `lesson` int(10) unsigned DEFAULT NULL,
+  `income` int(10) unsigned DEFAULT NULL,
+  `refunds` int(10) unsigned DEFAULT NULL,
+  KEY `teacherID` (`teacherID`),
+  CONSTRAINT `deductionsPrice_ibfk_1` FOREIGN KEY (`teacherID`) REFERENCES `teacher` (`teacherID`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -91,7 +146,7 @@ CREATE TABLE `lesson` (
   KEY `quarterID` (`quarterID`),
   KEY `teacherID` (`teacherID`),
   CONSTRAINT `lesson_ibfk_1` FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE,
-  CONSTRAINT `lesson_ibfk_2` FOREIGN KEY (`teacherID`) REFERENCES `teacher` (`teacherID`)
+  CONSTRAINT `lesson_ibfk_2` FOREIGN KEY (`teacherID`) REFERENCES `teacher` (`teacherID`) ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -104,62 +159,13 @@ DROP TABLE IF EXISTS `quarter`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `quarter` (
   `quarterID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `teacherID` int(10) unsigned DEFAULT NULL,
-  `quarterName` varchar(255) DEFAULT '반 이름을 지정하세요',
+  `quarterName` varchar(255) NOT NULL DEFAULT '반 이름을 지정하세요',
   `unused` tinyint(1) NOT NULL DEFAULT 0,
+  `teacherID` int(10) unsigned DEFAULT NULL,
   PRIMARY KEY (`quarterID`),
   KEY `teacherID` (`teacherID`),
   CONSTRAINT `quarter_ibfk_1` FOREIGN KEY (`teacherID`) REFERENCES `teacher` (`teacherID`) ON DELETE SET NULL ON UPDATE CASCADE
-) ENGINE=InnoDB AUTO_INCREMENT=32 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `refund`
---
-
-DROP TABLE IF EXISTS `refund`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `refund` (
-  `studentID` int(10) unsigned DEFAULT NULL,
-  `quarterID` int(10) unsigned DEFAULT NULL,
-  `lessonMonth` date DEFAULT NULL,
-  `refundReason` varchar(255) DEFAULT NULL,
-  `refundPercent` int(10) unsigned NOT NULL DEFAULT 100,
-  KEY `studentID` (`studentID`),
-  KEY `quarterID` (`quarterID`),
-  CONSTRAINT `refund_ibfk_1` FOREIGN KEY (`studentID`) REFERENCES `studentID` (`studentID`) ON UPDATE CASCADE,
-  CONSTRAINT `refund_ibfk_2` FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON UPDATE CASCADE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `refundExample`
---
-
-DROP TABLE IF EXISTS `refundExample`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `refundExample` (
-  `editID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `refundReason` varchar(255) NOT NULL DEFAULT '새 환불 사유',
-  PRIMARY KEY (`editID`)
-) ENGINE=InnoDB AUTO_INCREMENT=4 DEFAULT CHARSET=utf8mb4;
-/*!40101 SET character_set_client = @saved_cs_client */;
-
---
--- Table structure for table `salary`
---
-
-DROP TABLE IF EXISTS `salary`;
-/*!40101 SET @saved_cs_client     = @@character_set_client */;
-/*!40101 SET character_set_client = utf8 */;
-CREATE TABLE `salary` (
-  `ID` int(10) unsigned NOT NULL AUTO_INCREMENT,
-  `Price` int(10) unsigned DEFAULT NULL,
-  `Tag` varchar(255) NOT NULL DEFAULT '',
-  PRIMARY KEY (`ID`)
-) ENGINE=InnoDB AUTO_INCREMENT=2 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=85 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -174,7 +180,7 @@ CREATE TABLE `studentID` (
   `studentCreated` timestamp NOT NULL DEFAULT current_timestamp(),
   `unused` tinyint(1) NOT NULL DEFAULT 0,
   PRIMARY KEY (`studentID`)
-) ENGINE=InnoDB AUTO_INCREMENT=48 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=726 DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
 --
@@ -186,16 +192,20 @@ DROP TABLE IF EXISTS `studentInfo`;
 /*!40101 SET character_set_client = utf8 */;
 CREATE TABLE `studentInfo` (
   `studentID` int(10) unsigned DEFAULT NULL,
-  `studentName` varchar(255) DEFAULT '이름없는 학생',
-  `studentBirthday` date DEFAULT NULL,
-  `studentGender` tinyint(1) DEFAULT NULL,
-  `studentPhone` varchar(20) DEFAULT NULL,
-  `studentEmail` varchar(255) DEFAULT NULL,
-  `studentAddress` varchar(255) DEFAULT NULL,
-  `studentUniqueness` mediumtext DEFAULT NULL,
+  `studentName` varchar(255) NOT NULL DEFAULT '이름없는 학생',
+  `studentBirthday` date NOT NULL DEFAULT '1970-01-01',
+  `studentGender` tinyint(1) NOT NULL DEFAULT 0,
+  `studentPhone` varchar(20) NOT NULL DEFAULT '',
+  `studentEmail` varchar(255) NOT NULL DEFAULT '',
+  `studentAddress` varchar(255) NOT NULL DEFAULT '',
+  `studentUniqueness` mediumtext NOT NULL DEFAULT '',
   `studentModifiedInfo` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `studentUniformNumber` int(10) unsigned DEFAULT NULL,
+  `quarterID` int(10) unsigned DEFAULT NULL,
   KEY `studentID` (`studentID`),
-  CONSTRAINT `studentInfo_ibfk_1` FOREIGN KEY (`studentID`) REFERENCES `studentID` (`studentID`) ON DELETE CASCADE ON UPDATE CASCADE
+  KEY `quarterID` (`quarterID`),
+  CONSTRAINT `studentInfo_ibfk_1` FOREIGN KEY (`studentID`) REFERENCES `studentID` (`studentID`) ON DELETE CASCADE ON UPDATE CASCADE,
+  CONSTRAINT `studentInfo_ibfk_2` FOREIGN KEY (`quarterID`) REFERENCES `quarter` (`quarterID`) ON DELETE SET NULL ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -233,9 +243,27 @@ CREATE TABLE `teacher` (
   `teacherModified` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
   `teacherModifiedPassword` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
   `unused` tinyint(1) NOT NULL DEFAULT 0,
+  `isForeigner` int(10) unsigned NOT NULL DEFAULT 0,
+  `permission` int(10) unsigned NOT NULL DEFAULT 0,
   PRIMARY KEY (`teacherID`),
   UNIQUE KEY `teacherAccount` (`teacherAccount`)
-) ENGINE=InnoDB AUTO_INCREMENT=1232 DEFAULT CHARSET=utf8mb4;
+) ENGINE=InnoDB AUTO_INCREMENT=8 DEFAULT CHARSET=utf8mb4;
+/*!40101 SET character_set_client = @saved_cs_client */;
+
+--
+-- Table structure for table `teacherLeaving`
+--
+
+DROP TABLE IF EXISTS `teacherLeaving`;
+/*!40101 SET @saved_cs_client     = @@character_set_client */;
+/*!40101 SET character_set_client = utf8 */;
+CREATE TABLE `teacherLeaving` (
+  `teacherID` int(10) unsigned NOT NULL,
+  `teacherJoined` timestamp NULL DEFAULT NULL,
+  `teacherLeaved` timestamp NULL DEFAULT NULL,
+  KEY `teacherID` (`teacherID`),
+  CONSTRAINT `teacherLeaving_ibfk_1` FOREIGN KEY (`teacherID`) REFERENCES `teacher` (`teacherID`) ON UPDATE CASCADE
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 /*!40101 SET character_set_client = @saved_cs_client */;
 /*!40103 SET TIME_ZONE=@OLD_TIME_ZONE */;
 
@@ -247,4 +275,6 @@ CREATE TABLE `teacher` (
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2020-10-31 17:29:40
+SET FOREIGN_KEY_CHECKS = 1;
+
+-- Dump completed on 2021-05-20  1:09:12

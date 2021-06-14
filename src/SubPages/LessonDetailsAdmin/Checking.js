@@ -1,5 +1,5 @@
 import React from 'react';
-import { useLocation, useHistory, useParams } from 'react-router-dom';
+import * as ReactRouter from 'react-router-dom';
 import Typography from '@material-ui/core/Typography';
 import Box from '@material-ui/core/Box';
 import Grid from '@material-ui/core/Grid';
@@ -67,6 +67,7 @@ const Row = ({
         key={key}
         padding="checkbox"
         size="small"
+        style={{ textAlign: 'center' }}
       >
         <Icon color={typeof checkOks[`${key+1}`] === 'number' && checkOks[`${key+1}`]===1 ? 'secondary' : 'disabled'}>
           {typeof checkOks[`${key+1}`] === 'number' ?
@@ -86,9 +87,9 @@ export default ({
   studySize,
   students
 }) => {
-  const location = useLocation();
-  const history = useHistory();
-  const { quarterID, lessonMonth } = useParams();
+  const location = ReactRouter.useLocation();
+  const history = ReactRouter.useHistory();
+  const { quarterID, lessonMonth } = ReactRouter.useParams();
   const Reason = obj => ({
     ...obj,
     Checkbox: (<RefundReason key={obj.studentID} refundReason={obj.billingRefundReason} />)
@@ -132,8 +133,15 @@ export default ({
                   key={i}
                   padding="checkbox"
                   size="small"
+                  style={{ textAlign: 'center' }}
                 >
-                  {i+1}
+                  <Button
+                    color="secondary"
+                    onClick={e => history.push(`/admin/lesson/detail/${quarterID}/${lessonMonth}/study/${i+1}`)}
+                    variant="contained"
+                  >
+                    {i+1}주차
+                  </Button>
                 </TableCell>
               )}
             </TableRow>

@@ -242,6 +242,12 @@ router.put('/admin/lesson/:quarterID/:lessonMonth',
 router.delete('/admin/lesson/:quarterID/:lessonMonth',
   deleteLesson
 );
+router.get('/admin/lesson/:quarterID/:lessonMonth/study/:weekNum',
+  fetchStudyForLesson
+);
+router.patch('/admin/lesson/:quarterID/:lessonMonth/study/:weekNum',
+  editStudyForLesson
+);
 router.get('/admin/lesson',
   fetchLessonsOwn
 );

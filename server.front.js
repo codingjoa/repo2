@@ -4,9 +4,11 @@ const app = express();
 
 //ssl
 const fs = require('fs');
+const httpsKey = process.env.SSL_KEY_FILE ? (path.join(process.cwd(), process.env.SSL_KEY_FILE)) : (path.join(__dirname, '/ssl/cert.key'));
+const httpsCrt = process.env.SSL_CRT_FILE ? (path.join(process.cwd(), process.env.SSL_CRT_FILE)) : (path.join(__dirname, '/ssl/cert.crt'));
 const options = {
-  key: fs.readFileSync(__dirname + '/ssl/cert.key'),
-  cert: fs.readFileSync(__dirname + '/ssl/cert.crt')
+  key: fs.readFileSync(httpsKey),
+  cert: fs.readFileSync(httpsCrt)
 };
 
 
@@ -26,10 +28,10 @@ app.get('/*', function (req, res) {
 
 
 // SPA Server
-const https = require('https');
+const isHTTPS = (process.env?.HTTPS ?? false) === 'true';
 const port = process.env.PORT ?? 3000;
-https.createServer(options, app).listen(port);
-
+const server = (isHTTPS) ? (require('https').createServer(options, app)) : (require('http').createServer({}, app));
+server.listen(port);
 
 /* Linux Signal */
 const toStop = () => {
