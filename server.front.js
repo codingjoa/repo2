@@ -4,11 +4,11 @@ const app = express();
 
 //ssl
 const fs = require('fs');
-const httpsKey = process.env.SSL_KEY_FILE ? (path.join(process.cwd(), process.env.SSL_KEY_FILE)) : (path.join(__dirname, '/ssl/cert.key'));
-const httpsCrt = process.env.SSL_CRT_FILE ? (path.join(process.cwd(), process.env.SSL_CRT_FILE)) : (path.join(__dirname, '/ssl/cert.crt'));
+const httpsKey = process.env.SSL_KEY_FILE;
+const httpsCrt = process.env.SSL_CRT_FILE;
 const options = {
-  key: fs.readFileSync(httpsKey),
-  cert: fs.readFileSync(httpsCrt)
+  key: httpsKey && fs.readFileSync(httpsKey),
+  cert: httpsCrt && fs.readFileSync(httpsCrt)
 };
 
 

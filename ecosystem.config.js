@@ -7,8 +7,8 @@ module.exports = {
     env: {
       'PORT': 3000,
       'HTTPS': true,
-      'SSL_CRT_FILE': './ssl/cert.crt',
-      'SSL_KEY_FILE': './ssl/cert.key'
+      'SSL_CRT_FILE': '/etc/letsencrypt/live/codingjoa.kro.kr/cert.pem',
+      'SSL_KEY_FILE': '/etc/letsencrypt/live/codingjoa.kro.kr/privkey.pem'
     },
     env_dev: {
       'PORT': 5000,
