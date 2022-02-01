@@ -1,9 +1,0 @@
-drop table v1.studentID;
-drop table v1.studentInfo;
-drop table v1.teacher;
-drop table v1.quarter;
-drop table v1.billing;
-drop table v1.lesson;
-drop table v1.study;
-drop table v1.checking;
-drop table v1.refund;
